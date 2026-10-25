@@ -28,7 +28,7 @@ Working name/domain: **tiremileage.com is NOT purchased and NOT attached.** Prev
 - Only **4,665 of 7,628 records (61%)** name a specific tire size (469 distinct sizes, 244 with 5+ lines, 155 with 10+). The rest read "All sizes", rim ranges, speed ratings or series. Only 740 of 3,023 lines have any explicit size. NHTSA is **not** a size catalog; size pages are a lower bound. A size/fitment feed is needed for complete size and vehicle pages.
 - NHTSA `active` is false on all records, and complaint/recall counts are zero on all records, so neither is used. No "currently sold" flag.
 - NHTSA has **no prices and no warranty mileage**. Cost per mile is formula/user-input only: `cost per 1,000 mi = price per set / (expected miles / 1000)`. Anything unsourced shows "price data pending feed" / "unverified".
-- ~20 size strings are not parsed (e.g. `HL295/30R21`, `ZRF` forms); backlog.
+- ~61 records (59 strings) with size-like text are not parsed (e.g. `HL295/30R21`, `ZRF` forms); backlog.
 
 ## 4. Price/size feeds (to evaluate; terms NOT verified, none applied for)
 | Feed | Would supply | Verify before use |
