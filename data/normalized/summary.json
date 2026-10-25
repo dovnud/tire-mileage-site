@@ -1,0 +1,22 @@
+{
+ "source": "https://api.nhtsa.gov/tires?dataSet=ratings",
+ "pulled_at": "2026-10-25T20:12:43.463561+00:00",
+ "raw_records": 7628,
+ "reported_total": 7628,
+ "raw_brand_strings": 228,
+ "normalized_brands": 214,
+ "raw_product_names": 3162,
+ "normalized_lines": 3023,
+ "records_with_explicit_size": 4665,
+ "records_all_sizes_or_range": 2963,
+ "distinct_explicit_sizes": 469,
+ "sizes_with_ge10_lines": 155,
+ "sizes_with_ge5_lines": 244,
+ "lines_with_any_explicit_size": 740,
+ "records_missing_or_invalid_treadwear": 3,
+ "records_with_quality_flags": 10,
+ "active_true_count": 0,
+ "complaints_recalls_nonzero": 0,
+ "treadwear_overall_median": 420.0,
+ "generated_at": "2026-10-25T20:18:59.683327+00:00"
+}

@@ -1,0 +1,23 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { siteBrands, allLines, hasLine, lineUrl, S, fmt, pct, SOURCE_URL, UPDATED } from '../../../lib/data';
+export function getStaticPaths() { return siteBrands.map((b) => ({ params: { brand: b.slug }, props: { b } })); }
+const { b } = Astro.props as { b: (typeof siteBrands)[number] };
+const all = allLines.filter((l) => l.brand_slug === b.slug);
+const rated = all.filter((l) => l.wear_median != null).sort((x, y) => (x.brand_rank ?? 0) - (y.brand_rank ?? 0));
+const top = rated[0], low = rated[rated.length - 1];
+const title = `${b.name} Tire Treadwear Ratings: ${all.length} Lines Compared (UTQG)`;
+const description = `All ${all.length} ${b.name} tire lines in NHTSA's UTQG data ranked by treadwear${top ? `, from ${low.wear_median} to ${top.wear_median}` : ''}.`;
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires/' }, { name: b.name, href: `/tires/${b.slug}/` }];
+const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: `${b.name} tire lines by NHTSA treadwear`, itemListElement: rated.slice(0, 50).map((l, i) => ({ '@type': 'ListItem', position: i + 1, name: `${l.brand} ${l.line}` })) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld}>
+  <h1>{b.name} tire treadwear ratings</h1>
+  <div class="answer"><strong>Quick answer:</strong> NHTSA's UTQG data lists {all.length} {b.name} tire line{all.length === 1 ? '' : 's'}. {top && <span>The highest median treadwear grade is <strong>{top.wear_median}</strong> ({top.line}); the lowest is {low.wear_median} ({low.line}).</span>} Treadwear is a relative grade, not a mileage promise.</div>
+  <div class="scroll"><table>
+    <thead><tr><th class="n">Rank</th><th>Line</th><th class="n">Median treadwear</th><th class="n">Range</th><th class="n">Percentile*</th><th>Records</th></tr></thead>
+    <tbody>{rated.slice(0, 150).map((l) => <tr><td class="n">{l.brand_rank}</td><td>{hasLine(l) ? <a href={lineUrl(l)}>{l.line}</a> : l.line}</td><td class="n">{fmt(l.wear_median)}</td><td class="n">{l.wear_min === l.wear_max ? l.wear_min : `${l.wear_min}–${l.wear_max}`}</td><td class="n">{pct(l.wear_percentile)}</td><td>{l.records}</td></tr>)}</tbody>
+  </table></div>
+  <p class="meta">*Percentile = share of all {S.normalized_lines.toLocaleString()} lines with a lower median treadwear. Only lines with a linked name have their own page in this prototype.{rated.length > 150 && ` Showing first 150 of ${rated.length}.`}</p>
+  <p>Source: <a href={SOURCE_URL}>NHTSA tire ratings API</a>, {UPDATED}. <a href="/methodology/">Methodology</a>.</p>
+</Base>

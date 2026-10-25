@@ -1,0 +1,52 @@
+---
+import { PREVIEW, UPDATED, S } from '../lib/data';
+import { jsonLd } from '../lib/data';
+import Crumbs from '../components/Crumbs.astro';
+interface Props { title: string; description: string; crumbs?: { name: string; href: string }[]; ld?: unknown[]; noindex?: boolean; }
+const { title, description, crumbs = [], ld = [], noindex = false } = Astro.props;
+const origin = Astro.site!.origin;
+const canonical = new URL(Astro.url.pathname, origin).href;
+const crumbLd = crumbs.length ? { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.href, origin).href })) } : null;
+const graphs = [...(crumbLd ? [crumbLd] : []), ...ld];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {(PREVIEW || noindex) && <meta name="robots" content="noindex, nofollow" />}
+  <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" />
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+  {graphs.map((g) => <script type="application/ld+json" set:html={jsonLd(g)} />)}
+  <style is:global>
+    :root{--fg:#17202a;--mut:#5b6773;--bg:#fff;--card:#f5f7fa;--ac:#0b5cad;--bd:#d9e0e7}
+    *{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--fg);background:var(--bg)}
+    a{color:var(--ac)}header.site{border-bottom:1px solid var(--bd);background:#0f1c2b}header.site .in,main,footer .in{max-width:1000px;margin:0 auto;padding:0 16px}
+    header.site .in{display:flex;gap:20px;align-items:center;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}header.site a{color:#fff;text-decoration:none;font-weight:600}header.site .logo{font-size:1.15rem}
+    main{padding-top:20px;padding-bottom:40px}h1{font-size:1.9rem;line-height:1.2;margin:.3em 0}h2{margin-top:1.8em;border-bottom:1px solid var(--bd);padding-bottom:.2em}
+    .crumbs{font-size:.85rem;color:var(--mut)}.disclosure{background:#fff8e1;border:1px solid #f0d78a;padding:8px 12px;font-size:.85rem;border-radius:6px;margin:10px 0}
+    .answer{background:var(--card);border-left:4px solid var(--ac);padding:12px 16px;border-radius:4px;margin:14px 0;font-size:1.05rem}
+    .meta{color:var(--mut);font-size:.85rem}table{border-collapse:collapse;width:100%;font-size:.92rem;margin:10px 0}th,td{border:1px solid var(--bd);padding:6px 8px;text-align:left;vertical-align:top}th{background:var(--card)}td.n,th.n{text-align:right}
+    .scroll{overflow-x:auto}.calc{background:var(--card);padding:4px 16px 16px;border-radius:6px;border:1px solid var(--bd)}.calc-form{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.calc-form label{display:flex;flex-direction:column;font-size:.85rem;gap:4px}.calc-form input{padding:6px;width:11em}
+    #cc-out{font-weight:600;flex-basis:100%}.pill{display:inline-block;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:1px 9px;font-size:.8rem;margin:2px}
+    ul.cols{columns:2;padding-left:18px}@media(max-width:600px){ul.cols{columns:1}}footer{border-top:1px solid var(--bd);background:var(--card);padding:18px 0;font-size:.85rem;color:var(--mut)}
+    details{margin:8px 0}summary{cursor:pointer;font-weight:600}
+  </style>
+</head>
+<body>
+<header class="site"><div class="in"><a class="logo" href="/">Tire Mileage</a><a href="/tires/">Tire lines</a><a href="/sizes/">Sizes</a><a href="/methodology/">Methodology</a><a href="/data/">Data</a><a href="/about/">About</a></div></header>
+<main>
+  {crumbs.length > 1 && <Crumbs items={crumbs} />}
+  <p class="disclosure"><strong>Affiliate disclosure (placeholder):</strong> This site may earn commissions from qualifying purchases through links in the future. There are no affiliate links or ads on this prototype. Ratings are not influenced by any retailer.</p>
+  <slot />
+  <p class="meta">Last updated: <time datetime={UPDATED}>{UPDATED}</time> · Data: <a href="https://api.nhtsa.gov/tires?dataSet=ratings" rel="noopener">NHTSA tire ratings (UTQG) API</a>, pulled {UPDATED}. {S.raw_records.toLocaleString()} records.</p>
+</main>
+<footer><div class="in">
+  <p>Source: U.S. National Highway Traffic Safety Administration (NHTSA) Uniform Tire Quality Grading data, a U.S. federal government work. Grades are assigned by tire makers; they are not mileage guarantees. Not affiliated with NHTSA. <a href="/methodology/">Methodology</a> · <a href="/data/">Download data</a> · <a href="/llms.txt">llms.txt</a></p>
+  <p>Prototype build. Prices, warranties and live availability are not included (pending a licensed feed).</p>
+</div></footer>
+</body>
+</html>

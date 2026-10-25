@@ -1,0 +1,22 @@
+---
+// Cost per 1,000 miles = price per set / (expected miles / 1000). No prices or mileage are pre-filled: user input only.
+---
+<section class="calc" aria-labelledby="calc-h">
+  <h2 id="calc-h">Cost-per-mile calculator</h2>
+  <p>Price and mileage data are <strong>pending a licensed feed</strong>, so nothing is pre-filled. Enter your own quote and your own mileage expectation (for example the maker's treadwear warranty from the tire's paperwork). Formula: <code>cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000)</code>.</p>
+  <form class="calc-form" onsubmit="return false">
+    <label>Price per tire ($)<input id="cc-price" type="number" min="0" step="0.01" inputmode="decimal" /></label>
+    <label>Tires in set<input id="cc-count" type="number" min="1" step="1" value="4" /></label>
+    <label>Expected miles (your estimate or warranty)<input id="cc-miles" type="number" min="1000" step="1000" inputmode="numeric" /></label>
+    <output id="cc-out" aria-live="polite">Enter a price and expected miles.</output>
+  </form>
+</section>
+<script is:inline>
+  (function(){
+    var p=document.getElementById('cc-price'),c=document.getElementById('cc-count'),m=document.getElementById('cc-miles'),o=document.getElementById('cc-out');
+    function u(){var pr=parseFloat(p.value),n=parseFloat(c.value),mi=parseFloat(m.value);
+      if(!(pr>=0)||!(n>=1)||!(mi>0)||p.value===''){o.textContent='Enter a price and expected miles.';return;}
+      var set=pr*n;o.textContent='Set cost $'+set.toFixed(2)+' → $'+(set/(mi/1000)).toFixed(2)+' per 1,000 miles ($'+(set/mi).toFixed(4)+' per mile).';}
+    [p,c,m].forEach(function(e){e.addEventListener('input',u)});
+  })();
+</script>

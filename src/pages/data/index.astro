@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { S, UPDATED, SOURCE_URL } from '../../lib/data';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Data', href: '/data/' }];
+const origin = Astro.site!.origin;
+const files = [
+  ['nhtsa-utqg-records.csv', 'text/csv', 'Normalized record-level table (one row per NHTSA record)'],
+  ['nhtsa-utqg-records.json', 'application/json', 'Same as CSV, JSON'],
+  ['nhtsa-utqg-lines.json', 'application/json', 'One object per tire line with computed median, percentile and brand rank'],
+  ['nhtsa-utqg-sizes.json', 'application/json', 'Per-size rows of lines with an explicit size record'],
+  ['summary.json', 'application/json', 'Counts and pull metadata'],
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'Dataset', name: 'NHTSA UTQG tire ratings, normalized', description: `Normalized copy of ${S.raw_records} NHTSA Uniform Tire Quality Grading records (treadwear, traction, temperature) with parsed tire sizes and computed line statistics.`, url: new URL('/data/', origin).href, dateModified: UPDATED, creator: { '@type': 'Organization', name: 'U.S. National Highway Traffic Safety Administration (source data)' }, isBasedOn: SOURCE_URL, license: 'https://www.usa.gov/government-works', isAccessibleForFree: true, distribution: files.map(([f, t]) => ({ '@type': 'DataDownload', encodingFormat: t, contentUrl: new URL(`/data/${f}`, origin).href })) }];
+---
+<Base title="Download the NHTSA UTQG Tire Ratings Dataset (CSV, JSON)" description={`Free normalized CSV/JSON of ${S.raw_records.toLocaleString()} NHTSA tire treadwear, traction and temperature records with parsed sizes.`} crumbs={crumbs} ld={ld}>
+  <h1>Dataset downloads</h1>
+  <div class="answer"><strong>Quick answer:</strong> The full normalized dataset ({S.raw_records.toLocaleString()} records, {S.normalized_lines.toLocaleString()} lines, {S.normalized_brands} brands) is free to download below. Source data is NHTSA's, pulled {UPDATED}; please cite <a href={SOURCE_URL}>NHTSA</a> and this site.</div>
+  <div class="scroll"><table><thead><tr><th>File</th><th>Format</th><th>Contents</th></tr></thead><tbody>{files.map(([f, t, d]) => <tr><td><a href={`/data/${f}`} download>{f}</a></td><td>{t}</td><td>{d}</td></tr>)}</tbody></table></div>
+  <h2>CSV columns</h2>
+  <div class="scroll"><table><thead><tr><th>Column</th><th>Meaning</th></tr></thead><tbody>
+    <tr><td>id</td><td>NHTSA record id</td></tr><tr><td>brand, brand_slug, brand_raw</td><td>Normalized brand, URL slug, and the brand string exactly as NHTSA filed it</td></tr>
+    <tr><td>line, line_slug</td><td>Normalized tire line name and slug</td></tr><tr><td>size_raw</td><td>NHTSA's size text, unchanged</td></tr>
+    <tr><td>size_key, size_label, size_type, size_suffix</td><td>Parsed size (e.g. 225-65r17, 225/65R17, P/LT, load/speed text); blank if NHTSA gave no specific size</td></tr>
+    <tr><td>treadwear, traction, temperature</td><td>UTQG grades; blank when missing or invalid</td></tr><tr><td>quality_flags</td><td>Notes on invalid or missing source values</td></tr>
+  </tbody></table></div>
+  <p>License note: U.S. federal government works are generally not subject to U.S. copyright (17 U.S.C. §105); see <a href="https://www.usa.gov/government-works">usa.gov/government-works</a>. Our added fields (slugs, parsed sizes, ranks) are provided as-is, with no warranty.</p>
+</Base>

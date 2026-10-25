@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import { siteLines, siteSizes, siteBrands, lineUrl, sizeUrl, S, fmt, jsonLd } from '../lib/data';
+const feat = [...siteLines].sort((a, b) => b.wear_median! - a.wear_median!).slice(0, 8);
+const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Tire Mileage', url: Astro.site!.href, description: 'Tire treadwear (UTQG) grades from NHTSA data with size rankings and a cost-per-mile calculator.' }];
+---
+<Base title="Tire Treadwear Ratings & Cost-per-Mile Calculator (NHTSA UTQG Data)" description={`Compare tire treadwear, traction and temperature grades from ${S.raw_records.toLocaleString()} NHTSA UTQG records, by tire line and by size, with a cost-per-mile calculator.`} ld={ld}>
+  <h1>Tire treadwear ratings and cost per mile</h1>
+  <div class="answer"><strong>Quick answer:</strong> Tire Mileage turns the U.S. government's tire grading data (NHTSA UTQG) into plain-English comparisons: {S.raw_records.toLocaleString()} records, {S.normalized_lines.toLocaleString()} tire lines, {S.normalized_brands} brands. Treadwear is a relative durability grade (higher = slower wear on NHTSA's test), not a mileage promise. Pick a tire line or size below, then use the calculator with your own price to get cost per 1,000 miles.</div>
+  <h2>Browse</h2>
+  <ul>
+    <li><a href="/tires/">Tire lines by brand</a>: {siteLines.length} line pages in this prototype ({siteBrands.length} brands).</li>
+    <li><a href="/sizes/">Sizes ranked by treadwear</a>: {siteSizes.length} size pages in this prototype.</li>
+    <li><a href="/methodology/">Methodology</a> · <a href="/data/">Download the dataset (CSV/JSON)</a></li>
+  </ul>
+  <h2>Highest-treadwear lines among the prototype pages</h2>
+  <div class="scroll"><table><thead><tr><th>Line</th><th class="n">Median treadwear</th></tr></thead><tbody>{feat.map((l) => <tr><td><a href={lineUrl(l)}>{l.brand} {l.line}</a></td><td class="n">{fmt(l.wear_median)}</td></tr>)}</tbody></table></div>
+  <h2>Popular sizes</h2>
+  <p>{siteSizes.map((s, i) => <span><a href={sizeUrl(s.key)}>{s.label}</a>{i < siteSizes.length - 1 ? ' · ' : ''}</span>)}</p>
+  <h2>How cost per mile works here</h2>
+  <p>Cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000). We do not scrape retailers or guess warranties. Until a licensed price feed is connected, price and mileage are inputs you enter; the site shows “price data pending feed” instead of numbers it cannot source.</p>
+</Base>

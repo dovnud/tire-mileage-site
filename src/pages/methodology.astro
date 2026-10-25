@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import { S, UPDATED, SOURCE_URL, NHTSA_GUIDE, CFR_URL } from '../lib/data';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/methodology/' }];
+---
+<Base title="Methodology: How We Use NHTSA UTQG Tire Data | Tire Mileage" description="Where the data comes from (NHTSA), how it was cleaned, what the numbers mean, and what is missing (prices, warranties, full size coverage)." crumbs={crumbs}>
+  <h1>Methodology</h1>
+  <div class="answer"><strong>Quick answer:</strong> Every grade on this site comes from NHTSA's public tire ratings API, pulled {UPDATED}. We computed ranks and percentiles from those grades. We do not have, and do not show, prices or warranty mileage.</div>
+  <h2>Source</h2>
+  <p><a href={SOURCE_URL}>{SOURCE_URL}</a> returned {S.reported_total.toLocaleString()} records; we retrieved {S.raw_records.toLocaleString()} unique records. The API caps pages at 100 rows and only allows non-unique sort keys, so the pull script dedupes by NHTSA record id and checks the total. NHTSA is a U.S. federal agency; works of the U.S. federal government are generally not subject to U.S. copyright. Grade definitions: <a href={NHTSA_GUIDE}>NHTSA TireWise</a>, <a href={CFR_URL}>49 CFR 575.104</a>.</p>
+  <h2>What the grades mean</h2>
+  <ul>
+    <li><strong>Treadwear:</strong> a number in multiples of 20 relative to a government control tire graded 100. A 200 should wear twice as long as the control on the test course. It is set by the manufacturer and varies in real life with driving, maintenance and climate; it is not a mileage guarantee.</li>
+    <li><strong>Traction (AA, A, B, C):</strong> straight-ahead wet braking on test asphalt and concrete. Not cornering, not hydroplaning, not dry or snow grip.</li>
+    <li><strong>Temperature (A, B, C):</strong> resistance to heat build-up on a laboratory wheel.</li>
+  </ul>
+  <h2>Cleaning steps</h2>
+  <ul>
+    <li>Brand names differ only by capitalization in places (for example “CONTINENTAL”, “HanKOOK”). Merging case variants reduces {S.raw_brand_strings} raw brand strings to {S.normalized_brands} brands and {S.raw_product_names.toLocaleString()} product names to {S.normalized_lines.toLocaleString()} tire lines. Distinct brands with similar names are not merged.</li>
+    <li>{S.records_missing_or_invalid_treadwear} records have a missing or zero treadwear and are excluded from treadwear statistics. Out-of-range grades (for example a temperature grade of “500”) are shown as “unverified”. In total {S.records_with_quality_flags} records carry a quality flag; the raw values remain in the dataset.</li>
+    <li>Sizes are parsed from text such as “P235/75R15” or “255/40R20 101Y” into width/aspect/rim. Only {S.records_with_explicit_size.toLocaleString()} of {S.raw_records.toLocaleString()} records name a specific size; the others read “All sizes”, a rim range, or a speed/series description and are kept at line level only.</li>
+    <li>NHTSA's <code>active</code> flag is false on all records and its complaint/recall counts are zero everywhere, so we do not use them. A listed line may be discontinued.</li>
+  </ul>
+  <h2>Computed fields</h2>
+  <ul>
+    <li><strong>Median treadwear</strong> of a line: median of its records' grades.</li>
+    <li><strong>Percentile:</strong> share of all lines whose median is strictly lower.</li>
+    <li><strong>Brand rank:</strong> position among the brand's lines by median treadwear.</li>
+    <li><strong>Size rank:</strong> lines with a record for that exact size, sorted by the lowest grade filed for that size; ties share a rank.</li>
+    <li><strong>Cost per 1,000 miles</strong> = price per set ÷ (expected miles ÷ 1,000), from user input only.</li>
+  </ul>
+  <h2>Known gaps</h2>
+  <ul>
+    <li>No price feed and no warranty mileage, so no cost-per-mile ranking yet.</li>
+    <li>Size pages list only lines that NHTSA names for that size; a full size catalog feed is needed.</li>
+    <li>No vehicle fitment pages yet.</li>
+  </ul>
+</Base>

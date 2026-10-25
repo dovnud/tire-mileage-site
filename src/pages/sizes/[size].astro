@@ -1,0 +1,79 @@
+---
+import Base from '../../layouts/Base.astro';
+import { siteSizes, allSizes, hasLine, lineUrl, sizeUrl, sizeSet, S, UPDATED, fmt, range, median, wearBand, SOURCE_URL, NHTSA_GUIDE } from '../../lib/data';
+export function getStaticPaths() { return siteSizes.map((s) => ({ params: { size: s.key }, props: { s } })); }
+const { s } = Astro.props as { s: (typeof allSizes)[number] };
+const label = s.label;
+const rows = s.rows.filter((r) => r.wear_min != null).map((r) => ({ ...r, key: r.wear_min as number })).sort((a, b) => b.key - a.key || a.brand.localeCompare(b.brand) || a.line.localeCompare(b.line));
+const n = rows.length;
+let rank = 0, prev = -1;
+const ranked = rows.map((r, i) => { if (r.key !== prev) { rank = i + 1; prev = r.key; } return { ...r, rank, pctile: Math.round(100 * rows.filter((x) => x.key < r.key).length / n) }; });
+const top = ranked[0], med = median(rows.map((r) => r.key))!;
+const topTies = ranked.filter((r) => r.rank === 1);
+const lowestW = ranked[n - 1];
+const topAA = ranked.filter((r) => r.traction === 'AA' || r.traction === 'A')[0];
+const bands = [['under 200', 0, 199], ['200–299', 200, 299], ['300–399', 300, 399], ['400–499', 400, 499], ['500–599', 500, 599], ['600 and up', 600, 9999]] as const;
+const bandCounts = bands.map(([b, lo, hi]) => [b, rows.filter((r) => r.key >= lo && r.key <= hi).length] as const).filter(([, c]) => c > 0);
+const byBrand = new Map<string, number>();
+for (const r of ranked) if (!byBrand.has(r.brand)) byBrand.set(r.brand, r.key);
+const [, aspect, rim] = (() => { const m = s.key.match(/^(\d+)-(\d+)r(\d+)$/)!; return m; })();
+const related = siteSizes.filter((x) => x.key !== s.key && (x.key.endsWith(`r${rim}`) || x.key.split('-')[1].startsWith(aspect))).slice(0, 8);
+const types = [...new Set(s.rows.flatMap((r) => r.size_types))].join('/') || 'unspecified';
+const answer = `NHTSA's UTQG data has ${n} tire lines with a treadwear grade filed for ${label}. The highest grade is ${top.key}${topTies.length > 1 ? ` (tied by ${topTies.length} lines, including ${topTies[0].brand} ${topTies[0].line})` : ` (${top.brand} ${top.line})`}; the median is ${fmt(med)} and the lowest is ${lowestW.key}. ${topAA ? `The highest-treadwear line that also has traction A or AA is ${topAA.brand} ${topAA.line} (${topAA.key}).` : ''}`;
+const title = `Longest-Lasting ${label} Tires: Treadwear Ranking of ${n} Lines (UTQG)`;
+const description = `${label} tires ranked by NHTSA UTQG treadwear: ${n} lines, top grade ${top.key}, median ${fmt(med)}. Includes traction/temperature grades and a cost-per-mile calculator.`;
+const faqs = [
+  { q: `Which ${label} tire has the highest treadwear rating?`, a: `In NHTSA's UTQG data the highest treadwear grade filed for ${label} is ${top.key}${topTies.length > 1 ? `, shared by ${topTies.length} lines` : `, for the ${top.brand} ${top.line}`}. This covers only lines whose NHTSA record names this exact size.` },
+  { q: `What is a typical treadwear grade for ${label} tires?`, a: `The median treadwear grade across the ${n} rated lines for ${label} is ${fmt(med)}. Across all sizes in the dataset the median is ${fmt(S.treadwear_overall_median)}.` },
+  { q: `What is the cost per mile of ${label} tires?`, a: `We have no licensed price or warranty-mileage feed yet, so cost per mile is not computed. Use cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000) with your own quote; the table below has inputs for each line.` },
+];
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Sizes', href: '/sizes/' }, { name: label, href: sizeUrl(s.key) }];
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'ItemList', name: `${label} tires ranked by NHTSA treadwear grade`, numberOfItems: n, itemListOrder: 'https://schema.org/ItemListOrderDescending', itemListElement: ranked.slice(0, 50).map((r) => ({ '@type': 'ListItem', position: r.rank, name: `${r.brand} ${r.line}` })) },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+  { '@context': 'https://schema.org', '@type': 'WebPage', name: title, description, dateModified: UPDATED, isBasedOn: SOURCE_URL },
+];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld}>
+  <h1>{label} tires ranked by treadwear</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+
+  <h2>Ranking: {label} tire lines by NHTSA treadwear grade</h2>
+  <p>Sorted from highest to lowest treadwear. Ties share a rank. If a line has several records for this size with different grades, the lowest is used for ranking and the range is shown. Enter your own price and expected miles in the last columns; nothing is pre-filled because price and warranty data are pending a feed.</p>
+  <div class="scroll"><table id="rank-table">
+    <thead><tr><th class="n">Rank</th><th>Brand</th><th>Line</th><th class="n">Treadwear</th><th class="n">Percentile in size</th><th>Traction</th><th>Temp.</th><th>Price / set ($)</th><th>Expected miles</th><th>$ per 1,000 mi</th></tr></thead>
+    <tbody>{ranked.map((r) => <tr><td class="n">{r.rank}</td><td>{r.brand}</td><td>{hasLine(r) ? <a href={lineUrl(r)}>{r.line}</a> : r.line}</td><td class="n">{range(r.wear_min, r.wear_max)}</td><td class="n">{r.pctile}</td><td>{r.traction ?? 'unverified'}</td><td>{r.temperature ?? 'unverified'}</td><td><input class="rp" type="number" min="0" step="1" aria-label={`Price per set for ${r.brand} ${r.line}`} style="width:6em" /></td><td><input class="rm" type="number" min="1000" step="1000" aria-label={`Expected miles for ${r.brand} ${r.line}`} style="width:6em" /></td><td class="n rc">—</td></tr>)}</tbody>
+  </table></div>
+  <p class="meta">Percentile in size = share of the {n} lines for {label} with a lower treadwear grade. Cost column: price per set ÷ (expected miles ÷ 1,000), calculated in your browser from your inputs only.</p>
+
+  <h2>How the {n} lines spread across treadwear bands</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Treadwear band</th><th class="n">Lines</th><th class="n">Share</th></tr></thead>
+    <tbody>{bandCounts.map(([b, c]) => <tr><td>{b}</td><td class="n">{c}</td><td class="n">{Math.round((100 * c) / n)}%</td></tr>)}</tbody>
+  </table></div>
+  <p>The median line sits in the {wearBand(med).band} band: {wearBand(med).text}</p>
+
+  <h2>Best treadwear grade by brand for {label}</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Brand</th><th class="n">Highest grade for this size</th></tr></thead>
+    <tbody>{[...byBrand.entries()].slice(0, 15).map(([b, k]) => <tr><td>{b}</td><td class="n">{k}</td></tr>)}</tbody>
+  </table></div>
+
+  <h2>Reading this page</h2>
+  <ul>
+    <li><strong>Coverage:</strong> NHTSA lists a specific size for only {Math.round(100 * S.records_with_explicit_size / S.raw_records)}% of its records ({S.records_with_explicit_size.toLocaleString()} of {S.raw_records.toLocaleString()}); the rest are filed as “All sizes” or size ranges. Those lines may well be sold in {label} but cannot be placed here, so this is a lower bound, not a full catalog. A size catalog feed is needed for completeness.</li>
+    <li><strong>Size types in records:</strong> {types}. Load index and speed rating are not compared here.</li>
+    <li>Treadwear grades are set by each manufacturer and are most reliable for comparing tires of the same maker. See <a href="/methodology/">methodology</a> and <a href={NHTSA_GUIDE}>NHTSA TireWise</a>.</li>
+  </ul>
+  {related.length > 0 && <p>Related sizes: {related.map((x, i) => <span><a href={sizeUrl(x.key)}>{x.label}</a>{i < related.length - 1 ? ', ' : ''}</span>)}.</p>}
+
+  <h2>FAQ</h2>
+  {faqs.map((f) => <details open><summary>{f.q}</summary><p>{f.a}</p></details>)}
+  <script is:inline>
+    document.querySelectorAll('#rank-table tbody tr').forEach(function(tr){
+      var p=tr.querySelector('.rp'),m=tr.querySelector('.rm'),o=tr.querySelector('.rc');
+      function u(){var pr=parseFloat(p.value),mi=parseFloat(m.value);o.textContent=(pr>=0&&p.value!==''&&mi>0)?'$'+(pr/(mi/1000)).toFixed(2):'—';}
+      p.addEventListener('input',u);m.addEventListener('input',u);
+    });
+  </script>
+</Base>

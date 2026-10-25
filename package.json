@@ -1,0 +1,22 @@
+{
+  "name": "tire-mileage-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "data:pull": "python3 scripts/pull_nhtsa.py",
+    "data:normalize": "python3 scripts/normalize.py",
+    "predev": "node scripts/copy-downloads.mjs",
+    "dev": "astro dev",
+    "prebuild": "node scripts/copy-downloads.mjs",
+    "build": "astro build",
+    "build:full": "FULL=1 astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.4.2"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  }
+}

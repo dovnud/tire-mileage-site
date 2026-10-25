@@ -1,0 +1,82 @@
+---
+import Base from '../../../layouts/Base.astro';
+import CostCalc from '../../../components/CostCalc.astro';
+import { siteLines, allLines, recordsFor, hasLine, lineUrl, sizeUrl, sizeSet, S, UPDATED, fmt, range, pct, ordinal, wearBand, TRACTION, TEMPERATURE, mostCommon, trendLabel, SOURCE_URL, NHTSA_GUIDE, CFR_URL } from '../../../lib/data';
+export function getStaticPaths() { return siteLines.map((l) => ({ params: { brand: l.brand_slug, line: l.line_slug }, props: { l } })); }
+const { l } = Astro.props as { l: (typeof allLines)[number] };
+const name = `${l.brand} ${l.line}`;
+const recs = recordsFor(l);
+const explicit = recs.filter((r) => r.size_key);
+const band = wearBand(l.wear_median!);
+const trac = mostCommon(l.traction), temp = mostCommon(l.temperature);
+const lowerShare = l.wear_percentile!;
+const brandLines = allLines.filter((x) => x.brand_slug === l.brand_slug && x.wear_median != null).sort((a, b) => (a.brand_rank ?? 0) - (b.brand_rank ?? 0));
+const shown = [...recs].sort((a, b) => (b.treadwear ?? 0) - (a.treadwear ?? 0) || a.size_raw.localeCompare(b.size_raw)).slice(0, 80);
+const sizeLinks = [...new Set(explicit.map((r) => r.size_key))].filter((k) => sizeSet.has(k));
+const rank = l.brand_rank!;
+const above = brandLines.find((x) => x.brand_rank === rank - 1), below = brandLines.find((x) => x.brand_rank === rank + 1);
+const spread = l.wear_min === l.wear_max ? `a single treadwear grade of ${l.wear_min}` : `treadwear grades from ${l.wear_min} to ${l.wear_max} (median ${fmt(l.wear_median)})`;
+const answer = `${name} has ${spread} across ${l.records} NHTSA UTQG record${l.records === 1 ? '' : 's'}${trac ? `, traction ${trendLabel(l.traction)}` : ''}${temp ? ` and temperature ${trendLabel(l.temperature)}` : ''}. Its median treadwear is higher than ${pct(lowerShare)}% of the ${S.normalized_lines.toLocaleString()} tire lines in the dataset, and ranks #${rank} of ${l.brand_lines_rated} rated ${l.brand} lines.`;
+const title = `${name} Treadwear Rating & UTQG Grades (NHTSA data)`;
+const description = `${name}: NHTSA UTQG treadwear ${range(l.wear_min, l.wear_max)}${trac ? `, traction ${trac}` : ''}${temp ? `, temperature ${temp}` : ''}. Rank #${rank} of ${l.brand_lines_rated} ${l.brand} lines; cost-per-mile calculator.`.slice(0, 300);
+const faqs = [
+  { q: `What is the treadwear rating of the ${name}?`, a: `NHTSA's UTQG data lists ${spread} for the ${name}, from ${l.records} record${l.records === 1 ? '' : 's'}. Treadwear is graded in multiples of 20 relative to a government control tire graded 100; it is not a mileage guarantee.` },
+  { q: `Is the ${name} treadwear grade high or low?`, a: `A grade of ${fmt(l.wear_median)} is ${band.text} Compared with every line in the NHTSA data, the median is higher than ${pct(lowerShare)}% of lines (dataset median ${fmt(S.treadwear_overall_median)}). Within ${l.brand} it ranks #${rank} of ${l.brand_lines_rated}.` },
+  { q: `What is the cost per mile of the ${name}?`, a: `We do not have a licensed price or warranty-mileage feed yet, so we do not state a cost per mile. Use the formula cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000) with your own quote and mileage expectation, or the calculator on this page.` },
+];
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'WebPage', name: title, description, url: new URL(Astro.url.pathname, Astro.site).href, dateModified: UPDATED, isBasedOn: SOURCE_URL, about: { '@type': 'Thing', name } },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+];
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires/' }, { name: l.brand, href: `/tires/${l.brand_slug}/` }, { name: l.line, href: lineUrl(l) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld}>
+  <h1>{name}: treadwear rating &amp; UTQG grades</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+
+  <h2>Key facts</h2>
+  <div class="scroll"><table>
+    <tbody>
+      <tr><th scope="row">Treadwear (NHTSA UTQG)</th><td>{range(l.wear_min, l.wear_max)} (median {fmt(l.wear_median)}; band {band.band})</td></tr>
+      <tr><th scope="row">Traction grade(s)</th><td>{trendLabel(l.traction)}</td></tr>
+      <tr><th scope="row">Temperature grade(s)</th><td>{trendLabel(l.temperature)}</td></tr>
+      <tr><th scope="row">Percentile (all lines)</th><td>Median treadwear higher than {pct(lowerShare)}% of {S.normalized_lines.toLocaleString()} lines</td></tr>
+      <tr><th scope="row">Rank within {l.brand}</th><td>#{rank} of {l.brand_lines_rated} rated lines (by median treadwear)</td></tr>
+      <tr><th scope="row">NHTSA records</th><td>{l.records} total; {l.records_with_explicit_size} name a specific size ({l.explicit_sizes} distinct sizes)</td></tr>
+      <tr><th scope="row">Price / warranty miles</th><td>Price data pending feed (not available)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>What these grades mean in plain English</h2>
+  <ul>
+    <li><strong>Treadwear {fmt(l.wear_median)}:</strong> this is {band.text} Under UTQG a grade of 200 should wear twice as long as the grade-100 control tire on NHTSA's test course; real-world mileage varies with driving, rotation, alignment and climate.</li>
+    {trac && <li><strong>Traction {trac}:</strong> {TRACTION[trac]} Traction is straight-ahead wet braking only; it does not measure cornering or hydroplaning.</li>}
+    {temp && <li><strong>Temperature {temp}:</strong> {TEMPERATURE[temp]}</li>}
+    {above && <li>Ranked just above in {l.brand}: <a href={hasLine(above) ? lineUrl(above) : `/tires/${l.brand_slug}/`}>{above.line}</a> (median {fmt(above.wear_median)}).</li>}
+    {below && <li>Ranked just below in {l.brand}: <a href={hasLine(below) ? lineUrl(below) : `/tires/${l.brand_slug}/`}>{below.line}</a> (median {fmt(below.wear_median)}).</li>}
+  </ul>
+
+  <h2>NHTSA records for {name}</h2>
+  <p>Each row is one NHTSA record as filed by the manufacturer. Sizes are shown exactly as NHTSA lists them; entries such as “All sizes” apply a single grade to several sizes and cannot be matched to one specific size.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Size (as filed)</th><th class="n">Treadwear</th><th>Traction</th><th>Temperature</th></tr></thead>
+    <tbody>{shown.map((r) => <tr><td>{r.size_key && sizeSet.has(r.size_key) ? <a href={sizeUrl(r.size_key)}>{r.size_raw}</a> : r.size_raw}</td><td class="n">{r.treadwear ?? 'unverified'}</td><td>{r.traction ?? 'unverified'}</td><td>{r.temperature ?? 'unverified'}</td></tr>)}</tbody>
+  </table></div>
+  {recs.length > shown.length && <p class="meta">Showing {shown.length} of {recs.length} records; the full set is in the <a href="/data/">dataset download</a>.</p>}
+  {sizeLinks.length > 0 && <p>Compare this line with others in the same size: {sizeLinks.map((k, i) => <span><a href={sizeUrl(k)}>{k.replace('-', '/').replace('r', 'R')}</a>{i < sizeLinks.length - 1 ? ', ' : ''}</span>)}.</p>}
+
+  <CostCalc />
+
+  <h2>Other {l.brand} lines by treadwear</h2>
+  <div class="scroll"><table>
+    <thead><tr><th class="n">Rank</th><th>Line</th><th class="n">Median treadwear</th></tr></thead>
+    <tbody>{brandLines.slice(0, 12).map((x) => <tr><td class="n">{x.brand_rank}</td><td>{hasLine(x) ? <a href={lineUrl(x)}>{x.line}</a> : x.line}{x.line_slug === l.line_slug ? ' (this page)' : ''}</td><td class="n">{fmt(x.wear_median)}</td></tr>)}</tbody>
+  </table></div>
+  <p><a href={`/tires/${l.brand_slug}/`}>All {l.brand} lines →</a></p>
+
+  <h2>FAQ</h2>
+  {faqs.map((f) => <details open><summary>{f.q}</summary><p>{f.a}</p></details>)}
+
+  <h2>Source and caveats</h2>
+  <p>Source: <a href={SOURCE_URL}>NHTSA tire ratings API</a>, pulled {UPDATED}. Grade definitions: <a href={NHTSA_GUIDE}>NHTSA TireWise</a> and <a href={CFR_URL}>49 CFR 575.104</a>. Grades are self-reported by manufacturers. The NHTSA data has no “currently sold” flag (its <code>active</code> field is false on every record), so a listed line may be discontinued. See <a href="/methodology/">methodology</a>.</p>
+</Base>

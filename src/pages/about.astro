@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'About', href: '/about/' }];
+---
+<Base title="About Tire Mileage | Independent NHTSA Tire Data Reference" description="Tire Mileage is an independent, data-first reference built on public NHTSA tire grading data. No retailer controls the rankings." crumbs={crumbs}>
+  <h1>About Tire Mileage</h1>
+  <div class="answer"><strong>Quick answer:</strong> Tire Mileage is an independent reference that reorganizes public NHTSA tire grades so you can compare tires by size and by line. It is a prototype; nothing here is a sales recommendation.</div>
+  <p>We do not sell tires, test tires, or accept payment for placement. In the future the site may include affiliate links and ads, which will be disclosed on every page and will not change rankings, which come only from NHTSA's grades.</p>
+  <p>Every page states its source and the date the data was pulled. Anything we cannot source is labeled “unverified” or left out. See the <a href="/methodology/">methodology</a> and the <a href="/data/">open dataset</a>. Corrections: a contact method will be published at launch.</p>
+</Base>
