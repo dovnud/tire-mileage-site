@@ -1,0 +1,19 @@
+---
+import { enabledRetailers, buildRetailerUrl, retailerQuery, LINK_REL, CHECKED_ON } from '../lib/retailers';
+import { MAKER_FACTS } from '../lib/makers';
+const { brand, line, brandSlug, lineSlug } = Astro.props as { brand: string; line: string; brandSlug: string; lineSlug: string };
+const key = `${brandSlug}/${lineSlug}`;
+const fact = MAKER_FACTS[key];
+const q = retailerQuery(brand, line, key);
+---
+<section class="buy" aria-labelledby="buy-h">
+  <h2 id="buy-h">Where to buy / check current price</h2>
+  <p class="meta" style="margin:0 0 4px">Search results for “{q}”. We don’t show prices: they change by size and store, so check the retailer.</p>
+  <ul>
+    {enabledRetailers().map((r) => <li><a class="rl" href={buildRetailerUrl(r.id, brand, line, key)} target="_blank" rel={LINK_REL}>{r.name}<span>Search ↗</span></a></li>)}
+  </ul>
+  {fact?.warranty && (
+    <div class="warranty"><b>Maker’s mileage warranty</b>{fact.warranty.text}. <a href={fact.warranty.sourceUrl} target="_blank" rel="noopener">Source: {fact.warranty.sourceLabel}</a>, read {fact.warranty.retrieved}.{fact.warranty.note && <span class="meta"><br />{fact.warranty.note}</span>}</div>
+  )}
+  <p class="meta" style="margin:0"><strong>Disclosure:</strong> these are plain links to retailer search pages (checked {CHECKED_ON}). We have no affiliate relationship yet. If we add one, links will be marked and rankings will not change. A listed line may be discontinued or sold under a slightly different name.</p>
+</section>

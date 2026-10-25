@@ -1,22 +1,52 @@
 ---
 import Base from '../layouts/Base.astro';
-import { siteLines, siteSizes, siteBrands, lineUrl, sizeUrl, S, fmt, jsonLd } from '../lib/data';
-const feat = [...siteLines].sort((a, b) => b.wear_median! - a.wear_median!).slice(0, 8);
-const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Tire Mileage', url: Astro.site!.href, description: 'Tire treadwear (UTQG) grades from NHTSA data with size rankings and a cost-per-mile calculator.' }];
+import TireCard from '../components/TireCard.astro';
+import AdSlot from '../components/AdSlot.astro';
+import { siteLines, siteSizes, siteBrands, lineUrl, sizeUrl, S, jsonLd } from '../lib/data';
+const feat = [...siteLines].sort((a, b) => b.wear_median! - a.wear_median!).slice(0, 6);
+const popular = ["225-65r17","235-65r17","205-55r16","215-60r16","235-55r19","245-45r18","265-70r17","225-45r17"].map((k) => siteSizes.find((s) => s.key === k)).filter((s) => !!s) as typeof siteSizes;
+const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireMileage', url: Astro.site!.href, description: 'Tire treadwear (UTQG) grades from NHTSA data with size rankings and a cost-per-mile calculator.' }];
 ---
 <Base title="Tire Treadwear Ratings & Cost-per-Mile Calculator (NHTSA UTQG Data)" description={`Compare tire treadwear, traction and temperature grades from ${S.raw_records.toLocaleString()} NHTSA UTQG records, by tire line and by size, with a cost-per-mile calculator.`} ld={ld}>
-  <h1>Tire treadwear ratings and cost per mile</h1>
-  <div class="answer"><strong>Quick answer:</strong> Tire Mileage turns the U.S. government's tire grading data (NHTSA UTQG) into plain-English comparisons: {S.raw_records.toLocaleString()} records, {S.normalized_lines.toLocaleString()} tire lines, {S.normalized_brands} brands. Treadwear is a relative durability grade (higher = slower wear on NHTSA's test), not a mileage promise. Pick a tire line or size below, then use the calculator with your own price to get cost per 1,000 miles.</div>
-  <h2>Browse</h2>
-  <ul>
-    <li><a href="/tires/">Tire lines by brand</a>: {siteLines.length} line pages in this prototype ({siteBrands.length} brands).</li>
-    <li><a href="/sizes/">Sizes ranked by treadwear</a>: {siteSizes.length} size pages in this prototype.</li>
-    <li><a href="/methodology/">Methodology</a> · <a href="/data/">Download the dataset (CSV/JSON)</a></li>
-  </ul>
-  <h2>Highest-treadwear lines among the prototype pages</h2>
-  <div class="scroll"><table><thead><tr><th>Line</th><th class="n">Median treadwear</th></tr></thead><tbody>{feat.map((l) => <tr><td><a href={lineUrl(l)}>{l.brand} {l.line}</a></td><td class="n">{fmt(l.wear_median)}</td></tr>)}</tbody></table></div>
-  <h2>Popular sizes</h2>
-  <p>{siteSizes.map((s, i) => <span><a href={sizeUrl(s.key)}>{s.label}</a>{i < siteSizes.length - 1 ? ' · ' : ''}</span>)}</p>
-  <h2>How cost per mile works here</h2>
-  <p>Cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000). We do not scrape retailers or guess warranties. Until a licensed price feed is connected, price and mileage are inputs you enter; the site shows “price data pending feed” instead of numbers it cannot source.</p>
+  <section class="hero" aria-labelledby="h1">
+    <p class="eyebrow" style="color:#9fb8d6;position:relative">Independent · built on U.S. government data</p>
+    <h1 id="h1">Find tires that actually last.</h1>
+    <p class="lead">Compare treadwear, wet traction and heat grades for {S.normalized_lines.toLocaleString()} tire lines from {S.normalized_brands} brands, ranked by size, then work out cost per mile with your own price.</p>
+    <form id="size-lookup" class="lookup" action="/sizes/" role="search">
+      <label class="sr" for="size-in">Tire size</label>
+      <input id="size-in" name="size" inputmode="text" autocomplete="off" placeholder="Enter your size, e.g. 225/65R17" aria-describedby="lookup-msg" />
+      <button type="submit">See ranking</button>
+    </form>
+    <p id="lookup-msg" class="lookup-msg" role="status" aria-live="polite"></p>
+    <div class="chips" aria-label="Popular sizes">{popular.map((s) => <a class="chip" href={sizeUrl(s.key)}>{s.label}</a>)}</div>
+  </section>
+
+  <div class="stats" role="list">
+    <div class="stat" role="listitem"><b>{S.raw_records.toLocaleString()}</b><span>NHTSA UTQG records</span></div>
+    <div class="stat" role="listitem"><b>{S.normalized_lines.toLocaleString()}</b><span>tire lines</span></div>
+    <div class="stat" role="listitem"><b>{S.normalized_brands}</b><span>brands</span></div>
+    <div class="stat" role="listitem"><b>{S.distinct_explicit_sizes}</b><span>sizes named in the data</span></div>
+  </div>
+
+  <div class="answer"><strong>Quick answer:</strong> TireMileage turns the U.S. government’s tire grading data (NHTSA UTQG) into plain-English comparisons. Treadwear is a relative durability grade (higher = slower wear on NHTSA’s test), not a mileage promise. Pick a size or tire line, then use the calculator with your own price to get cost per 1,000 miles.</div>
+
+  <div class="sec-h"><h2>Highest-treadwear lines in this prototype</h2><a href="/tires/">All tire lines →</a></div>
+  <div class="grid g3">{feat.map((l) => <TireCard l={l} />)}</div>
+
+  <AdSlot slot="home-mid" height={250} />
+
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><h3>Find your size</h3><p>Type the size from your sidewall. We rank every line NHTSA lists for it.</p></li>
+    <li><h3>Read the grades</h3><p>Treadwear gauge plus color-coded traction (wet braking) and temperature badges, each with the plain-English meaning.</p></li>
+    <li><h3>Work out cost per mile</h3><p>Enter a real quote and the maker’s mileage warranty. Cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000).</p></li>
+  </ol>
+
+  <div class="sec-h"><h2>Browse</h2></div>
+  <div class="grid g3">
+    <a class="card" href="/tires/"><h3>Tire lines by brand</h3><p class="meta">{siteLines.length} line pages across {siteBrands.length} brand hubs in this prototype.</p></a>
+    <a class="card" href="/sizes/"><h3>Sizes ranked by treadwear</h3><p class="meta">{siteSizes.length} size pages in this prototype.</p></a>
+    <a class="card" href="/methodology/"><h3>Methodology &amp; data</h3><p class="meta">Where every number comes from, plus CSV/JSON downloads.</p></a>
+  </div>
+  <p class="note"><strong>Honest limits.</strong> NHTSA publishes grades, not prices or warranties. We do not scrape retailers or guess numbers: prices are not shown, and a maker’s warranty mileage appears only where we cite the maker’s own page.</p>
 </Base>

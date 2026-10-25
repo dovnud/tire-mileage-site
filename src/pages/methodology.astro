@@ -3,9 +3,9 @@ import Base from '../layouts/Base.astro';
 import { S, UPDATED, SOURCE_URL, NHTSA_GUIDE, CFR_URL } from '../lib/data';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/methodology/' }];
 ---
-<Base title="Methodology: How We Use NHTSA UTQG Tire Data | Tire Mileage" description="Where the data comes from (NHTSA), how it was cleaned, what the numbers mean, and what is missing (prices, warranties, full size coverage)." crumbs={crumbs}>
+<Base title="Methodology: How We Use NHTSA UTQG Tire Data | TireMileage" description="Where the data comes from (NHTSA), how it was cleaned, what the numbers mean, and what is missing (prices, warranties, full size coverage)." crumbs={crumbs}>
   <h1>Methodology</h1>
-  <div class="answer"><strong>Quick answer:</strong> Every grade on this site comes from NHTSA's public tire ratings API, pulled {UPDATED}. We computed ranks and percentiles from those grades. We do not have, and do not show, prices or warranty mileage.</div>
+  <div class="answer"><strong>Quick answer:</strong> Every grade on this site comes from NHTSA's public tire ratings API, pulled {UPDATED}. We computed ranks and percentiles from those grades. We do not show prices. A maker's mileage warranty appears only on a few lines, and only where we read it on the maker's own page (linked).</div>
   <h2>Source</h2>
   <p><a href={SOURCE_URL}>{SOURCE_URL}</a> returned {S.reported_total.toLocaleString()} records; we retrieved {S.raw_records.toLocaleString()} unique records. The API caps pages at 100 rows and only allows non-unique sort keys, so the pull script dedupes by NHTSA record id and checks the total. NHTSA is a U.S. federal agency; works of the U.S. federal government are generally not subject to U.S. copyright. Grade definitions: <a href={NHTSA_GUIDE}>NHTSA TireWise</a>, <a href={CFR_URL}>49 CFR 575.104</a>.</p>
   <h2>What the grades mean</h2>
@@ -29,9 +29,15 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/meth
     <li><strong>Size rank:</strong> lines with a record for that exact size, sorted by the lowest grade filed for that size; ties share a rank.</li>
     <li><strong>Cost per 1,000 miles</strong> = price per set ÷ (expected miles ÷ 1,000), from user input only.</li>
   </ul>
+  <h2>Retailer links and maker warranties</h2>
+  <ul>
+    <li><strong>Retailer links</strong> on tire-line pages are plain search links to Discount Tire and Amazon, built in one place (<code>src/lib/retailers.ts</code>). We checked on 2026-10-25 that each pattern returns search results. They are marked <code>rel="sponsored nofollow noopener"</code>. We have no affiliate relationship today; if we join a program later, affected links will be disclosed on the page. Rankings use only NHTSA grades, never retailer or commission data.</li>
+    <li><strong>Maker warranty mileage</strong> is shown only where a maker's own public page or flyer states it, with the source URL and the date we read it. Names differ between NHTSA (for example “Defender 2”) and makers (“Defender2”); we match them by hand. A warranty is not a prediction of how long a tire will last.</li>
+    <li>We do not scrape prices, so no price is displayed anywhere.</li>
+  </ul>
   <h2>Known gaps</h2>
   <ul>
-    <li>No price feed and no warranty mileage, so no cost-per-mile ranking yet.</li>
+    <li>No price feed, and maker warranty mileage only on a handful of lines, so no cost-per-mile ranking yet.</li>
     <li>Size pages list only lines that NHTSA names for that size; a full size catalog feed is needed.</li>
     <li>No vehicle fitment pages yet.</li>
   </ul>

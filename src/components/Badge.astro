@@ -1,0 +1,8 @@
+---
+interface Props { kind: 'traction' | 'temp'; grade?: string | null; big?: boolean }
+const { kind, grade, big = false } = Astro.props;
+const word = kind === 'traction' ? 'Traction' : 'Temp';
+const cls = !grade ? '' : grade === 'AA' ? 'b-aa' : grade === 'A' ? 'b-a' : grade === 'B' ? 'b-b' : 'b-c';
+const hint = kind === 'traction' ? { AA: 'highest wet braking', A: 'second-highest', B: 'middle', C: 'lowest' } : { A: 'highest heat resistance', B: 'middle', C: 'minimum' };
+---
+<span class={`badge ${cls} ${big ? 'big' : ''}`} title={grade ? `${word} ${grade}: ${(hint as Record<string, string>)[grade] ?? ''}` : `${word}: not rated`}><i>{word}</i> {grade ?? '—'}</span>

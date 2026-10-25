@@ -1,6 +1,12 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import CostCalc from '../../../components/CostCalc.astro';
+import Gauge from '../../../components/Gauge.astro';
+import Badge from '../../../components/Badge.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import WhereToBuy from '../../../components/WhereToBuy.astro';
+import { MAKER_FACTS } from '../../../lib/makers';
+import { wearPct, wearTier } from '../../../lib/data';
 import { siteLines, allLines, recordsFor, hasLine, lineUrl, sizeUrl, sizeSet, S, UPDATED, fmt, range, pct, ordinal, wearBand, TRACTION, TEMPERATURE, mostCommon, trendLabel, SOURCE_URL, NHTSA_GUIDE, CFR_URL } from '../../../lib/data';
 export function getStaticPaths() { return siteLines.map((l) => ({ params: { brand: l.brand_slug, line: l.line_slug }, props: { l } })); }
 const { l } = Astro.props as { l: (typeof allLines)[number] };
@@ -10,13 +16,16 @@ const explicit = recs.filter((r) => r.size_key);
 const band = wearBand(l.wear_median!);
 const trac = mostCommon(l.traction), temp = mostCommon(l.temperature);
 const lowerShare = l.wear_percentile!;
+const RATED_N = allLines.filter((x) => x.wear_percentile != null).length;
 const brandLines = allLines.filter((x) => x.brand_slug === l.brand_slug && x.wear_median != null).sort((a, b) => (a.brand_rank ?? 0) - (b.brand_rank ?? 0));
 const shown = [...recs].sort((a, b) => (b.treadwear ?? 0) - (a.treadwear ?? 0) || a.size_raw.localeCompare(b.size_raw)).slice(0, 80);
 const sizeLinks = [...new Set(explicit.map((r) => r.size_key))].filter((k) => sizeSet.has(k));
 const rank = l.brand_rank!;
+const maker = MAKER_FACTS[`${l.brand_slug}/${l.line_slug}`];
+const arc = 2 * Math.PI * 80 / 2; // semicircle length for r=80
 const above = brandLines.find((x) => x.brand_rank === rank - 1), below = brandLines.find((x) => x.brand_rank === rank + 1);
 const spread = l.wear_min === l.wear_max ? `a single treadwear grade of ${l.wear_min}` : `treadwear grades from ${l.wear_min} to ${l.wear_max} (median ${fmt(l.wear_median)})`;
-const answer = `${name} has ${spread} across ${l.records} NHTSA UTQG record${l.records === 1 ? '' : 's'}${trac ? `, traction ${trendLabel(l.traction)}` : ''}${temp ? ` and temperature ${trendLabel(l.temperature)}` : ''}. Its median treadwear is higher than ${pct(lowerShare)}% of the ${S.normalized_lines.toLocaleString()} tire lines in the dataset, and ranks #${rank} of ${l.brand_lines_rated} rated ${l.brand} lines.`;
+const answer = `${name} has ${spread} across ${l.records} NHTSA UTQG record${l.records === 1 ? '' : 's'}${trac ? `, traction ${trendLabel(l.traction)}` : ''}${temp ? ` and temperature ${trendLabel(l.temperature)}` : ''}. Its median treadwear is higher than ${pct(lowerShare)}% of the ${RATED_N.toLocaleString()} tire lines in the dataset, and ranks #${rank} of ${l.brand_lines_rated} rated ${l.brand} lines.`;
 const title = `${name} Treadwear Rating & UTQG Grades (NHTSA data)`;
 const description = `${name}: NHTSA UTQG treadwear ${range(l.wear_min, l.wear_max)}${trac ? `, traction ${trac}` : ''}${temp ? `, temperature ${temp}` : ''}. Rank #${rank} of ${l.brand_lines_rated} ${l.brand} lines; cost-per-mile calculator.`.slice(0, 300);
 const faqs = [
@@ -31,19 +40,39 @@ const ld = [
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires/' }, { name: l.brand, href: `/tires/${l.brand_slug}/` }, { name: l.line, href: lineUrl(l) }];
 ---
 <Base title={title} description={description} crumbs={crumbs} ld={ld}>
-  <h1>{name}: treadwear rating &amp; UTQG grades</h1>
-  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <div class="lhead">
+    <div>
+      <p class="eyebrow">{l.brand} · tire line</p>
+      <h1>{name}: treadwear rating &amp; UTQG grades</h1>
+      {maker && maker.makerName !== l.line && <p class="sub">Sold by {l.brand} as <strong>{l.brand} {maker.makerName}</strong>; NHTSA files it as “{l.line}”.</p>}
+      <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+    </div>
+    <div class="card score" aria-label="Grade summary">
+      <div class="t"><h2 style="margin:0;font-size:var(--fs-3)">Grade summary</h2><span class="meta">NHTSA UTQG</span></div>
+      <svg class={`dial ${wearTier(l.wear_median!)}`} viewBox="0 0 200 118" role="img" aria-label={`Median treadwear ${fmt(l.wear_median)} on a 0 to 1000 scale`}>
+        <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="var(--track)" stroke-width="16" stroke-linecap="round" />
+        <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="var(--c)" stroke-width="16" stroke-linecap="round" stroke-dasharray={`${(arc * wearPct(l.wear_median!)) / 100} ${arc}`} />
+        <text x="100" y="88" text-anchor="middle" font-size="38" font-weight="800" fill="var(--fg)">{fmt(l.wear_median)}</text>
+        <text x="100" y="108" text-anchor="middle" font-size="11" fill="var(--mut)">median treadwear</text>
+      </svg>
+      <p class="meta" style="text-align:center;margin:0">Higher than {pct(lowerShare)}% of {RATED_N.toLocaleString()} lines · #{rank} of {l.brand_lines_rated} {l.brand} lines</p>
+      <div class="badges"><Badge kind="traction" grade={trac} big /><Badge kind="temp" grade={temp} big /></div>
+    </div>
+  </div>
 
+  <div class="cols-2">
+  <div>
   <h2>Key facts</h2>
-  <div class="scroll"><table>
+  <div class="tw"><table class="facts">
     <tbody>
-      <tr><th scope="row">Treadwear (NHTSA UTQG)</th><td>{range(l.wear_min, l.wear_max)} (median {fmt(l.wear_median)}; band {band.band})</td></tr>
-      <tr><th scope="row">Traction grade(s)</th><td>{trendLabel(l.traction)}</td></tr>
-      <tr><th scope="row">Temperature grade(s)</th><td>{trendLabel(l.temperature)}</td></tr>
-      <tr><th scope="row">Percentile (all lines)</th><td>Median treadwear higher than {pct(lowerShare)}% of {S.normalized_lines.toLocaleString()} lines</td></tr>
+      <tr><th scope="row">Treadwear (NHTSA UTQG)</th><td><Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} size="lg" scale label={`median · range ${range(l.wear_min, l.wear_max)} · band ${band.band}`} /></td></tr>
+      <tr><th scope="row">Traction grade(s)</th><td>{trac ? <Badge kind="traction" grade={trac} /> : '—'} <span class="meta">{trendLabel(l.traction)}</span></td></tr>
+      <tr><th scope="row">Temperature grade(s)</th><td>{temp ? <Badge kind="temp" grade={temp} /> : '—'} <span class="meta">{trendLabel(l.temperature)}</span></td></tr>
+      <tr><th scope="row">Percentile (all lines)</th><td>Median treadwear higher than {pct(lowerShare)}% of {RATED_N.toLocaleString()} lines</td></tr>
       <tr><th scope="row">Rank within {l.brand}</th><td>#{rank} of {l.brand_lines_rated} rated lines (by median treadwear)</td></tr>
       <tr><th scope="row">NHTSA records</th><td>{l.records} total; {l.records_with_explicit_size} name a specific size ({l.explicit_sizes} distinct sizes)</td></tr>
-      <tr><th scope="row">Price / warranty miles</th><td>Price data pending feed (not available)</td></tr>
+      <tr><th scope="row">Warranty miles</th><td>{maker?.warranty ? <span>{maker.warranty.text}. <a href={maker.warranty.sourceUrl} target="_blank" rel="noopener">Source</a></span> : 'Not shown (no maker-published figure verified)'}</td></tr>
+      <tr><th scope="row">Price</th><td>Not shown (varies by size and store); see “Where to buy”</td></tr>
     </tbody>
   </table></div>
 
@@ -58,9 +87,9 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires
 
   <h2>NHTSA records for {name}</h2>
   <p>Each row is one NHTSA record as filed by the manufacturer. Sizes are shown exactly as NHTSA lists them; entries such as “All sizes” apply a single grade to several sizes and cannot be matched to one specific size.</p>
-  <div class="scroll"><table>
+  <div class="tw"><table data-sortable>
     <thead><tr><th>Size (as filed)</th><th class="n">Treadwear</th><th>Traction</th><th>Temperature</th></tr></thead>
-    <tbody>{shown.map((r) => <tr><td>{r.size_key && sizeSet.has(r.size_key) ? <a href={sizeUrl(r.size_key)}>{r.size_raw}</a> : r.size_raw}</td><td class="n">{r.treadwear ?? 'unverified'}</td><td>{r.traction ?? 'unverified'}</td><td>{r.temperature ?? 'unverified'}</td></tr>)}</tbody>
+    <tbody>{shown.map((r) => <tr><td>{r.size_key && sizeSet.has(r.size_key) ? <a href={sizeUrl(r.size_key)}>{r.size_raw}</a> : r.size_raw}</td><td class="n" data-v={r.treadwear ?? ''}>{r.treadwear ?? 'unverified'}</td><td data-v={r.traction ?? ''}>{r.traction ? <Badge kind="traction" grade={r.traction} /> : 'unverified'}</td><td data-v={r.temperature ?? ''}>{r.temperature ? <Badge kind="temp" grade={r.temperature} /> : 'unverified'}</td></tr>)}</tbody>
   </table></div>
   {recs.length > shown.length && <p class="meta">Showing {shown.length} of {recs.length} records; the full set is in the <a href="/data/">dataset download</a>.</p>}
   {sizeLinks.length > 0 && <p>Compare this line with others in the same size: {sizeLinks.map((k, i) => <span><a href={sizeUrl(k)}>{k.replace('-', '/').replace('r', 'R')}</a>{i < sizeLinks.length - 1 ? ', ' : ''}</span>)}.</p>}
@@ -68,9 +97,9 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires
   <CostCalc />
 
   <h2>Other {l.brand} lines by treadwear</h2>
-  <div class="scroll"><table>
+  <div class="tw"><table data-sortable>
     <thead><tr><th class="n">Rank</th><th>Line</th><th class="n">Median treadwear</th></tr></thead>
-    <tbody>{brandLines.slice(0, 12).map((x) => <tr><td class="n">{x.brand_rank}</td><td>{hasLine(x) ? <a href={lineUrl(x)}>{x.line}</a> : x.line}{x.line_slug === l.line_slug ? ' (this page)' : ''}</td><td class="n">{fmt(x.wear_median)}</td></tr>)}</tbody>
+    <tbody>{brandLines.slice(0, 12).map((x) => <tr><td class="n">{x.brand_rank}</td><td>{hasLine(x) ? <a href={lineUrl(x)}>{x.line}</a> : x.line}{x.line_slug === l.line_slug ? ' (this page)' : ''}</td><td class="n" data-v={x.wear_median}><Gauge value={x.wear_median!} min={x.wear_min} max={x.wear_max} /></td></tr>)}</tbody>
   </table></div>
   <p><a href={`/tires/${l.brand_slug}/`}>All {l.brand} lines →</a></p>
 
@@ -79,4 +108,10 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires
 
   <h2>Source and caveats</h2>
   <p>Source: <a href={SOURCE_URL}>NHTSA tire ratings API</a>, pulled {UPDATED}. Grade definitions: <a href={NHTSA_GUIDE}>NHTSA TireWise</a> and <a href={CFR_URL}>49 CFR 575.104</a>. Grades are self-reported by manufacturers. The NHTSA data has no “currently sold” flag (its <code>active</code> field is false on every record), so a listed line may be discontinued. See <a href="/methodology/">methodology</a>.</p>
+  </div>
+  <aside aria-label="Where to buy">
+    <WhereToBuy brand={l.brand} line={l.line} brandSlug={l.brand_slug} lineSlug={l.line_slug} />
+    <AdSlot slot="line-sidebar" height={250} />
+  </aside>
+  </div>
 </Base>

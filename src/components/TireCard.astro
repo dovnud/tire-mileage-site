@@ -1,0 +1,12 @@
+---
+import Gauge from './Gauge.astro';
+import Badge from './Badge.astro';
+import { lineUrl, mostCommon, fmt, type Line } from '../lib/data';
+const { l } = Astro.props as { l: Line };
+---
+<a class="tcard" href={lineUrl(l)}>
+  <div><div class="brand">{l.brand}</div><div class="name">{l.line}</div></div>
+  <Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} />
+  <div class="row"><Badge kind="traction" grade={mostCommon(l.traction)} /><Badge kind="temp" grade={mostCommon(l.temperature)} /></div>
+  <div class="foot">Rank #{l.brand_rank} of {l.brand_lines_rated} {l.brand} lines · {l.records} NHTSA record{l.records === 1 ? '' : 's'}</div>
+</a>

@@ -3,12 +3,12 @@ import Base from '../../layouts/Base.astro';
 import { siteSizes, S, sizeUrl, FULL, MIN_SIZE_LINES } from '../../lib/data';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Sizes', href: '/sizes/' }];
 ---
-<Base title="Tire Sizes Ranked by Treadwear (NHTSA UTQG) | Tire Mileage" description={`Tire sizes with NHTSA UTQG treadwear rankings. ${S.distinct_explicit_sizes} sizes appear with explicit ratings; ${S.sizes_with_ge5_lines} have at least 5 rated lines.`} crumbs={crumbs}>
+<Base title="Tire Sizes Ranked by Treadwear (NHTSA UTQG) | TireMileage" description={`Tire sizes with NHTSA UTQG treadwear rankings. ${S.distinct_explicit_sizes} sizes appear with explicit ratings; ${S.sizes_with_ge5_lines} have at least 5 rated lines.`} crumbs={crumbs}>
   <h1>Tire sizes ranked by treadwear</h1>
   <div class="answer"><strong>Quick answer:</strong> NHTSA's ratings data names a specific size on {S.records_with_explicit_size.toLocaleString()} of {S.raw_records.toLocaleString()} records, covering {S.distinct_explicit_sizes} distinct sizes. {S.sizes_with_ge5_lines} sizes have 5+ rated lines and {S.sizes_with_ge10_lines} have 10+. This prototype publishes the {siteSizes.length} sizes with the most lines.</div>
-  <div class="scroll"><table>
+  <div class="tw"><table data-sortable>
     <thead><tr><th>Size</th><th class="n">Rated lines</th></tr></thead>
     <tbody>{siteSizes.map((s) => <tr><td><a href={sizeUrl(s.key)}>{s.label}</a></td><td class="n">{s.lines}</td></tr>)}</tbody>
   </table></div>
-  <p><strong>Honest limit:</strong> the remaining {S.records_all_sizes_or_range.toLocaleString()} NHTSA records ({Math.round(100 * S.records_all_sizes_or_range / S.raw_records)}%) are filed as “All sizes” or size ranges, so common sizes like 225/65R17 show only the lines NHTSA names explicitly. A tire-size catalog feed is needed to build complete size pages.</p>
+  <p class="note"><strong>Honest limit:</strong> the remaining {S.records_all_sizes_or_range.toLocaleString()} NHTSA records ({Math.round(100 * S.records_all_sizes_or_range / S.raw_records)}%) are filed as “All sizes” or size ranges, so common sizes like 225/65R17 show only the lines NHTSA names explicitly. A tire-size catalog feed is needed to build complete size pages.</p>
 </Base>

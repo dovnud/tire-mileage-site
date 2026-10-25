@@ -25,22 +25,33 @@ export const recordsFor = (l: { brand_slug: string; line_slug: string }) => recs
 
 // ---- Prototype selection (full build = every line + every size with >=5 lines) ----
 const MAJOR = ['continental', 'michelin', 'yokohama', 'goodyear', 'bridgestone', 'toyo', 'falken', 'hankook', 'nexen', 'pirelli'];
+// Popular lines always included in the prototype (names are NHTSA's spelling; see makers.ts for maker spellings).
+const FEATURED = ['michelin/defender-2', 'michelin/defender-ltx-m-s-2', 'michelin/defender-ltx-m-s', 'michelin/defender-t-h', 'continental/procontact-tx', 'continental/contiprocontact',
+  'goodyear/assurance-finesse', 'goodyear/assurance-rangemax', 'goodyear/eagle-touring', 'bridgestone/turanza-6', 'bridgestone/dueler-h-p-sport-as', 'cooper/discoverer-srx-h-rated', 'cooper/endeavor-plus-t-rated'];
 function pickPrototypeLines(): Line[] {
   const per: Record<string, number> = {};
-  const out: Line[] = [];
+  const out: Line[] = FEATURED.map((k) => allLines.find((l) => `${l.brand_slug}/${l.line_slug}` === k)).filter((l): l is Line => !!l && l.wear_median != null);
+  const have = new Set(out.map((l) => `${l.brand_slug}/${l.line_slug}`));
   const cand = [...allLines].filter((l) => MAJOR.includes(l.brand_slug) && l.wear_median != null)
     .sort((a, b) => b.records_with_explicit_size - a.records_with_explicit_size);
   for (const l of cand) {
+    if (have.has(`${l.brand_slug}/${l.line_slug}`)) continue;
     if ((per[l.brand_slug] ?? 0) >= 3) continue;
     per[l.brand_slug] = (per[l.brand_slug] ?? 0) + 1;
     out.push(l);
-    if (out.length >= 28) break;
+    if (out.length >= 40) break;
   }
   return out;
 }
 export const MIN_SIZE_LINES = 5;
+export const WEAR_SCALE_MAX = 1000; // treadwear gauge scale (data max is 900)
+export const wearPct = (w: number) => Math.max(0, Math.min(100, (w / WEAR_SCALE_MAX) * 100));
+export function wearTier(w: number): 'w1' | 'w2' | 'w3' | 'w4' | 'w5' { return w < 300 ? 'w1' : w < 400 ? 'w2' : w < 500 ? 'w3' : w < 600 ? 'w4' : 'w5'; }
 export const siteLines: Line[] = FULL ? allLines.filter((l) => l.wear_median != null) : pickPrototypeLines();
-export const siteSizes = FULL ? allSizes.filter((s) => s.lines >= MIN_SIZE_LINES) : allSizes.slice(0, 12);
+// Prototype: the 12 sizes with the most lines plus a few of the most common U.S. fitments (all have >=23 rated lines in NHTSA data).
+const FEATURED_SIZES = ['225-65r17', '235-55r19', '245-45r18', '265-70r17', '215-65r16', '225-50r17'];
+export const siteSizes = FULL ? allSizes.filter((s) => s.lines >= MIN_SIZE_LINES)
+  : [...allSizes.slice(0, 12), ...FEATURED_SIZES.map((k) => allSizes.find((x) => x.key === k)).filter((x): x is (typeof allSizes)[number] => !!x)];
 export const lineSet = new Set(siteLines.map((l) => `${l.brand_slug}/${l.line_slug}`));
 export const sizeSet = new Set(siteSizes.map((s) => s.key));
 export const siteBrands = (() => {
@@ -56,7 +67,7 @@ export const sizeUrl = (k: string) => `/sizes/${k}/`;
 export function median(a: number[]) { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
 export const fmt = (n: number | null | undefined) => (n == null ? '—' : Number.isInteger(n) ? String(n) : n.toFixed(1));
 export const range = (a: number | null, b: number | null) => (a == null ? '—' : a === b ? String(a) : `${a}–${b}`);
-export const pct = (p: number | null | undefined) => (p == null ? '—' : `${Math.round(p)}`);
+export const pct = (p: number | null | undefined) => (p == null ? '—' : p >= 99 || p <= 1 ? p.toFixed(1) : `${Math.round(p)}`);
 export const ordinal = (n: number) => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
 
 export function wearBand(w: number) {

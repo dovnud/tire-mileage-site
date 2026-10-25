@@ -1,0 +1,12 @@
+---
+import { wearPct, wearTier } from '../lib/data';
+interface Props { value: number; min?: number | null; max?: number | null; size?: 'sm' | 'lg'; label?: string; scale?: boolean }
+const { value, min = null, max = null, size = 'sm', label = 'Treadwear', scale = false } = Astro.props;
+const hasRange = min != null && max != null && max > min;
+const desc = `${label} ${value}${hasRange ? `, range ${min} to ${max}` : ''} on a 0 to 1000 scale`;
+---
+<div class={`gauge ${size} ${wearTier(value)}`} role="img" aria-label={desc} style={`--p:${wearPct(value)}%;--lo:${hasRange ? wearPct(min!) : 0}%;--rw:${hasRange ? wearPct(max!) - wearPct(min!) : 0}%`}>
+  <div class="val"><b>{value}</b><span>{label}</span></div>
+  <div class="bar"><div class="fill"></div>{hasRange && <div class="rng"></div>}<div class="ticks"></div></div>
+  {scale && <div class="scale" aria-hidden="true"><span>0</span><span>200</span><span>400</span><span>600</span><span>800</span><span>1000</span></div>}
+</div>

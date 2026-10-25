@@ -15,9 +15,9 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'Dataset', name: 'NHTSA
 <Base title="Download the NHTSA UTQG Tire Ratings Dataset (CSV, JSON)" description={`Free normalized CSV/JSON of ${S.raw_records.toLocaleString()} NHTSA tire treadwear, traction and temperature records with parsed sizes.`} crumbs={crumbs} ld={ld}>
   <h1>Dataset downloads</h1>
   <div class="answer"><strong>Quick answer:</strong> The full normalized dataset ({S.raw_records.toLocaleString()} records, {S.normalized_lines.toLocaleString()} lines, {S.normalized_brands} brands) is free to download below. Source data is NHTSA's, pulled {UPDATED}; please cite <a href={SOURCE_URL}>NHTSA</a> and this site.</div>
-  <div class="scroll"><table><thead><tr><th>File</th><th>Format</th><th>Contents</th></tr></thead><tbody>{files.map(([f, t, d]) => <tr><td><a href={`/data/${f}`} download>{f}</a></td><td>{t}</td><td>{d}</td></tr>)}</tbody></table></div>
+  <div class="tw"><table><thead><tr><th>File</th><th>Format</th><th>Contents</th></tr></thead><tbody>{files.map(([f, t, d]) => <tr><td><a href={`/data/${f}`} download>{f}</a></td><td>{t}</td><td>{d}</td></tr>)}</tbody></table></div>
   <h2>CSV columns</h2>
-  <div class="scroll"><table><thead><tr><th>Column</th><th>Meaning</th></tr></thead><tbody>
+  <div class="tw"><table><thead><tr><th>Column</th><th>Meaning</th></tr></thead><tbody>
     <tr><td>id</td><td>NHTSA record id</td></tr><tr><td>brand, brand_slug, brand_raw</td><td>Normalized brand, URL slug, and the brand string exactly as NHTSA filed it</td></tr>
     <tr><td>line, line_slug</td><td>Normalized tire line name and slug</td></tr><tr><td>size_raw</td><td>NHTSA's size text, unchanged</td></tr>
     <tr><td>size_key, size_label, size_type, size_suffix</td><td>Parsed size (e.g. 225-65r17, 225/65R17, P/LT, load/speed text); blank if NHTSA gave no specific size</td></tr>

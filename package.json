@@ -11,7 +11,10 @@
     "prebuild": "node scripts/copy-downloads.mjs",
     "build": "astro build",
     "build:full": "FULL=1 astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "check": "node scripts/check.mjs",
+    "screenshots": "python3 scripts/screenshots.py",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name tiremileage --branch main"
   },
   "dependencies": {
     "astro": "^7.4.2"

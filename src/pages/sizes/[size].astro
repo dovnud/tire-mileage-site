@@ -1,5 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Gauge from '../../components/Gauge.astro';
+import Badge from '../../components/Badge.astro';
+import AdSlot from '../../components/AdSlot.astro';
 import { siteSizes, allSizes, hasLine, lineUrl, sizeUrl, sizeSet, S, UPDATED, fmt, range, median, wearBand, SOURCE_URL, NHTSA_GUIDE } from '../../lib/data';
 export function getStaticPaths() { return siteSizes.map((s) => ({ params: { size: s.key }, props: { s } })); }
 const { s } = Astro.props as { s: (typeof allSizes)[number] };
@@ -40,21 +43,23 @@ const ld = [
 
   <h2>Ranking: {label} tire lines by NHTSA treadwear grade</h2>
   <p>Sorted from highest to lowest treadwear. Ties share a rank. If a line has several records for this size with different grades, the lowest is used for ranking and the range is shown. Enter your own price and expected miles in the last columns; nothing is pre-filled because price and warranty data are pending a feed.</p>
-  <div class="scroll"><table id="rank-table">
-    <thead><tr><th class="n">Rank</th><th>Brand</th><th>Line</th><th class="n">Treadwear</th><th class="n">Percentile in size</th><th>Traction</th><th>Temp.</th><th>Price / set ($)</th><th>Expected miles</th><th>$ per 1,000 mi</th></tr></thead>
-    <tbody>{ranked.map((r) => <tr><td class="n">{r.rank}</td><td>{r.brand}</td><td>{hasLine(r) ? <a href={lineUrl(r)}>{r.line}</a> : r.line}</td><td class="n">{range(r.wear_min, r.wear_max)}</td><td class="n">{r.pctile}</td><td>{r.traction ?? 'unverified'}</td><td>{r.temperature ?? 'unverified'}</td><td><input class="rp" type="number" min="0" step="1" aria-label={`Price per set for ${r.brand} ${r.line}`} style="width:6em" /></td><td><input class="rm" type="number" min="1000" step="1000" aria-label={`Expected miles for ${r.brand} ${r.line}`} style="width:6em" /></td><td class="n rc">—</td></tr>)}</tbody>
+  <div class="tw"><table id="rank-table" data-sortable>
+    <thead><tr><th class="n">Rank</th><th>Brand</th><th>Line</th><th class="n">Treadwear</th><th class="n hide-sm">Percentile in size</th><th>Traction</th><th>Temp.</th><th data-nosort>Price / set ($)</th><th data-nosort>Expected miles</th><th class="n">$ per 1,000 mi</th></tr></thead>
+    <tbody>{ranked.map((r) => <tr><td class="n">{r.rank}</td><td>{r.brand}</td><td>{hasLine(r) ? <a href={lineUrl(r)}>{r.line}</a> : r.line}</td><td class="n" data-v={r.wear_min}><Gauge value={r.wear_min!} min={r.wear_min} max={r.wear_max} /></td><td class="n hide-sm">{r.pctile}</td><td data-v={r.traction ?? ''}>{r.traction ? <Badge kind="traction" grade={r.traction} /> : 'unverified'}</td><td data-v={r.temperature ?? ''}>{r.temperature ? <Badge kind="temp" grade={r.temperature} /> : 'unverified'}</td><td><input class="rp" type="number" min="0" step="1" aria-label={`Price per set for ${r.brand} ${r.line}`} /></td><td><input class="rm" type="number" min="1000" step="1000" aria-label={`Expected miles for ${r.brand} ${r.line}`} /></td><td class="n rc" data-v="">—</td></tr>)}</tbody>
   </table></div>
+  <p class="tbl-note">Click a column heading to sort. Treadwear bar shows the lowest grade filed for this size.</p>
+  <AdSlot slot="size-mid" height={250} />
   <p class="meta">Percentile in size = share of the {n} lines for {label} with a lower treadwear grade. Cost column: price per set ÷ (expected miles ÷ 1,000), calculated in your browser from your inputs only.</p>
 
   <h2>How the {n} lines spread across treadwear bands</h2>
-  <div class="scroll"><table>
+  <div class="tw"><table>
     <thead><tr><th>Treadwear band</th><th class="n">Lines</th><th class="n">Share</th></tr></thead>
     <tbody>{bandCounts.map(([b, c]) => <tr><td>{b}</td><td class="n">{c}</td><td class="n">{Math.round((100 * c) / n)}%</td></tr>)}</tbody>
   </table></div>
   <p>The median line sits in the {wearBand(med).band} band: {wearBand(med).text}</p>
 
   <h2>Best treadwear grade by brand for {label}</h2>
-  <div class="scroll"><table>
+  <div class="tw"><table>
     <thead><tr><th>Brand</th><th class="n">Highest grade for this size</th></tr></thead>
     <tbody>{[...byBrand.entries()].slice(0, 15).map(([b, k]) => <tr><td>{b}</td><td class="n">{k}</td></tr>)}</tbody>
   </table></div>
@@ -72,7 +77,7 @@ const ld = [
   <script is:inline>
     document.querySelectorAll('#rank-table tbody tr').forEach(function(tr){
       var p=tr.querySelector('.rp'),m=tr.querySelector('.rm'),o=tr.querySelector('.rc');
-      function u(){var pr=parseFloat(p.value),mi=parseFloat(m.value);o.textContent=(pr>=0&&p.value!==''&&mi>0)?'$'+(pr/(mi/1000)).toFixed(2):'—';}
+      function u(){var pr=parseFloat(p.value),mi=parseFloat(m.value);var v=(pr>=0&&p.value!==''&&mi>0)?(pr/(mi/1000)):null;o.textContent=v==null?'—':'$'+v.toFixed(2);o.dataset.v=v==null?'':v.toFixed(2);}
       p.addEventListener('input',u);m.addEventListener('input',u);
     });
   </script>

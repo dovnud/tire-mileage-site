@@ -1,9 +1,9 @@
 import { siteLines, siteSizes, siteBrands, S, UPDATED, lineUrl, sizeUrl, SOURCE_URL } from '../lib/data';
 export const GET = ({ site }: { site: URL }) => {
   const u = (p: string) => new URL(p, site).href;
-  const body = `# Tire Mileage
+  const body = `# TireMileage
 
-> Tire treadwear (UTQG) grades from NHTSA data, organized by tire line and by tire size, with a cost-per-mile formula. Source: ${SOURCE_URL} (pulled ${UPDATED}; ${S.raw_records} records, ${S.normalized_lines} lines, ${S.normalized_brands} brands). No prices or warranty mileage are included (pending a licensed feed). Prototype build; affiliate links and ads are not live.
+> Tire treadwear (UTQG) grades from NHTSA data, organized by tire line and by tire size, with a cost-per-mile formula. Source: ${SOURCE_URL} (pulled ${UPDATED}; ${S.raw_records} records, ${S.normalized_lines} lines, ${S.normalized_brands} brands). No prices are included. Maker warranty mileage appears only on a few lines, with the maker's source URL. Retailer links are plain (non-affiliate) search links. Prototype build; ads are not live.
 
 ## Key pages
 - [Methodology](${u('/methodology/')}): data source, cleaning, definitions, known gaps
