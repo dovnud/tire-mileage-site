@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import CostCalc from '../../components/CostCalc.astro';
+import FaqList from '../../components/FaqList.astro';
+import GuideLinks from '../../components/GuideLinks.astro';
+import { GUIDES, guideBySlug, guideUrl } from '../../lib/all-guides';
+import { SRC } from '../../lib/guides';
+import { lineOf } from '../../lib/guides';
+import { allSizes, sizeSet, sizeUrl, hasLine, lineUrl, jsonLd, UPDATED } from '../../lib/data';
+import { SITE_NAME } from '../../lib/site';
+export function getStaticPaths() { return GUIDES.map((g) => ({ params: { slug: g.slug }, props: { g } })); }
+const { g } = Astro.props as { g: (typeof GUIDES)[number] };
+const slugify = (s: string) => s.toLowerCase().replace(/<[^>]+>/g, '').replace(/&amp;/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const toc: { id: string; t: string }[] = [];
+const body = g.body.replace(/<h2>(.*?)<\/h2>/g, (_m, h) => { const id = slugify(h); toc.push({ id, t: h.replace(/<[^>]+>/g, '') }); return `<h2 id="${id}">${h}</h2>`; });
+const parts = body.split('<!--CALC-->');
+const srcs = g.sources.map((id) => SRC[id]);
+const sizes = g.sizes.filter((k) => sizeSet.has(k)).map((k) => allSizes.find((s) => s.key === k)!);
+const lines = g.lines.map((k) => lineOf(k)).filter((l) => l && hasLine(l)) as NonNullable<ReturnType<typeof lineOf>>[];
+const url = new URL(guideUrl(g), Astro.site).href;
+const org = { '@type': 'Organization', name: SITE_NAME, url: new URL('/', Astro.site).href };
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'Article', headline: g.h1, description: g.description, datePublished: g.updated, dateModified: g.updated, inLanguage: 'en-US', mainEntityOfPage: url, image: new URL(`/og/guides/${g.slug}.png`, Astro.site).href, author: org, publisher: org, citation: srcs.map((s) => s.url) },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: g.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+];
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: g.h1, href: guideUrl(g) }];
+const rel = g.related.map((s) => guideBySlug(s));
+---
+<Base title={`${g.title} | ${SITE_NAME}`} description={g.description} crumbs={crumbs} ld={ld} og={`guides/${g.slug}`} ogType="article" published={g.updated} modified={g.updated}>
+  <article class="guide-body">
+    <p class="eyebrow">{g.kicker} · guide</p>
+    <h1>{g.h1}</h1>
+    <p class="guide-meta"><span>By {SITE_NAME}</span><span>Last updated <time datetime={g.updated}>{g.updated}</time></span><span>{srcs.length} sources cited</span><a href="/methodology/">How we work</a></p>
+    <div class="answer"><strong>Short answer:</strong> {g.answer}</div>
+    {toc.length > 2 && <nav class="toc" aria-label="On this page"><strong>On this page</strong><ol>{toc.map((x) => <li><a href={`#${x.id}`}>{x.t}</a></li>)}</ol></nav>}
+    {parts.map((p, i) => <><Fragment set:html={p} />{i < parts.length - 1 && <CostCalc />}</>)}
+    <FaqList faqs={g.faqs} />
+    {(sizes.length > 0 || lines.length > 0) && <section class="relblock"><h2>Look up real ratings</h2><ul class="rel">
+      {sizes.map((s) => <li><a href={sizeUrl(s.key)}>{s.label} tires ranked by treadwear</a><span>{s.lines} graded lines</span></li>)}
+      {lines.map((l) => <li><a href={lineUrl(l)}>{l.brand} {l.line}</a><span>Treadwear {l.wear_median} median</span></li>)}
+    </ul></section>}
+    <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+      <ol>{srcs.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a>, {s.publisher}. <span class="why">Retrieved {UPDATED}.</span></li>)}</ol>
+      <p class="why">NHTSA ratings are from the <a href="/data/">dataset we publish</a>. Maker statements are the makers’ own claims. We make no price claims. Found an error? See <a href="/about/">About &amp; corrections</a>.</p>
+    </section>
+    <GuideLinks slugs={rel.map((r) => r.slug)} heading="Keep reading" />
+  </article>
+</Base>

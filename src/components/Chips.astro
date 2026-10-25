@@ -1,0 +1,5 @@
+---
+import type { Chip } from '../lib/taxonomy';
+const { chips, label = 'Tags' } = Astro.props as { chips: Chip[]; label?: string };
+---
+{chips.length > 0 && <ul class="tagrow" aria-label={label}>{chips.map((c) => <li><a class={`chip chip-${c.kind}`} href={c.href}>{c.label}</a></li>)}</ul>}

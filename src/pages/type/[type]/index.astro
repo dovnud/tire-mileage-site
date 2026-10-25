@@ -1,0 +1,52 @@
+---
+import Base from '../../../layouts/Base.astro';
+import GuideLinks from '../../../components/GuideLinks.astro';
+import FaqList from '../../../components/FaqList.astro';
+import LineTable from '../../../components/LineTable.astro';
+import BrandTable from '../../../components/BrandTable.astro';
+import GradeMix from '../../../components/GradeMix.astro';
+import { BANDS, TYPES, inType, bandUrl, typeUrl, ratedLines, share, medianOf, brandBreakdown, lineBand } from '../../../lib/taxonomy';
+import { hasLine, lineUrl, UPDATED, fmt } from '../../../lib/data';
+export function getStaticPaths() { return TYPES.map((t) => ({ params: { type: t.slug }, props: { t } })); }
+const { t } = Astro.props as { t: (typeof TYPES)[number] };
+const ls = inType(t);
+const n = ls.length, brands = brandBreakdown(ls);
+const bandRows = BANDS.map((b) => ({ b, c: ls.filter((l) => lineBand(l).slug === b.slug).length })).filter((x) => x.c > 0);
+const top = [...ls].sort((a, c) => (c.wear_median as number) - (a.wear_median as number) || a.brand.localeCompare(c.brand))[0];
+const med = medianOf(ls);
+const overall = medianOf(ratedLines);
+const title = `${t.label} Tires: Treadwear Ratings of ${n} NHTSA-Graded Lines`;
+const description = `${n} tire lines are named as ${t.label.toLowerCase()} tires in NHTSA's UTQG data: median treadwear ${fmt(med)}, brands, grade mixes and the lines themselves.`;
+const answer = `${n} of ${ratedLines.length.toLocaleString()} NHTSA-rated tire lines (${share(n, ratedLines.length)}%) carry ${/^[aeiou]/i.test(t.label) ? 'an' : 'a'} ${t.label.toLowerCase()} marker in their name (${t.markers}). Their median treadwear grade is ${fmt(med)}, against ${fmt(overall)} for all rated lines. The highest median grade among them is ${fmt(top.wear_median)} (${top.brand} ${top.line}).`;
+const faqs = [
+  { q: `How do you decide which tires are ${t.label.toLowerCase()}?`, a: `Only from the product name NHTSA lists. Lines whose name contains ${t.markers} are included. NHTSA has no tire-type field, so lines without a marker are not classified, and a name marker is the maker's naming choice, not a test result.` },
+  { q: `What is the typical treadwear grade for ${t.label.toLowerCase()} tires?`, a: `The median line grade among the ${n} marked lines is ${fmt(med)}; all ${ratedLines.length.toLocaleString()} rated lines have a median of ${fmt(overall)}. Treadwear is not mileage.` },
+  { q: `Which brand has the most ${t.label.toLowerCase()}-marked lines?`, a: `${brands[0].brand} (${brands[0].n} lines)${brands[1] ? `, then ${brands[1].brand} (${brands[1].n})` : ''}.` },
+];
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'By category', href: '/type/' }, { name: t.label, href: typeUrl(t) }];
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, description, url: new URL(typeUrl(t), Astro.site).href, dateModified: UPDATED },
+  { '@context': 'https://schema.org', '@type': 'ItemList', name: `${t.label} tire lines`, numberOfItems: n, itemListElement: [...ls].sort((a, c) => c.records - a.records).slice(0, 25).map((l, k) => ({ '@type': 'ListItem', position: k + 1, name: `${l.brand} ${l.line}`, ...(hasLine(l) ? { url: new URL(lineUrl(l), Astro.site).href } : {}) })) },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={`type/${t.slug}`}>
+  <p class="eyebrow">Browse by category</p>
+  <h1>{t.label} tires: treadwear and grades</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <p>{t.blurb}</p>
+  <p class="note"><strong>Method note:</strong> this category is inferred only from name markers ({t.markers}) in NHTSA’s product names. It misses lines that don’t say so in the name, and we can’t verify a maker’s category from this data.</p>
+  <div class="stats"><div class="stat"><b>{n}</b><span>lines</span></div><div class="stat"><b>{brands.length}</b><span>brands</span></div><div class="stat"><b>{fmt(med)}</b><span>median grade</span></div><div class="stat"><b>{fmt(overall)}</b><span>all-lines median</span></div></div>
+  <h2>Where these lines fall on the treadwear scale</h2>
+  <div class="tw"><table><thead><tr><th>Treadwear band</th><th class="n">Lines</th><th class="n">Share of category</th></tr></thead><tbody>{bandRows.map(({ b, c }) => <tr><td><a href={bandUrl(b)}>{b.label}</a></td><td class="n">{c}</td><td class="n">{share(c, n)}%</td></tr>)}</tbody></table></div>
+  <h2>Brands with the most {t.label.toLowerCase()}-marked lines</h2>
+  <BrandTable lines={ls} />
+  <h2>Traction and temperature grades</h2>
+  <GradeMix lines={ls} />
+  <h2>{t.label} lines</h2>
+  <LineTable lines={ls} limit={40} />
+  <p class="relblock">Other categories: {TYPES.filter((x) => x.slug !== t.slug).map((x, k, a) => <span><a href={typeUrl(x)}>{x.label}</a>{k < a.length - 1 ? ' · ' : ''}</span>)}</p>
+  <GuideLinks slugs={['all-season-vs-all-weather-vs-winter-tires', 'what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage']} />
+  <FaqList faqs={faqs} />
+  <p class="meta">Source: NHTSA UTQG ratings pulled {UPDATED}. <a href="/methodology/">Methodology</a>.</p>
+</Base>

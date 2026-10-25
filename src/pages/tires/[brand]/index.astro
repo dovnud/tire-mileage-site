@@ -1,4 +1,7 @@
 ---
+import Chips from '../../../components/Chips.astro';
+import GuideLinks from '../../../components/GuideLinks.astro';
+import { BANDS, lineBand, bandUrl } from '../../../lib/taxonomy';
 import Base from '../../../layouts/Base.astro';
 import Gauge from '../../../components/Gauge.astro';
 import Badge from '../../../components/Badge.astro';
@@ -13,9 +16,12 @@ const title = `${b.name} Tire Treadwear Ratings: ${all.length} Lines Compared (U
 const description = `All ${all.length} ${b.name} tire lines in NHTSA's UTQG data ranked by treadwear${top ? `, from ${low.wear_median} to ${top.wear_median}` : ''}.`;
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires/' }, { name: b.name, href: `/tires/${b.slug}/` }];
 const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: `${b.name} tire lines by NHTSA treadwear`, itemListElement: rated.slice(0, 50).map((l, i) => ({ '@type': 'ListItem', position: i + 1, name: `${l.brand} ${l.line}` })) }];
+const present = BANDS.map((x) => [x, rated.filter((l) => lineBand(l).slug === x.slug).length] as const).filter(([, c]) => c > 0);
+const chips = present.map(([x, c]) => ({ label: `${x.label} (${c})`, href: bandUrl(x), kind: 'treadwear' as const }));
 ---
-<Base title={title} description={description} crumbs={crumbs} ld={ld}>
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={`brand/${b.slug}`}>
   <h1>{b.name} tire treadwear ratings</h1>
+  <Chips chips={chips} label={`${b.name} lines by treadwear band`} />
   <div class="answer"><strong>Quick answer:</strong> NHTSA's UTQG data lists {all.length} {b.name} tire line{all.length === 1 ? '' : 's'}. {top && <span>The highest median treadwear grade is <strong>{top.wear_median}</strong> ({top.line}); the lowest is {low.wear_median} ({low.line}).</span>} Treadwear is a relative grade, not a mileage promise.</div>
   <p class="tbl-note">Click a column heading to sort.</p>
   <div class="tw"><table data-sortable>
@@ -25,4 +31,5 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: `${b.
   <AdSlot slot="brand-mid" height={250} />
   <p class="meta">*Percentile = share of all {S.normalized_lines.toLocaleString()} lines with a lower median treadwear. Only lines with a linked name have their own page in this prototype.{rated.length > 150 && ` Showing first 150 of ${rated.length}.`}</p>
   <p>Source: <a href={SOURCE_URL}>NHTSA tire ratings API</a>, {UPDATED}. <a href="/methodology/">Methodology</a>.</p>
+  <GuideLinks slugs={['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'how-to-find-longest-lasting-tires-for-your-size']} />
 </Base>

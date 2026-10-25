@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import GuideLinks from '../../components/GuideLinks.astro';
+import { TYPES, inType, typeUrl, ratedLines, share, medianOf } from '../../lib/taxonomy';
+import { fmt } from '../../lib/data';
+const rows = TYPES.map((t) => ({ t, ls: inType(t) }));
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'By category', href: '/type/' }];
+const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Tires by category', itemListElement: rows.map((r, i) => ({ '@type': 'ListItem', position: i + 1, name: r.t.label, url: new URL(typeUrl(r.t), Astro.site).href })) }];
+---
+<Base title="Tires by Category: All-Season, Touring, Performance, All-Terrain, Highway" description="Browse NHTSA-rated tire lines by category, using only the markers in the product name (A/S, Touring, HP, A/T, H/T). Median treadwear and grade mixes per category." crumbs={crumbs} ld={ld} og="type/index">
+  <h1>Tires by category</h1>
+  <div class="answer"><strong>How this works:</strong> NHTSA’s UTQG data has no “tire type” field. We sort lines into a category only when the product name says so (for example “A/S”, “Touring”, “HP”, “A/T”, “H/T”). That is honest but incomplete: most lines carry no marker, and a line without one is not “not all-season”. Winter tires are outside UTQG, so there is no winter category (<a href="/guides/all-season-vs-all-weather-vs-winter-tires/">why</a>).</div>
+  <div class="tw"><table><thead><tr><th>Category</th><th>Name markers</th><th class="n">Lines</th><th class="n">Share of rated lines</th><th class="n">Median treadwear</th></tr></thead><tbody>
+    {rows.map((r) => <tr><td><a href={typeUrl(r.t)}>{r.t.label}</a></td><td>{r.t.markers}</td><td class="n">{r.ls.length}</td><td class="n">{share(r.ls.length, ratedLines.length)}%</td><td class="n">{fmt(medianOf(r.ls))}</td></tr>)}
+  </tbody></table></div>
+  <p class="tbl-note">A line can match more than one marker. Out of {ratedLines.length.toLocaleString()} rated lines.</p>
+  <div class="cardgrid">{rows.map((r) => <a class="gcard" href={typeUrl(r.t)}><b>{r.t.label}</b><span>{r.t.blurb}</span><small>{r.ls.length} lines · median treadwear {fmt(medianOf(r.ls))}</small></a>)}</div>
+  <GuideLinks slugs={['all-season-vs-all-weather-vs-winter-tires', 'what-does-treadwear-rating-mean', 'how-to-read-a-tire-sidewall']} />
+</Base>

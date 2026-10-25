@@ -1,0 +1,5 @@
+---
+const { faqs } = Astro.props as { faqs: { q: string; a: string }[] };
+---
+<h2>FAQ</h2>
+{faqs.map((f) => <details open><summary>{f.q}</summary><p>{f.a}</p></details>)}

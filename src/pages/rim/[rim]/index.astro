@@ -1,0 +1,57 @@
+---
+import Base from '../../../layouts/Base.astro';
+import GuideLinks from '../../../components/GuideLinks.astro';
+import FaqList from '../../../components/FaqList.astro';
+import { BANDS, RIMS, rimUrl, rimSlug, sizesForRim, bandOf, share } from '../../../lib/taxonomy';
+import { sizeSet, sizeUrl, siteBrands, median, UPDATED, fmt } from '../../../lib/data';
+export function getStaticPaths() { return RIMS.map((r, i) => ({ params: { rim: rimSlug(r) }, props: { r, i } })); }
+const { r, i } = Astro.props as { r: number; i: number };
+const ss = sizesForRim(r);
+const per = ss.map((s) => { const w = s.rows.filter((x) => x.wear_min != null).map((x) => x.wear_min as number); return { s, n: w.length, hi: w.length ? Math.max(...w) : null, med: median(w) }; }).filter((x) => x.n > 0).sort((a, b) => b.n - a.n || a.s.key.localeCompare(b.s.key));
+const all = ss.flatMap((s) => s.rows.filter((x) => x.wear_min != null));
+const med = median(all.map((x) => x.wear_min as number));
+const bandRows = BANDS.map((b) => ({ b, c: all.filter((x) => bandOf(x.wear_min as number).slug === b.slug).length })).filter((x) => x.c > 0);
+const lineCount = new Set(all.map((x) => `${x.brand_slug}/${x.line_slug}`)).size;
+const brandLines = new Map<string, { brand: string; slug: string; set: Set<string> }>();
+for (const x of all) { const e = brandLines.get(x.brand_slug) ?? { brand: x.brand, slug: x.brand_slug, set: new Set<string>() }; e.set.add(x.line_slug); brandLines.set(x.brand_slug, e); }
+const topBrands = [...brandLines.values()].sort((a, b) => b.set.size - a.set.size || a.brand.localeCompare(b.brand)).slice(0, 10);
+const have = new Set(siteBrands.map((b) => b.slug));
+const topCombos = [...all].sort((a, b) => (b.wear_min as number) - (a.wear_min as number)).slice(0, 8);
+const comboSize = (x: (typeof all)[number]) => ss.find((s) => s.rows.includes(x))!;
+const prev = RIMS[i - 1], next = RIMS[i + 1];
+const title = `${r}-Inch Tires: ${per.length} Sizes and Their Treadwear Ratings (NHTSA UTQG)`;
+const description = `${per.length} tire sizes fit ${r}-inch wheels in NHTSA's UTQG data; ${lineCount} lines graded, median treadwear ${fmt(med)}. Compare sizes and brands.`;
+const answer = `NHTSA’s UTQG data lists ${ss.length} tire sizes for ${r}-inch wheels (${per.length} with a treadwear grade). ${lineCount} tire lines have a grade at one or more of them, and the median treadwear across line × size grades is ${fmt(med)}. The size with the most graded lines is ${per[0].s.label} (${per[0].n}).`;
+const faqs = [
+  { q: `What does the ${r} mean in a tire size?`, a: `In a size like 225/65R${r}, the number after R is the wheel (rim) diameter in inches. It must match your wheel exactly; width and aspect ratio come from your vehicle's placard.` },
+  { q: `What is the most common ${r}-inch tire size in NHTSA's data?`, a: `By number of graded lines, ${per[0].s.label} (${per[0].n} line × size grades), followed by ${per[1] ? `${per[1].s.label} (${per[1].n})` : 'no other size'}. This reflects what is in the NHTSA database, not sales.` },
+  { q: `What is the typical treadwear grade for ${r}-inch tires?`, a: `The median across ${all.length.toLocaleString()} line × size grades is ${fmt(med)}. Treadwear is the maker's wear rating relative to a control tire, not miles.` },
+];
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'By rim size', href: '/rim/' }, { name: `${r}-inch`, href: rimUrl(r) }];
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, description, url: new URL(rimUrl(r), Astro.site).href, dateModified: UPDATED },
+  { '@context': 'https://schema.org', '@type': 'ItemList', name: `${r}-inch tire sizes`, numberOfItems: per.length, itemListElement: per.slice(0, 30).map((x, k) => ({ '@type': 'ListItem', position: k + 1, name: x.s.label, ...(sizeSet.has(x.s.key) ? { url: new URL(sizeUrl(x.s.key), Astro.site).href } : {}) })) },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={`rim/${rimSlug(r)}`}>
+  <p class="eyebrow">Browse by rim diameter</p>
+  <h1>{r}-inch tires: sizes and treadwear</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <div class="stats"><div class="stat"><b>{per.length}</b><span>graded sizes</span></div><div class="stat"><b>{lineCount}</b><span>lines</span></div><div class="stat"><b>{fmt(med)}</b><span>median grade</span></div><div class="stat"><b>{all.length.toLocaleString()}</b><span>line × size grades</span></div></div>
+  <h2>{r}-inch sizes in the NHTSA data</h2>
+  <div class="tw"><table data-sortable><thead><tr><th>Size</th><th class="n">Graded lines</th><th class="n">Highest treadwear</th><th class="n">Median treadwear</th></tr></thead><tbody>
+    {per.slice(0, 40).map((x) => <tr><td>{sizeSet.has(x.s.key) ? <a href={sizeUrl(x.s.key)}>{x.s.label}</a> : x.s.label}</td><td class="n">{x.n}</td><td class="n">{x.hi}</td><td class="n">{fmt(x.med)}</td></tr>)}
+  </tbody></table></div>
+  <p class="tbl-note">{per.length > 40 ? `Showing 40 of ${per.length} sizes, most graded lines first. ` : ''}Sizes link only where this build has a page. Click a heading to sort.</p>
+  <h2>Treadwear mix at {r} inches</h2>
+  <div class="tw"><table><thead><tr><th>Treadwear band</th><th class="n">Line × size grades</th><th class="n">Share</th></tr></thead><tbody>{bandRows.map(({ b, c }) => <tr><td><a href={`/treadwear/${b.slug}/`}>{b.label}</a></td><td class="n">{c}</td><td class="n">{share(c, all.length)}%</td></tr>)}</tbody></table></div>
+  <h2>Brands with the most {r}-inch lines</h2>
+  <div class="tw"><table><thead><tr><th>Brand</th><th class="n">Lines graded at {r} inches</th></tr></thead><tbody>{topBrands.map((b) => <tr><td>{have.has(b.slug) ? <a href={`/tires/${b.slug}/`}>{b.brand}</a> : b.brand}</td><td class="n">{b.set.size}</td></tr>)}</tbody></table></div>
+  <h2>Highest treadwear grades at {r} inches</h2>
+  <div class="tw"><table><thead><tr><th>Tire line</th><th>Size</th><th class="n">Treadwear</th></tr></thead><tbody>{topCombos.map((x) => <tr><td>{x.brand} {x.line}</td><td>{comboSize(x).label}</td><td class="n">{x.wear_min}</td></tr>)}</tbody></table></div>
+  <p class="relblock">{prev && <a href={rimUrl(prev)}>← {prev}-inch</a>}{prev && next && ' · '}{next && <a href={rimUrl(next)}>{next}-inch →</a>} · <a href="/rim/">All rim sizes</a></p>
+  <GuideLinks slugs={['how-to-read-a-tire-sidewall', 'how-to-find-longest-lasting-tires-for-your-size', 'when-to-replace-tires']} />
+  <FaqList faqs={faqs} />
+  <p class="meta">Source: NHTSA UTQG ratings pulled {UPDATED}. <a href="/methodology/">Methodology</a>.</p>
+</Base>

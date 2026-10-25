@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import { GUIDES, guideUrl } from '../lib/all-guides';
+import { BANDS, TYPES, RIMS, bandUrl, typeUrl, rimUrl } from '../lib/taxonomy';
+import { siteBrands, siteSizes, siteLines, lineUrl, sizeUrl } from '../lib/data';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Site map', href: '/sitemap/' }];
+---
+<Base title="Site Map: Every Page on TireMileage" description="HTML site map: guides, treadwear bands, tire categories, rim sizes, brands, sizes and tire lines." crumbs={crumbs} og="default">
+  <h1>Site map</h1>
+  <div class="sitemap-h">
+    <h2>Main</h2><ul><li><a href="/">Home</a></li><li><a href="/methodology/">Methodology</a></li><li><a href="/data/">Dataset downloads</a></li><li><a href="/about/">About &amp; corrections</a></li><li><a href="/llms.txt">llms.txt</a></li><li><a href="/guides/feed.xml">Guides Atom feed</a></li></ul>
+    <h2>Guides</h2><ul><li><a href="/guides/">All guides</a></li>{GUIDES.map((g) => <li><a href={guideUrl(g)}>{g.h1}</a></li>)}</ul>
+    <h2>By treadwear band</h2><ul><li><a href="/treadwear/">All bands</a></li>{BANDS.map((b) => <li><a href={bandUrl(b)}>Treadwear {b.label}</a></li>)}</ul>
+    <h2>By category</h2><ul><li><a href="/type/">All categories</a></li>{TYPES.map((t) => <li><a href={typeUrl(t)}>{t.label}</a></li>)}</ul>
+    <h2>By rim diameter</h2><ul><li><a href="/rim/">All rim sizes</a></li>{RIMS.map((r) => <li><a href={rimUrl(r)}>{r}-inch</a></li>)}</ul>
+    <h2>Brands</h2><ul><li><a href="/tires/">All brands</a></li>{siteBrands.map((b) => <li><a href={`/tires/${b.slug}/`}>{b.name}</a></li>)}</ul>
+    <h2>Sizes</h2><ul><li><a href="/sizes/">All sizes</a></li>{siteSizes.map((s) => <li><a href={sizeUrl(s.key)}>{s.label}</a></li>)}</ul>
+    {siteLines.length <= 200 && <><h2>Tire lines</h2><ul>{siteLines.map((l) => <li><a href={lineUrl(l)}>{l.brand} {l.line}</a></li>)}</ul></>}
+  </div>
+</Base>

@@ -1,0 +1,12 @@
+---
+import { hasLine, lineUrl, range, mostCommon, siteBrands } from '../lib/data';
+import type { Line } from '../lib/data';
+const { lines, limit = 40, caption = '' } = Astro.props as { lines: Line[]; limit?: number; caption?: string };
+const brandHas = new Set(siteBrands.map((b) => b.slug));
+const rows = [...lines].sort((a, b) => b.records - a.records || a.brand.localeCompare(b.brand) || a.line.localeCompare(b.line)).slice(0, limit);
+---
+<div class="tw"><table>
+  <thead><tr><th>Brand</th><th>Line</th><th class="n">Treadwear</th><th>Traction</th><th>Temp.</th></tr></thead>
+  <tbody>{rows.map((l) => <tr><td>{brandHas.has(l.brand_slug) ? <a href={`/tires/${l.brand_slug}/`}>{l.brand}</a> : l.brand}</td><td>{hasLine(l) ? <a href={lineUrl(l)}>{l.line}</a> : l.line}</td><td class="n">{range(l.wear_min, l.wear_max)}</td><td>{mostCommon(l.traction as Record<string, number>) ?? '—'}</td><td>{mostCommon(l.temperature as Record<string, number>) ?? '—'}</td></tr>)}</tbody>
+</table></div>
+<p class="tbl-note">{caption || `Showing ${rows.length} of ${lines.length} lines, those with the most NHTSA records first.`} Names link only where this build has a page for the line. Traction/temperature show the most common grade across the line’s records.</p>

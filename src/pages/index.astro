@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import TireCard from '../components/TireCard.astro';
 import AdSlot from '../components/AdSlot.astro';
+import { GUIDES, guideUrl } from '../lib/all-guides';
 import { siteLines, siteSizes, siteBrands, lineUrl, sizeUrl, S, jsonLd } from '../lib/data';
 const feat = [...siteLines].sort((a, b) => b.wear_median! - a.wear_median!).slice(0, 6);
 const popular = ["225-65r17","235-65r17","205-55r16","215-60r16","235-55r19","245-45r18","265-70r17","225-45r17"].map((k) => siteSizes.find((s) => s.key === k)).filter((s) => !!s) as typeof siteSizes;
@@ -42,10 +43,17 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
     <li><h3>Work out cost per mile</h3><p>Enter a real quote and the maker’s mileage warranty. Cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000).</p></li>
   </ol>
 
+  <div class="sec-h"><h2>Start with a guide</h2><a href="/guides/">All guides →</a></div>
+  <ul class="rel">{['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'tire-cost-per-mile', 'when-to-replace-tires'].map((s) => { const g = GUIDES.find((x) => x.slug === s)!; return <li><a href={guideUrl(g)}>{g.h1}</a><span>{g.kicker}</span></li>; })}</ul>
+
   <div class="sec-h"><h2>Browse</h2></div>
   <div class="grid g3">
     <a class="card" href="/tires/"><h3>Tire lines by brand</h3><p class="meta">{siteLines.length} line pages across {siteBrands.length} brand hubs in this prototype.</p></a>
     <a class="card" href="/sizes/"><h3>Sizes ranked by treadwear</h3><p class="meta">{siteSizes.length} size pages in this prototype.</p></a>
+    <a class="card" href="/guides/"><h3>Guides</h3><p class="meta">{GUIDES.length} sourced guides: treadwear, warranties, sidewalls, when to replace.</p></a>
+    <a class="card" href="/treadwear/"><h3>By treadwear band</h3><p class="meta">Under 200 to 800 and up, with brand and grade breakdowns.</p></a>
+    <a class="card" href="/type/"><h3>By category</h3><p class="meta">All-season, touring, performance, all-terrain, highway (name markers only).</p></a>
+    <a class="card" href="/rim/"><h3>By rim diameter</h3><p class="meta">Every size NHTSA lists for each wheel diameter.</p></a>
     <a class="card" href="/methodology/"><h3>Methodology &amp; data</h3><p class="meta">Where every number comes from, plus CSV/JSON downloads.</p></a>
   </div>
   <p class="note"><strong>Honest limits.</strong> NHTSA publishes grades, not prices or warranties. We do not scrape retailers or guess numbers: prices are not shown, and a maker’s warranty mileage appears only where we cite the maker’s own page.</p>

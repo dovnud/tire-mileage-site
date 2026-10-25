@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import GuideLinks from '../../components/GuideLinks.astro';
+import { BANDS, inBand, bandUrl, ratedLines, share, medianOf } from '../../lib/taxonomy';
+import { UPDATED, fmt } from '../../lib/data';
+const rows = BANDS.map((b) => ({ b, n: inBand(b).length }));
+const mx = Math.max(...rows.map((r) => r.n));
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'By treadwear', href: '/treadwear/' }];
+const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Tires by treadwear band', itemListElement: rows.map((r, i) => ({ '@type': 'ListItem', position: i + 1, name: `Treadwear ${r.b.label}`, url: new URL(bandUrl(r.b), Astro.site).href })) }];
+---
+<Base title="Tires by Treadwear Rating: Browse UTQG Bands From Under 200 to 800+" description={`Browse ${ratedLines.length.toLocaleString()} NHTSA-rated tire lines by treadwear band, with grade mixes, brand breakdowns and the lines in each band.`} crumbs={crumbs} ld={ld} og="treadwear/index">
+  <h1>Tires by treadwear band</h1>
+  <div class="answer"><strong>Quick answer:</strong> We group the {ratedLines.length.toLocaleString()} NHTSA-rated tire lines into {BANDS.length} treadwear bands by each line’s median grade (median across its records). The most common band is <strong>{rows.find((r) => r.n === mx)!.b.label}</strong> with {mx.toLocaleString()} lines. A higher grade means slower wear on the government’s test course, not a mileage number: <a href="/guides/what-does-treadwear-rating-mean/">read why</a>.</div>
+  <div class="tw"><table><thead><tr><th>Treadwear band</th><th class="n">Lines</th><th class="n">Share of rated lines</th></tr></thead><tbody>
+    {rows.map((r) => <tr><td><a href={bandUrl(r.b)}>{r.b.label}</a></td><td class="n">{r.n.toLocaleString()}</td><td class="n">{share(r.n, ratedLines.length)}%</td></tr>)}
+  </tbody></table></div>
+  <p class="tbl-note">Source: NHTSA UTQG ratings pulled {UPDATED}; {fmt(medianOf(ratedLines))} is the median line grade overall. Each band page lists brands, categories, grade mixes and lines.</p>
+  <div class="cardgrid">{rows.map((r) => <a class="gcard" href={bandUrl(r.b)}><b>Treadwear {r.b.label}</b><span>{r.b.blurb}</span><small>{r.n.toLocaleString()} lines</small></a>)}</div>
+  <GuideLinks slugs={['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'how-to-find-longest-lasting-tires-for-your-size']} />
+</Base>

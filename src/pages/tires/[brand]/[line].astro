@@ -1,4 +1,8 @@
 ---
+import Chips from '../../../components/Chips.astro';
+import GuideLinks from '../../../components/GuideLinks.astro';
+import { lineChips, lineBand } from '../../../lib/taxonomy';
+import { ogSlugForLine } from '../../../lib/og';
 import Base from '../../../layouts/Base.astro';
 import CostCalc from '../../../components/CostCalc.astro';
 import Gauge from '../../../components/Gauge.astro';
@@ -26,8 +30,10 @@ const arc = 2 * Math.PI * 80 / 2; // semicircle length for r=80
 const above = brandLines.find((x) => x.brand_rank === rank - 1), below = brandLines.find((x) => x.brand_rank === rank + 1);
 const spread = l.wear_min === l.wear_max ? `a single treadwear grade of ${l.wear_min}` : `treadwear grades from ${l.wear_min} to ${l.wear_max} (median ${fmt(l.wear_median)})`;
 const answer = `${name} has ${spread} across ${l.records} NHTSA UTQG record${l.records === 1 ? '' : 's'}${trac ? `, traction ${trendLabel(l.traction)}` : ''}${temp ? ` and temperature ${trendLabel(l.temperature)}` : ''}. Its median treadwear is higher than ${pct(lowerShare)}% of the ${RATED_N.toLocaleString()} tire lines in the dataset, and ranks #${rank} of ${l.brand_lines_rated} rated ${l.brand} lines.`;
-const title = `${name} Treadwear Rating & UTQG Grades (NHTSA data)`;
-const description = `${name}: NHTSA UTQG treadwear ${range(l.wear_min, l.wear_max)}${trac ? `, traction ${trac}` : ''}${temp ? `, temperature ${temp}` : ''}. Rank #${rank} of ${l.brand_lines_rated} ${l.brand} lines; cost-per-mile calculator.`.slice(0, 300);
+const t1 = `${name} Treadwear Rating & UTQG Grades (NHTSA data)`, t2 = `${name} Treadwear & UTQG Grades`;
+const title = t1.length <= 70 ? t1 : t2.length <= 90 ? t2 : `${name.slice(0, 60).replace(/\s+\S*$/, '')}… Treadwear & UTQG`;
+const description0 = `${name}: NHTSA UTQG treadwear ${range(l.wear_min, l.wear_max)}${trac ? `, traction ${trac}` : ''}${temp ? `, temperature ${temp}` : ''}. Rank #${rank} of ${l.brand_lines_rated} ${l.brand} lines; cost-per-mile calculator.`;
+const description = description0.length <= 200 ? description0 : description0.replace('; cost-per-mile calculator.', '.').slice(0, 200);
 const faqs = [
   { q: `What is the treadwear rating of the ${name}?`, a: `NHTSA's UTQG data lists ${spread} for the ${name}, from ${l.records} record${l.records === 1 ? '' : 's'}. Treadwear is graded in multiples of 20 relative to a government control tire graded 100; it is not a mileage guarantee.` },
   { q: `Is the ${name} treadwear grade high or low?`, a: `A grade of ${fmt(l.wear_median)} is ${band.text} Compared with every line in the NHTSA data, the median is higher than ${pct(lowerShare)}% of lines (dataset median ${fmt(S.treadwear_overall_median)}). Within ${l.brand} it ranks #${rank} of ${l.brand_lines_rated}.` },
@@ -38,13 +44,17 @@ const ld = [
   { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
 ];
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires/' }, { name: l.brand, href: `/tires/${l.brand_slug}/` }, { name: l.line, href: lineUrl(l) }];
+const chips = lineChips(l);
+const tband = lineBand(l);
+const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !== l.brand_slug && hasLine(x) && lineBand(x).slug === tband.slug).sort((a, b) => Math.abs((a.wear_median as number) - (l.wear_median as number)) - Math.abs((b.wear_median as number) - (l.wear_median as number)) || a.brand.localeCompare(b.brand)).slice(0, 6);
 ---
-<Base title={title} description={description} crumbs={crumbs} ld={ld}>
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={ogSlugForLine(l)}>
   <div class="lhead">
     <div>
       <p class="eyebrow">{l.brand} · tire line</p>
       <h1>{name}: treadwear rating &amp; UTQG grades</h1>
       {maker && maker.makerName !== l.line && <p class="sub">Sold by {l.brand} as <strong>{l.brand} {maker.makerName}</strong>; NHTSA files it as “{l.line}”.</p>}
+      <Chips chips={chips} label="Tags for this tire line" />
       <div class="answer"><strong>Quick answer:</strong> {answer}</div>
     </div>
     <div class="card score" aria-label="Grade summary">
@@ -102,6 +112,9 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires
     <tbody>{brandLines.slice(0, 12).map((x) => <tr><td class="n">{x.brand_rank}</td><td>{hasLine(x) ? <a href={lineUrl(x)}>{x.line}</a> : x.line}{x.line_slug === l.line_slug ? ' (this page)' : ''}</td><td class="n" data-v={x.wear_median}><Gauge value={x.wear_median!} min={x.wear_min} max={x.wear_max} /></td></tr>)}</tbody>
   </table></div>
   <p><a href={`/tires/${l.brand_slug}/`}>All {l.brand} lines →</a></p>
+
+  {similar.length > 0 && <section class="relblock"><h2>Similar treadwear from other brands</h2><p>Other lines in the same treadwear band (<a href={`/treadwear/${tband.slug}/`}>{tband.label}</a>) with a page here: {similar.map((x, i) => <span><a href={lineUrl(x)}>{x.brand} {x.line}</a> ({fmt(x.wear_median)}){i < similar.length - 1 ? ', ' : ''}</span>)}.</p></section>}
+  <GuideLinks slugs={['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'how-to-make-tires-last-longer']} />
 
   <h2>FAQ</h2>
   {faqs.map((f) => <details open><summary>{f.q}</summary><p>{f.a}</p></details>)}

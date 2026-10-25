@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import GuideLinks from '../../components/GuideLinks.astro';
+import { RIMS, rimUrl, sizesForRim } from '../../lib/taxonomy';
+import { median, fmt } from '../../lib/data';
+const rows = RIMS.map((r) => { const ss = sizesForRim(r); const w = ss.flatMap((s) => s.rows.filter((x) => x.wear_min != null).map((x) => x.wear_min as number)); return { r, sizes: ss.length, combos: w.length, med: median(w) }; });
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'By rim size', href: '/rim/' }];
+const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Tires by rim diameter', itemListElement: rows.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: `${x.r}-inch tires`, url: new URL(rimUrl(x.r), Astro.site).href })) }];
+---
+<Base title="Tires by Rim Diameter: 14- to 24-Inch Sizes and Treadwear Ratings" description="Browse tire sizes by wheel diameter. For each rim size, see every size in NHTSA's UTQG data, how many lines are graded, and typical treadwear." crumbs={crumbs} ld={ld} og="rim/index">
+  <h1>Tires by rim diameter</h1>
+  <div class="answer"><strong>Quick answer:</strong> The last number in a tire size (the “17” in 225/65R17) is the wheel diameter in inches. Pick yours to see every size NHTSA’s data lists for that diameter, how many lines are graded for each, and the typical treadwear grade. Rim diameters with fewer than 15 explicit-size records have no page. <a href="/guides/how-to-read-a-tire-sidewall/">How to read a sidewall</a>.</div>
+  <div class="tw"><table><thead><tr><th>Rim diameter</th><th class="n">Sizes</th><th class="n">Line × size grades</th><th class="n">Median treadwear</th></tr></thead><tbody>
+    {rows.map((x) => <tr><td><a href={rimUrl(x.r)}>{x.r}-inch</a></td><td class="n">{x.sizes}</td><td class="n">{x.combos.toLocaleString()}</td><td class="n">{fmt(x.med)}</td></tr>)}
+  </tbody></table></div>
+  <p class="tbl-note">“Line × size grades” counts each (line, size) pair with a treadwear grade in the NHTSA file; the median is over those pairs.</p>
+  <GuideLinks slugs={['how-to-read-a-tire-sidewall', 'how-to-find-longest-lasting-tires-for-your-size', 'when-to-replace-tires']} />
+</Base>

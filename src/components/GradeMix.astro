@@ -1,0 +1,14 @@
+---
+import { gradeCounts } from '../lib/taxonomy';
+import type { Line } from '../lib/data';
+import { TRACTION, TEMPERATURE } from '../lib/data';
+const { lines } = Astro.props as { lines: Line[] };
+const tr = gradeCounts(lines, 'traction'), te = gradeCounts(lines, 'temperature');
+const tt = Object.values(tr).reduce((a, b) => a + b, 0), tn = Object.values(te).reduce((a, b) => a + b, 0);
+const pc = (n: number, d: number) => (d ? `${(Math.round((1000 * n) / d) / 10).toFixed(1)}%` : '—');
+---
+<div class="grid g2">
+  <div class="tw"><table><caption class="sr">Traction grades</caption><thead><tr><th>Traction</th><th class="n">Records</th><th class="n">Share</th></tr></thead><tbody>{['AA', 'A', 'B', 'C'].filter((k) => tr[k]).map((k) => <tr><td>{k}</td><td class="n">{tr[k].toLocaleString()}</td><td class="n">{pc(tr[k], tt)}</td></tr>)}</tbody></table></div>
+  <div class="tw"><table><caption class="sr">Temperature grades</caption><thead><tr><th>Temperature</th><th class="n">Records</th><th class="n">Share</th></tr></thead><tbody>{['A', 'B', 'C'].filter((k) => te[k]).map((k) => <tr><td>{k}</td><td class="n">{te[k].toLocaleString()}</td><td class="n">{pc(te[k], tn)}</td></tr>)}</tbody></table></div>
+</div>
+<p class="tbl-note">Counts are NHTSA records for these lines (one line can have many records, one per size/variant filed), so shares are of records, not of lines. <a href="/guides/utqg-traction-and-temperature-grades/">What the grades mean</a>.</p>

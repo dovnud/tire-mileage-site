@@ -1,0 +1,12 @@
+---
+import { brandBreakdown, share, ratedLines } from '../lib/taxonomy';
+import { siteBrands } from '../lib/data';
+import type { Line } from '../lib/data';
+const { lines, limit = 12 } = Astro.props as { lines: Line[]; limit?: number };
+const have = new Set(siteBrands.map((b) => b.slug));
+const tot = new Map<string, number>(); for (const l of ratedLines) tot.set(l.brand_slug, (tot.get(l.brand_slug) ?? 0) + 1);
+const rows = brandBreakdown(lines).slice(0, limit);
+---
+<div class="tw"><table><thead><tr><th>Brand</th><th class="n">Lines here</th><th class="n">Brand’s rated lines</th><th class="n">Share of brand</th></tr></thead>
+<tbody>{rows.map((r) => <tr><td>{have.has(r.slug) ? <a href={`/tires/${r.slug}/`}>{r.brand}</a> : r.brand}</td><td class="n">{r.n}</td><td class="n">{tot.get(r.slug)}</td><td class="n">{share(r.n, tot.get(r.slug) ?? 0)}%</td></tr>)}</tbody></table></div>
+<p class="tbl-note">Top {rows.length} of {brandBreakdown(lines).length} brands, most lines first. Brand names link where this build has a brand page.</p>

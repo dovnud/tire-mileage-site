@@ -1,0 +1,9 @@
+---
+import { guideBySlug, guideUrl } from '../lib/all-guides';
+const { slugs, heading = 'Guides that explain these numbers' } = Astro.props as { slugs: string[]; heading?: string };
+const gs = slugs.map(guideBySlug);
+---
+<section class="relblock" aria-labelledby="gl-h">
+  <h2 id="gl-h">{heading}</h2>
+  <ul class="rel">{gs.map((g) => <li><a href={guideUrl(g)}>{g.h1}</a><span>{g.kicker}</span></li>)}</ul>
+</section>

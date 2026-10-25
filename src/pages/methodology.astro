@@ -35,6 +35,13 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/meth
     <li><strong>Maker warranty mileage</strong> is shown only where a maker's own public page or flyer states it, with the source URL and the date we read it. Names differ between NHTSA (for example “Defender 2”) and makers (“Defender2”); we match them by hand. A warranty is not a prediction of how long a tire will last.</li>
     <li>We do not scrape prices, so no price is displayed anywhere.</li>
   </ul>
+  <h2>Browse pages: bands, categories, rim sizes</h2>
+  <ul>
+    <li><strong>Treadwear bands</strong> (<a href="/treadwear/">/treadwear/</a>): each rated line is placed by its median treadwear grade across its NHTSA records into 100-point bands (under 200 up to 800 and up).</li>
+    <li><strong>Categories</strong> (<a href="/type/">/type/</a>): NHTSA has no tire-type field, so a line is tagged only when its product name contains a marker (A/S, Touring, HP, A/T, H/T and similar). Lines without a marker are untagged, not “not all-season”. Winter tires are outside UTQG, so no winter category exists.</li>
+    <li><strong>Rim diameters</strong> (<a href="/rim/">/rim/</a>): taken from the parsed size (the number after R). Diameters with fewer than 15 explicit-size records get no page.</li>
+    <li><strong>Guides</strong> (<a href="/guides/">/guides/</a>): every factual claim links to a page we read (NHTSA, 49 CFR, Tire Industry Association, USTMA, makers). Figures computed from our dataset are labeled; worked examples with invented inputs say so.</li>
+  </ul>
   <h2>Known gaps</h2>
   <ul>
     <li>No price feed, and maker warranty mileage only on a handful of lines, so no cost-per-mile ranking yet.</li>

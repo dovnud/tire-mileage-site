@@ -1,0 +1,59 @@
+---
+import Base from '../../../layouts/Base.astro';
+import GuideLinks from '../../../components/GuideLinks.astro';
+import FaqList from '../../../components/FaqList.astro';
+import LineTable from '../../../components/LineTable.astro';
+import BrandTable from '../../../components/BrandTable.astro';
+import GradeMix from '../../../components/GradeMix.astro';
+import { BANDS, TYPES, inBand, bandUrl, typeUrl, ratedLines, share, medianOf, brandBreakdown, gradeCounts, typesOf, rimUrl, RIMS, rimOf } from '../../../lib/taxonomy';
+import { allSizes, sizeSet, sizeUrl, hasLine, lineUrl, UPDATED, fmt } from '../../../lib/data';
+export function getStaticPaths() { return BANDS.map((b, i) => ({ params: { band: b.slug }, props: { b, i } })); }
+const { b, i } = Astro.props as { b: (typeof BANDS)[number]; i: number };
+const ls = inBand(b);
+const n = ls.length, brands = brandBreakdown(ls);
+const lo = Math.min(...ls.map((l) => l.wear_min as number)), hi = Math.max(...ls.map((l) => l.wear_max as number));
+const tr = gradeCounts(ls, 'traction'); const trTot = Object.values(tr).reduce((a, c) => a + c, 0);
+const aa = share((tr.AA ?? 0), trTot);
+const typed = TYPES.map((t) => ({ t, c: ls.filter((l) => typesOf(l).some((x) => x.slug === t.slug)).length }));
+const withMarker = ls.filter((l) => typesOf(l).length > 0).length;
+const sizeCount = new Map<string, number>();
+for (const s of allSizes) { const c = s.rows.filter((r) => r.wear_min != null && r.wear_min >= b.lo && r.wear_min <= b.hi).length; if (c) sizeCount.set(s.key, c); }
+const topSizes = [...sizeCount.entries()].sort((a, c) => c[1] - a[1] || a[0].localeCompare(c[0])).slice(0, 10).map(([k, c]) => ({ s: allSizes.find((x) => x.key === k)!, c }));
+const prev = BANDS[i - 1], next = BANDS[i + 1];
+const title = `Tires With Treadwear ${b.label}: ${n} UTQG-Rated Lines (NHTSA Data)`;
+const description = `${n} tire lines fall in the ${b.label} NHTSA treadwear band (by median grade), from ${brands.length} brands. See the brands, categories, traction/temperature grades and sizes.`;
+const answer = `${n} of ${ratedLines.length.toLocaleString()} NHTSA-rated tire lines (${share(n, ratedLines.length)}%) fall in the ${b.label} treadwear band (by median grade), from ${brands.length} brands; individual records in these lines range from ${lo} to ${hi}. ${brands[0].brand} has the most lines here (${brands[0].n}). ${aa}% of these lines’ records carry traction AA.`;
+const faqs = [
+  { q: `What does a treadwear rating of ${b.label} mean?`, a: `Treadwear is the maker's rating of wear against the government's control tire, which is graded 100; a grade of 200 means the tire is rated to wear twice as slowly on the test course. For ${b.label} that works out to ${b.lo === 0 ? 'less than twice' : b.hi >= 9999 ? `${b.lo / 100} times or more` : `${b.lo / 100} to just under ${(b.hi + 1) / 100} times`} as slowly (our arithmetic). It is not a mileage figure and varies with driving, vehicle and maintenance.` },
+  { q: `How many tire lines have treadwear ${b.label}?`, a: `${n} lines in the NHTSA file we downloaded on ${UPDATED}, by median grade. That is ${share(n, ratedLines.length)}% of ${ratedLines.length.toLocaleString()} rated lines.` },
+  { q: `Which brand has the most lines in the ${b.label} band?`, a: `${brands[0].brand} (${brands[0].n} lines)${brands[1] ? `, followed by ${brands[1].brand} (${brands[1].n})` : ''}. Counting lines is not a ranking of quality or popularity.` },
+];
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'By treadwear', href: '/treadwear/' }, { name: b.label, href: bandUrl(b) }];
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, description, url: new URL(bandUrl(b), Astro.site).href, dateModified: UPDATED },
+  { '@context': 'https://schema.org', '@type': 'ItemList', name: `Tire lines with treadwear ${b.label}`, numberOfItems: n, itemListElement: [...ls].sort((a, c) => c.records - a.records).slice(0, 25).map((l, k) => ({ '@type': 'ListItem', position: k + 1, name: `${l.brand} ${l.line}`, ...(hasLine(l) ? { url: new URL(lineUrl(l), Astro.site).href } : {}) })) },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={`treadwear/${b.slug}`}>
+  <p class="eyebrow">Browse by treadwear</p>
+  <h1>Tires with treadwear {b.label}</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <p>{b.blurb}</p>
+  <div class="stats"><div class="stat"><b>{n}</b><span>lines</span></div><div class="stat"><b>{brands.length}</b><span>brands</span></div><div class="stat"><b>{share(n, ratedLines.length)}%</b><span>of rated lines</span></div><div class="stat"><b>{fmt(medianOf(ls))}</b><span>median grade</span></div></div>
+  <h2>Brands with the most lines here</h2>
+  <BrandTable lines={ls} />
+  <h2>What kinds of tires are in this band</h2>
+  <p>We only label a tire’s category when the name says so (for example “A/S” or “Touring”). In this band {withMarker} of {n} lines ({share(withMarker, n)}%) carry such a marker; the rest could be anything.</p>
+  <div class="tw"><table><thead><tr><th>Category (name marker)</th><th class="n">Lines</th><th class="n">Share of band</th></tr></thead><tbody>{typed.map(({ t, c }) => <tr><td><a href={typeUrl(t)}>{t.label}</a></td><td class="n">{c}</td><td class="n">{share(c, n)}%</td></tr>)}</tbody></table></div>
+  <h2>Traction and temperature grades</h2>
+  <GradeMix lines={ls} />
+  <h2>Lines in this band</h2>
+  <LineTable lines={ls} limit={40} />
+  {topSizes.length > 0 && <><h2>Sizes with the most {b.label} lines</h2>
+  <p>Where NHTSA records show a line in this band at a given size, by number of lines: {topSizes.map(({ s, c }, k) => <span>{sizeSet.has(s.key) ? <a href={sizeUrl(s.key)}>{s.label}</a> : s.label} ({c}){k < topSizes.length - 1 ? ', ' : ''}</span>)}. Browse by rim: {RIMS.filter((r) => [16, 17, 18, 19, 20].includes(r)).map((r) => <a href={rimUrl(r)}>{r}-inch </a>)}</p></>}
+  <p class="relblock">{prev && <a href={bandUrl(prev)}>← Treadwear {prev.label}</a>}{prev && next && ' · '}{next && <a href={bandUrl(next)}>Treadwear {next.label} →</a>} · <a href="/treadwear/">All bands</a></p>
+  <GuideLinks slugs={['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'tire-cost-per-mile']} />
+  <FaqList faqs={faqs} />
+  <p class="meta">Source: NHTSA UTQG ratings pulled {UPDATED}; bands use each line’s median record. <a href="/methodology/">Methodology</a>.</p>
+</Base>

@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import { GUIDES, guideUrl } from '../../lib/all-guides';
+import { SRC } from '../../lib/guides';
+import { UPDATED, jsonLd } from '../../lib/data';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }];
+const ld = [{ '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'Tire guides', url: new URL('/guides/', Astro.site).href, hasPart: GUIDES.map((g) => ({ '@type': 'Article', headline: g.h1, url: new URL(guideUrl(g), Astro.site).href })) },
+  { '@context': 'https://schema.org', '@type': 'ItemList', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(guideUrl(g), Astro.site).href, name: g.h1 })) }];
+---
+<Base title="Tire Guides: Treadwear, Warranties, Sidewalls, Cost Per Mile" description={`${GUIDES.length} plain-English tire guides. Every claim links to NHTSA, the CFR, tire-industry associations or the maker, and each guide links to real ratings.`} crumbs={crumbs} ld={ld} og="guides/index">
+  <h1>Tire guides</h1>
+  <div class="answer"><strong>What these are:</strong> {GUIDES.length} short guides on the questions behind the numbers: what treadwear means, why warranty miles aren’t mileage, when to replace, how to compare cost per mile. Each one opens with the answer, cites the pages it relies on (NHTSA, 49 CFR, the Tire Industry Association, USTMA, makers), shows the date it was last updated, and links to the matching size and line pages.</div>
+  <div class="cardgrid">
+    {GUIDES.map((g) => <a class="gcard" href={guideUrl(g)}><small>{g.kicker}</small><b>{g.h1}</b><span>{g.answer.split('. ')[0]}.</span><small>Updated {g.updated} · {g.sources.length} sources</small></a>)}
+  </div>
+  <h2>How we write them</h2>
+  <ul>
+    <li>Claims come from pages we actually read, linked at the bottom of each guide. Maker statements are labeled as the maker’s own.</li>
+    <li>Numbers from NHTSA’s database are computed at build time from <a href="/data/">the dataset we publish</a>. Worked examples with invented numbers say so.</li>
+    <li>We show no tire prices: we have no licensed price source.</li>
+    <li>Corrections go through <a href="/about/">About</a>. Method: <a href="/methodology/">methodology</a>. Updates: <a href="/guides/feed.xml">Atom feed</a>.</li>
+  </ul>
+</Base>
