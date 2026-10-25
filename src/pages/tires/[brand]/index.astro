@@ -29,7 +29,7 @@ const chips = present.map(([x, c]) => ({ label: `${x.label} (${c})`, href: bandU
     <tbody>{rated.slice(0, 150).map((l) => <tr><td class="n">{l.brand_rank}</td><td>{hasLine(l) ? <a href={lineUrl(l)}>{l.line}</a> : l.line}</td><td class="n" data-v={l.wear_median}><Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} /></td><td class="n hide-sm">{l.wear_min === l.wear_max ? l.wear_min : `${l.wear_min}–${l.wear_max}`}</td><td class="n hide-sm">{pct(l.wear_percentile)}</td><td data-v={mostCommon(l.traction) ?? ''}><Badge kind="traction" grade={mostCommon(l.traction)} /></td><td class="hide-sm" data-v={mostCommon(l.temperature) ?? ''}><Badge kind="temp" grade={mostCommon(l.temperature)} /></td><td class="n hide-sm">{l.records}</td></tr>)}</tbody>
   </table></div>
   <AdSlot slot="brand-mid" height={250} />
-  <p class="meta">*Percentile = share of all {S.normalized_lines.toLocaleString()} lines with a lower median treadwear. Only lines with a linked name have their own page in this prototype.{rated.length > 150 && ` Showing first 150 of ${rated.length}.`}</p>
+  <p class="meta">*Percentile = share of all {S.normalized_lines.toLocaleString()} lines with a lower median treadwear. Only lines with a linked name have their own page so far; more are added in stages.{rated.length > 150 && ` Showing first 150 of ${rated.length}.`}</p>
   <p>Source: <a href={SOURCE_URL}>NHTSA tire ratings API</a>, {UPDATED}. <a href="/methodology/">Methodology</a>.</p>
   <GuideLinks slugs={['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'how-to-find-longest-lasting-tires-for-your-size']} />
 </Base>

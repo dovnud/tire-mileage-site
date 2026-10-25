@@ -7,6 +7,7 @@ export type Line = (typeof lines)[number] & { brand_rank?: number; brand_lines_r
 export type Rec = (typeof records)[number];
 export const S = summary;
 export const FULL = process.env.FULL === '1';
+export const TRANCHE1 = process.env.TRANCHE === '1' && !FULL; // launch tranche 1 (see PLAN.md section 7)
 export const PREVIEW = process.env.PREVIEW !== '0'; // pre-launch: noindex until a real domain is chosen
 export const UPDATED = S.pulled_at.slice(0, 10);
 export const SOURCE_URL = 'https://api.nhtsa.gov/tires?dataSet=ratings';
@@ -47,10 +48,21 @@ export const MIN_SIZE_LINES = 5;
 export const WEAR_SCALE_MAX = 1000; // treadwear gauge scale (data max is 900)
 export const wearPct = (w: number) => Math.max(0, Math.min(100, (w / WEAR_SCALE_MAX) * 100));
 export function wearTier(w: number): 'w1' | 'w2' | 'w3' | 'w4' | 'w5' { return w < 300 ? 'w1' : w < 400 ? 'w2' : w < 500 ? 'w3' : w < 600 ? 'w4' : 'w5'; }
-export const siteLines: Line[] = FULL ? allLines.filter((l) => l.wear_median != null) : pickPrototypeLines();
+// ---- Launch tranche 1: top 300 rated lines by explicit-size record count (major brands break ties) + sizes with 10+ lines ----
+export const TRANCHE1_LINES = 300;
+export const TRANCHE1_MIN_SIZE_LINES = 10;
+function pickTranche1Lines(): Line[] {
+  const rated = allLines.filter((l) => l.wear_median != null);
+  const major = (l: Line) => (MAJOR.includes(l.brand_slug) ? 1 : 0);
+  const featured = new Set(FEATURED);
+  const key = (l: Line) => `${l.brand_slug}/${l.line_slug}`;
+  const ranked = [...rated].sort((a, b) => (Number(featured.has(key(b))) - Number(featured.has(key(a)))) || (b.records_with_explicit_size - a.records_with_explicit_size) || (major(b) - major(a)) || (b.records - a.records) || key(a).localeCompare(key(b)));
+  return ranked.slice(0, TRANCHE1_LINES);
+}
+export const siteLines: Line[] = FULL ? allLines.filter((l) => l.wear_median != null) : TRANCHE1 ? pickTranche1Lines() : pickPrototypeLines();
 // Prototype: the 12 sizes with the most lines plus a few of the most common U.S. fitments (all have >=23 rated lines in NHTSA data).
 const FEATURED_SIZES = ['225-65r17', '235-55r19', '245-45r18', '265-70r17', '215-65r16', '225-50r17'];
-export const siteSizes = FULL ? allSizes.filter((s) => s.lines >= MIN_SIZE_LINES)
+export const siteSizes = FULL ? allSizes.filter((s) => s.lines >= MIN_SIZE_LINES) : TRANCHE1 ? allSizes.filter((s) => s.lines >= TRANCHE1_MIN_SIZE_LINES)
   : [...allSizes.slice(0, 12), ...FEATURED_SIZES.map((k) => allSizes.find((x) => x.key === k)).filter((x): x is (typeof allSizes)[number] => !!x)];
 export const lineSet = new Set(siteLines.map((l) => `${l.brand_slug}/${l.line_slug}`));
 export const sizeSet = new Set(siteSizes.map((s) => s.key));

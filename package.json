@@ -9,13 +9,14 @@
     "predev": "node scripts/copy-downloads.mjs",
     "dev": "astro dev",
     "prebuild": "node scripts/copy-downloads.mjs",
-    "build": "astro build",
-    "build:full": "FULL=1 astro build",
+    "build": "astro build && node scripts/postbuild.mjs",
+    "build:full": "FULL=1 astro build && node scripts/postbuild.mjs",
     "preview": "astro preview",
     "check": "node scripts/check.mjs",
     "screenshots": "python3 scripts/screenshots.py",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name tiremileage --branch main",
-    "indexnow": "node scripts/indexnow.mjs"
+    "deploy": "npm run build:launch && npx wrangler pages deploy dist --project-name tiremileage --branch main",
+    "indexnow": "node scripts/indexnow.mjs",
+    "build:launch": "PREVIEW=0 TRANCHE=1 SITE_URL=https://tiremileage.com astro build && PREVIEW=0 node scripts/postbuild.mjs"
   },
   "dependencies": {
     "astro": "^7.4.2",

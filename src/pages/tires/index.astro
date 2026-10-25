@@ -4,9 +4,9 @@ import TireCard from '../../components/TireCard.astro';
 import { siteBrands, siteLines, lineUrl, S, fmt } from '../../lib/data';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires/' }];
 ---
-<Base title="Tire Lines by Brand: NHTSA Treadwear, Traction, Temperature | TireMileage" description={`Browse ${S.normalized_lines.toLocaleString()} tire lines from ${S.normalized_brands} brands with NHTSA UTQG grades. Prototype shows ${siteLines.length} lines.`} crumbs={crumbs}>
+<Base title="Tire Lines by Brand: NHTSA Treadwear, Traction, Temperature | TireMileage" description={`Browse ${S.normalized_lines.toLocaleString()} tire lines from ${S.normalized_brands} brands with NHTSA UTQG grades. ${siteLines.length} lines have their own page.`} crumbs={crumbs}>
   <h1>Tire lines by brand</h1>
-  <div class="answer"><strong>Quick answer:</strong> NHTSA's dataset covers {S.normalized_lines.toLocaleString()} tire lines from {S.normalized_brands} brands ({S.raw_records.toLocaleString()} records). The median treadwear grade is {fmt(S.treadwear_overall_median)}. This prototype publishes {siteLines.length} line pages across {siteBrands.length} brand hubs.</div>
+  <div class="answer"><strong>Quick answer:</strong> NHTSA's dataset covers {S.normalized_lines.toLocaleString()} tire lines from {S.normalized_brands} brands ({S.raw_records.toLocaleString()} records). The median treadwear grade is {fmt(S.treadwear_overall_median)}. This site publishes {siteLines.length} line pages across {siteBrands.length} brand hubs.</div>
   <div class="brandgrid">
     {siteBrands.map((b) => <section class="card"><h2><a href={`/tires/${b.slug}/`}>{b.name}</a></h2><ul>{b.lines.sort((a, c) => (a.brand_rank ?? 0) - (c.brand_rank ?? 0)).map((l) => <li><a href={lineUrl(l)}>{l.line}</a> <span class="meta">{fmt(l.wear_median)}</span></li>)}</ul></section>)}
   </div>

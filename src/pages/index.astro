@@ -31,7 +31,7 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
 
   <div class="answer"><strong>Quick answer:</strong> TireMileage turns the U.S. government’s tire grading data (NHTSA UTQG) into plain-English comparisons. Treadwear is a relative durability grade (higher = slower wear on NHTSA’s test), not a mileage promise. Pick a size or tire line, then use the calculator with your own price to get cost per 1,000 miles.</div>
 
-  <div class="sec-h"><h2>Highest-treadwear lines in this prototype</h2><a href="/tires/">All tire lines →</a></div>
+  <div class="sec-h"><h2>Highest-treadwear lines</h2><a href="/tires/">All tire lines →</a></div>
   <div class="grid g3">{feat.map((l) => <TireCard l={l} />)}</div>
 
   <AdSlot slot="home-mid" height={250} />
@@ -48,8 +48,8 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
 
   <div class="sec-h"><h2>Browse</h2></div>
   <div class="grid g3">
-    <a class="card" href="/tires/"><h3>Tire lines by brand</h3><p class="meta">{siteLines.length} line pages across {siteBrands.length} brand hubs in this prototype.</p></a>
-    <a class="card" href="/sizes/"><h3>Sizes ranked by treadwear</h3><p class="meta">{siteSizes.length} size pages in this prototype.</p></a>
+    <a class="card" href="/tires/"><h3>Tire lines by brand</h3><p class="meta">{siteLines.length} line pages across {siteBrands.length} brand hubs.</p></a>
+    <a class="card" href="/sizes/"><h3>Sizes ranked by treadwear</h3><p class="meta">{siteSizes.length} size pages.</p></a>
     <a class="card" href="/guides/"><h3>Guides</h3><p class="meta">{GUIDES.length} sourced guides: treadwear, warranties, sidewalls, when to replace.</p></a>
     <a class="card" href="/treadwear/"><h3>By treadwear band</h3><p class="meta">Under 200 to 800 and up, with brand and grade breakdowns.</p></a>
     <a class="card" href="/type/"><h3>By category</h3><p class="meta">All-season, touring, performance, all-terrain, highway (name markers only).</p></a>

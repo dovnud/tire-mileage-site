@@ -40,7 +40,7 @@ function initHeaderSearch() {
     if (!input.value.trim()) return close();
     list.innerHTML = res.length
       ? res.map((r, n) => `<li role="presentation"><a role="option" id="q-o${n}" href="${r[2]}">${esc(r[1])}<small>${TYPE[r[0]]} · ${esc(r[3])}</small></a></li>`).join('')
-      : `<li class="empty">No match in this prototype’s ${rows.length} pages. Try a brand, a tire line or a size like 225/65R17.</li>`;
+      : `<li class="empty">No match in this site’s ${rows.length} searchable pages. Try a brand, a tire line or a size like 225/65R17.</li>`;
     list.hidden = false; input.setAttribute('aria-expanded', 'true'); cur = -1;
   };
   input.addEventListener('focus', () => void load());

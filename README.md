@@ -19,3 +19,12 @@ npm run screenshots  # desktop/mobile PNGs into screenshots/
 npm run deploy       # build + wrangler pages deploy (needs CLOUDFLARE_API_TOKEN); project: tiremileage
 ```
 
+
+## Launch (tranche 1)
+```
+npm run build:launch   # PREVIEW=0 TRANCHE=1 SITE_URL=https://tiremileage.com, writes dist/_headers + IndexNow key file
+PREVIEW=0 npm run check
+npx wrangler pages deploy dist --project-name tiremileage --branch main
+PREVIEW=0 SITE_URL=https://tiremileage.com node scripts/indexnow.mjs --submit
+```
+IndexNow key lives in `indexnow-key.txt` (public by design; served at `/<key>.txt`). See `gsc-bing-handoff.md`.
