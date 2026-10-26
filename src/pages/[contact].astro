@@ -1,0 +1,43 @@
+---
+// /contact/ exists ONLY when CONTACT_EMAIL is set at build time. With it empty, getStaticPaths returns no path, so the page is not
+// generated, and every link to it (footer, sitemaps, llms.txt, privacy/terms text) is also omitted via CONTACT_ENABLED.
+import Base from '../layouts/Base.astro';
+import { CONTACT_EMAIL, CONTACT_ENABLED, LEGAL_REVISED } from '../lib/site';
+export function getStaticPaths() { return CONTACT_ENABLED ? [{ params: { contact: 'contact' } }] : []; }
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact/' }];
+// Light obfuscation: the address is not in the HTML as plain text or a mailto link. It ships reversed in a data attribute, and a tiny script
+// restores it in the browser. Without JavaScript, the readable fallback is "name [at] domain [dot] tld".
+const [user = '', host = ''] = CONTACT_EMAIL.split('@');
+const reversed = [...CONTACT_EMAIL].reverse().join('');
+const fallback = `${user} [at] ${host.replace(/\./g, ' [dot] ')}`;
+---
+<Base title="Contact TireMileage: Corrections, Data Issues, Affiliate Questions" description="How to contact TireMileage about a correction, a data problem or a question about affiliate links or privacy." crumbs={crumbs}>
+  <h1>Contact</h1>
+  <div class="answer"><strong>Quick answer:</strong> Email <span id="contact-email" data-r={reversed}>{fallback}</span>. Please include the page address and what looks wrong.</div>
+  <p class="meta">Last revised: <time datetime={LEGAL_REVISED}>{LEGAL_REVISED}</time>.</p>
+  <p>Without JavaScript the address is shown as “name [at] domain [dot] com”; replace the bracketed words with the symbols.</p>
+
+  <h2>What to contact us about</h2>
+  <ul>
+    <li><strong>Corrections.</strong> A number, grade or claim on a page looks wrong. Please send the page address and, if you can, a source. See our <a href="/about/">corrections policy</a>.</li>
+    <li><strong>Data issues.</strong> A tire line is missing, mislabeled or out of date compared with NHTSA’s published data, or a download does not match the site. See the <a href="/methodology/">methodology</a> for known gaps.</li>
+    <li><strong>Affiliate and retailer links.</strong> A retailer link is broken or leads somewhere unexpected, or you have a question about our <a href="/affiliate-disclosure/">affiliate disclosure</a>.</li>
+    <li><strong>Privacy questions.</strong> See the <a href="/privacy/">Privacy</a> page first. We hold no accounts or personal profiles.</li>
+  </ul>
+
+  <h2>Before you write</h2>
+  <ul>
+    <li>We can’t give tire-buying or safety advice. For fitment and safety questions, follow your vehicle’s tire placard and ask a qualified tire professional. See the <a href="/disclaimer/">Disclaimer</a>.</li>
+    <li>We can’t help with orders, returns or prices; those are handled by the retailer you bought from.</li>
+    <li>We read what we receive but can’t promise a reply time.</li>
+  </ul>
+  <script is:inline>
+    (function () {
+      var el = document.getElementById('contact-email');
+      if (!el || !el.dataset.r) return;
+      var a = el.dataset.r.split('').reverse().join('');
+      var l = document.createElement('a'); l.href = 'mailto:' + a; l.textContent = a;
+      el.replaceWith(l);
+    })();
+  </script>
+</Base>

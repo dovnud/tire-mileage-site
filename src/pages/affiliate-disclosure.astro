@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import { LEGAL_REVISED, CONTACT_ENABLED } from '../lib/site';
+import { AMAZON_DISCLOSURE, AMAZON_TAG } from '../lib/retailers';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Affiliate disclosure', href: '/affiliate-disclosure/' }];
+---
+<Base title="Affiliate Disclosure: How TireMileage Earns Commissions" description="TireMileage may earn a commission from qualifying purchases made through its Amazon links. Rankings and cost-per-mile figures are never influenced by commissions." crumbs={crumbs}>
+  <h1>Affiliate disclosure</h1>
+  <div class="answer"><strong>Quick answer:</strong> {AMAZON_DISCLOSURE} If you click one of our Amazon links and buy, we may earn a commission at no extra cost to you. Commissions never change our rankings or our cost-per-mile calculations.</div>
+  <p class="meta">Last revised: <time datetime={LEGAL_REVISED}>{LEGAL_REVISED}</time>.</p>
+
+  <h2>How the site earns money</h2>
+  <p>TireMileage is free to read and does not sell tires. The site is supported by commissions from qualifying purchases. <strong>{AMAZON_DISCLOSURE}</strong></p>
+  <ul>
+    <li><strong>Amazon.</strong> Links from this site to Amazon carry our Amazon Associates tracking tag{AMAZON_TAG ? <> (<code>tag={AMAZON_TAG}</code>)</> : ''}. If you click one and then buy a qualifying item within the period Amazon allows, Amazon may pay us a commission. The price you pay is the same. Amazon tells us in aggregate reports about qualifying purchases; it does not tell us who you are.</li>
+    <li><strong>Discount Tire.</strong> Our Discount Tire links are plain links to Discount Tire’s own search results. At the time of this revision they carry no tracking or affiliate code and earn us nothing. If that ever changes, we will update this page and the disclosures next to those links first.</li>
+    <li><strong>Other retailers.</strong> We do not currently link to other retailers. Any we add will be named on <a href="/where-to-buy/">Where to buy</a>, and this page will say whether the links are affiliate links.</li>
+    <li><strong>Ads.</strong> The site does not currently run advertising.</li>
+  </ul>
+
+  <h2>What commissions do not influence</h2>
+  <ul>
+    <li><strong>Rankings.</strong> Tire lines and sizes are ranked only from the treadwear grades in NHTSA’s public data, using the method on our <a href="/methodology/">methodology page</a>. A commission, or the lack of one, has no effect on a rank.</li>
+    <li><strong>Cost-per-mile figures.</strong> The calculator and the guides do arithmetic on numbers you enter or that are cited to a named source. Commissions play no part.</li>
+    <li><strong>Which tires appear.</strong> Lines appear because NHTSA lists them, not because a retailer or maker pays for placement. We do not accept payment for placement.</li>
+  </ul>
+
+  <h2>About the retailer links</h2>
+  <ul>
+    <li>Our buttons open a retailer’s <em>search results</em> for the tire line or size, not a specific product page. The retailer’s search may not show the exact tire (it may be discontinued, sold under a slightly different name, or not stocked in your size), and it may show other products too.</li>
+    <li>We do not show prices because they vary by size, store and date. Check the price, fitment, shipping and installation details on the retailer’s site before you buy.</li>
+    <li>Retailer links use <code>rel="sponsored nofollow noopener"</code> so search engines know they are commercial links.</li>
+    <li>When you leave TireMileage for a retailer, that retailer’s own terms, prices and privacy practices apply. See our <a href="/privacy/">Privacy</a> page.</li>
+  </ul>
+
+  <h2>Questions</h2>
+  <p>{CONTACT_ENABLED ? <>For questions about affiliate links, use the <a href="/contact/">contact page</a>.</> : <>We have not yet published a public contact address. When we do, it will be linked from the footer of every page.</>} See also <a href="/about/">About</a>, <a href="/terms/">Terms of use</a> and the <a href="/disclaimer/">Disclaimer</a>.</p>
+</Base>

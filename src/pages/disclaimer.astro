@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import AccuracyList from '../components/AccuracyList.astro';
+import { LEGAL_REVISED, CONTACT_ENABLED } from '../lib/site';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Disclaimer', href: '/disclaimer/' }];
+---
+<Base title="Disclaimer: Tire Data Is Informational, Not Safety Advice | TireMileage" description="TireMileage tire data is informational and not safety advice. UTQG grades are reported by tire makers, prices and warranties change, and the calculator is an estimate." crumbs={crumbs}>
+  <h1>Disclaimer</h1>
+  <div class="answer"><strong>Quick answer:</strong> The tire information on TireMileage is for general information only. It is not safety advice and not a recommendation that any tire is right or safe for your vehicle. Always follow your vehicle’s tire placard, the information on the tire sidewall, and the advice of a qualified tire professional.</div>
+  <p class="meta">Last revised: <time datetime={LEGAL_REVISED}>{LEGAL_REVISED}</time>. This is a plain-language notice, not legal advice.</p>
+
+  <h2>About the tire data</h2>
+  <AccuracyList />
+
+  <h2>Use at your own risk</h2>
+  <p>Decisions about buying, installing, inflating, rotating and replacing tires are yours. TireMileage is provided “as is”, without any promise that the information is complete, current or suited to your situation. See also our <a href="/terms/">Terms of use</a>, which include the full limitation of liability.</p>
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/methodology/">Methodology</a>: where the data comes from and what is missing.</li>
+    <li><a href="/affiliate-disclosure/">Affiliate disclosure</a>: how the site earns commissions.</li>
+    <li><a href="https://www.nhtsa.gov/vehicle-safety/tires" rel="noopener">NHTSA TireWise</a>: the U.S. government’s tire safety information.</li>
+    {CONTACT_ENABLED && <li><a href="/contact/">Contact</a>: report a data problem.</li>}
+  </ul>
+</Base>

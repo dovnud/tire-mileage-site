@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import { GA4_ID, PRIVACY_REVISED, CONTACT_ENABLED } from '../lib/site';
+import { AMAZON_DISCLOSURE, AMAZON_TAG } from '../lib/retailers';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy/' }];
+// Google Analytics 4 text renders ONLY when GA4_ID was set at build time (same flag as the loader in Base.astro). Empty = no GA text, no GA code.
+const ga = GA4_ID !== '';
+---
+<Base title="Privacy Policy | TireMileage" description="What TireMileage collects: no accounts, ads or forms; cookieless Cloudflare Web Analytics page-view counts; hosting logs; and affiliate links to Amazon and Discount Tire." crumbs={crumbs}>
+  <h1>Privacy</h1>
+  <div class="answer"><strong>Quick answer:</strong> TireMileage has no accounts, no ads and no forms that send us anything, and we do not ask for or store personal information. We count page views in aggregate with Cloudflare Web Analytics, which does not use cookies. If you click through to Amazon or Discount Tire, those sites have their own privacy policies.</div>
+  <p class="meta">Last revised: <time datetime={PRIVACY_REVISED}>{PRIVACY_REVISED}</time>. This is a plain-language description of our practices, not legal advice.</p>
+
+  <h2>What this site is</h2>
+  <p>TireMileage is a static website: its pages are prepared in advance and delivered as files. It has no user accounts, no sign-in, no comments, no ads and no forms that send data to us. We do not knowingly collect personal information such as your name, email address or location.</p>
+
+  <h2>Analytics: Cloudflare Web Analytics</h2>
+  <ul>
+    <li>The site is hosted on Cloudflare. Cloudflare adds its Web Analytics script (a small file called <code>beacon.min.js</code>) to our pages when they are delivered. We do not add it ourselves.</li>
+    <li>Cloudflare describes Web Analytics as privacy-focused: it does not use cookies or local storage, and it does not track visitors across sites. It reports aggregate page-view metrics such as which pages are viewed, referring sites, country, device and browser type, and page-load performance. Details are on <a href="https://www.cloudflare.com/web-analytics/" rel="noopener">Cloudflare’s Web Analytics page</a> and in <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">Cloudflare’s Privacy Policy</a>.</li>
+    <li>We use these totals only to see which pages are read. We do not try to identify individual visitors.</li>
+    <li>You can stop this by blocking the script with a browser setting or content-blocking extension. The site works the same without it.</li>
+  </ul>
+
+  <h2>Hosting logs</h2>
+  <p>Like every website, the company that delivers the site (Cloudflare) necessarily receives your IP address, browser details and the page you request in order to serve it, and may keep standard server and security logs under its own policy. We do not receive or use those logs to identify you.</p>
+
+  <h2>Search, size lookup and calculator</h2>
+  <p>The site search, the tire-size lookup and the cost-per-mile calculator run in your browser, using a data file downloaded from this site. What you type is processed on your device and is not sent to us.</p>
+
+  <h2>Cookies</h2>
+  <ul>
+    <li>TireMileage’s own pages and scripts do not set cookies or store anything in your browser’s local storage.</li>
+    <li>Cloudflare, as our host, may use technical cookies or similar mechanisms for security or performance as described in its own policies.</li>
+    <li>When you follow a link to another site, that site (for example Amazon or Discount Tire) may set its own cookies under its own policy. We do not control those.</li>
+    <li>You can block or delete cookies in your browser settings.</li>
+  </ul>
+
+  <h2>Affiliate links: Amazon and Discount Tire</h2>
+  <ul>
+    <li>{AMAZON_DISCLOSURE}</li>
+    <li>Links from this site to Amazon{AMAZON_TAG ? <> carry our Amazon Associates tracking tag (<code>tag={AMAZON_TAG}</code>)</> : ' may carry an Amazon Associates tracking tag'}. When you click one, your browser sends Amazon the tag and the address of the page you came from, and Amazon handles the visit under Amazon’s own privacy notice, which may include cookies that let it credit us for a purchase. We receive aggregate commission reports about qualifying purchases; we do not receive your name or account details.</li>
+    <li>Links to Discount Tire are plain links with no tracking added by us. Once you are on Discount Tire’s site, its own privacy policy and cookies apply.</li>
+    <li>Affiliate links never change our rankings. See the <a href="/affiliate-disclosure/">affiliate disclosure</a>.</li>
+  </ul>
+  {ga && <>
+  <h2>Google Analytics 4</h2>
+  <p><strong>This version of the site was built with a Google Analytics 4 measurement ID, so Google Analytics 4 is enabled in addition to the analytics described above.</strong></p>
+  <ul>
+    <li>A Google script (<code>gtag.js</code>) loads after the page has finished loading and the browser is idle. It is not loaded at all if your browser sends a Do Not Track signal or a Global Privacy Control signal.</li>
+    <li>In general terms, Google Analytics 4 records pages viewed, approximate location derived from your IP address, device, browser and operating system details, the referring site, and on-site interactions such as clicks. Google processes this data on our behalf under <a href="https://policies.google.com/privacy" rel="noopener">Google’s Privacy Policy</a>; see also Google’s <a href="https://support.google.com/analytics/answer/6004245" rel="noopener">safeguarding-data page</a>.</li>
+    <li>We configure it to turn off Google signals and ad-personalization signals. We do not run advertising on this site and we send Google no information that identifies you, such as a name or email address.</li>
+    <li><strong>Cookies:</strong> Google Analytics sets first-party cookies (typically named <code>_ga</code> and <code>_ga_</code> followed by part of the measurement ID) to tell visits apart. Google documents these as lasting up to about two years unless cleared.</li>
+    <li><strong>How to opt out:</strong> turn on Do Not Track or Global Privacy Control in your browser (the script then does not load), block the script with a content blocker, delete the cookies in your browser settings, or install Google’s <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">Analytics opt-out browser add-on</a>.</li>
+    <li>Data retention is a setting in the site owner’s Google Analytics account; we do not state a specific period here.</li>
+  </ul>
+  </>}
+
+  <h2>Selling and sharing</h2>
+  <p>We do not sell personal information, and we do not share any with advertisers. The only parties that handle visitor data in connection with this site are those named on this page: Cloudflare{ga ? ', Google' : ''}, and the retailers you choose to visit.</p>
+
+  <h2>Children</h2>
+  <p>This site is a general-audience tire reference and is not directed at children. We do not knowingly collect information from anyone, including children.</p>
+
+  <h2>Questions about your data</h2>
+  <p>We hold no accounts or personal profiles, so there is generally nothing on our side to access, correct or delete. Aggregate analytics and hosting logs are held by Cloudflare under its policies, and information collected by Amazon or Discount Tire is held by them; to ask about that data, contact those companies directly. {CONTACT_ENABLED ? <>For anything else about this page, please use our <a href="/contact/">contact page</a>.</> : <>We have not yet published a public contact address; when we do it will be linked from the footer of every page and added here.</>}</p>
+
+  <h2>Changes</h2>
+  <p>If this page changes, we update the “Last revised” date above. See also our <a href="/terms/">Terms of use</a>.</p>
+</Base>

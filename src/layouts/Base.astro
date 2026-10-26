@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { PREVIEW, UPDATED, S, jsonLd } from '../lib/data';
-import { SITE_NAME } from '../lib/site';
+import { SITE_NAME, GA4_ID, LEGAL_LINKS } from '../lib/site';
 import { AMAZON_DISCLOSURE } from '../lib/retailers';
 import Crumbs from '../components/Crumbs.astro';
 import Logo from '../components/Logo.astro';
@@ -48,7 +48,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Where to buy', '
     <ul id="q-results" class="results" role="listbox" aria-label="Search results" hidden></ul>
   </form>
 </div></header>
-<div class="disc"><div class="wrap"><strong>Disclosure:</strong> TireMileage is independent and sells nothing. {AMAZON_DISCLOSURE} Amazon links on this site carry our Associates tag; other retailer links are plain. It never changes a ranking. <a href="/where-to-buy/">Where to buy</a></div></div>
+<div class="disc"><div class="wrap"><strong>Disclosure:</strong> TireMileage is independent and sells nothing. {AMAZON_DISCLOSURE} Amazon links on this site carry our Associates tag; other retailer links are plain. It never changes a ranking. <a href="/affiliate-disclosure/">Affiliate disclosure</a> · <a href="/where-to-buy/">Where to buy</a></div></div>
 <main id="main"><div class="wrap">
   {crumbs.length > 1 && <Crumbs items={crumbs} />}
   <slot />
@@ -60,9 +60,31 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Where to buy', '
     <div><h3>Explore</h3><ul><li><a href="/tires/">Tire lines</a></li><li><a href="/sizes/">Sizes</a></li><li><a href="/where-to-buy/">Where to buy</a></li><li><a href="/guides/">Guides</a></li><li><a href="/treadwear/">By treadwear</a></li><li><a href="/type/">By category</a></li><li><a href="/rim/">By rim size</a></li><li><a href="/methodology/">Methodology</a></li><li><a href="/data/">Download data</a></li></ul></div>
     <div><h3>Trust</h3><ul><li><a href="/about/">About &amp; disclosure</a></li><li><a href="https://www.nhtsa.gov/vehicle-safety/tires" rel="noopener">NHTSA TireWise</a></li><li><a href="/sitemap/">Site map</a></li><li><a href="/guides/feed.xml">Guides feed</a></li><li><a href="/llms.txt">llms.txt</a></li></ul></div>
   </div>
-  <p class="fine">Source: U.S. National Highway Traffic Safety Administration (NHTSA) Uniform Tire Quality Grading data, a U.S. federal government work. Grades are assigned by tire makers; they are not mileage guarantees. Not affiliated with NHTSA or any tire maker or retailer. Prices are not shown; manufacturer warranty figures appear only where cited from the maker’s own page.</p>
+  <nav class="legal-links" aria-label="Legal"><ul>{LEGAL_LINKS.map((l) => <li><a href={l.href}>{l.name}</a></li>)}</ul></nav>
+  <p class="fine">Source: U.S. National Highway Traffic Safety Administration (NHTSA) Uniform Tire Quality Grading data, a U.S. federal government work. Grades are assigned by tire makers; they are not mileage guarantees. Tire data here is informational, not safety advice (<a href="/disclaimer/">disclaimer</a>). Not affiliated with NHTSA or any tire maker or retailer. Prices are not shown; manufacturer warranty figures appear only where cited from the maker’s own page.</p>
   <p class="fine">{AMAZON_DISCLOSURE}</p>
 </div></footer>
 <script>import '../scripts/site.ts';</script>
+{GA4_ID && <script is:inline define:vars={{ GA4_ID }}>
+/* GA4, only when GA4_ID was set at build time. Not loaded if Do Not Track or Global Privacy Control is on.
+   gtag.js is injected as an async script only after the window load event + browser idle, so it never blocks rendering and adds no DOM/layout. */
+(function () {
+  var n = navigator, w = window;
+  if (n.globalPrivacyControl || n.doNotTrack === '1' || n.doNotTrack === 'yes' || w.doNotTrack === '1' || n.msDoNotTrack === '1') return;
+  function start() {
+    w.dataLayer = w.dataLayer || [];
+    function gtag() { w.dataLayer.push(arguments); }
+    w.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', GA4_ID, { allow_google_signals: false, allow_ad_personalization_signals: false });
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA4_ID);
+    document.head.appendChild(s);
+  }
+  function schedule() { if ('requestIdleCallback' in w) w.requestIdleCallback(start, { timeout: 5000 }); else setTimeout(start, 3000); }
+  if (document.readyState === 'complete') schedule(); else w.addEventListener('load', schedule);
+})();
+</script>}
 </body>
 </html>

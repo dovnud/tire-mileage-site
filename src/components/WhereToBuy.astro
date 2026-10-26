@@ -15,5 +15,5 @@ const q = retailerQuery(brand, line, key);
   {fact?.warranty && (
     <div class="warranty"><b>Maker’s mileage warranty</b>{fact.warranty.text}. <a href={fact.warranty.sourceUrl} target="_blank" rel="noopener">Source: {fact.warranty.sourceLabel}</a>, read {fact.warranty.retrieved}.{fact.warranty.note && <span class="meta"><br />{fact.warranty.note}</span>}</div>
   )}
-  <p class="meta" style="margin:0"><strong>Disclosure:</strong> {AMAZON_DISCLOSURE} The Amazon link is an affiliate link; the other links go to retailer search pages with no tracking (checked {CHECKED_ON}). Rankings never depend on commissions. A listed line may be discontinued or sold under a slightly different name.</p>
+  <p class="meta" style="margin:0"><strong>Disclosure:</strong> {AMAZON_DISCLOSURE} The Amazon link is an affiliate link; the other links go to retailer search pages with no tracking (checked {CHECKED_ON}). Rankings never depend on commissions. A listed line may be discontinued or sold under a slightly different name. <a href="/affiliate-disclosure/">Full affiliate disclosure</a>.</p>
 </section>

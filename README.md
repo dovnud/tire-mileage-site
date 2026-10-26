@@ -30,3 +30,10 @@ npx wrangler pages deploy dist --project-name tiremileage --branch main
 PREVIEW=0 SITE_URL=https://tiremileage.com node scripts/indexnow.mjs --submit
 ```
 IndexNow key lives in `indexnow-key.txt` (public by design; served at `/<key>.txt`). See `gsc-bing-handoff.md`.
+
+## Google Analytics 4 (off by default)
+`GA4_ID` (build-time env var, read in `src/lib/site.ts`) is empty by default, which outputs nothing. To enable:
+`GA4_ID=G-XXXXXXXXXX npm run build:launch` then deploy. The loader (in `src/layouts/Base.astro`) injects gtag.js asynchronously after window load + idle, and is skipped when Do Not Track or Global Privacy Control is on. `/privacy/` renders its Google Analytics 4 section (cookies, DNT/GPC handling, opt-out) only when the same variable is set; with it empty the page has no Google Analytics text at all. `npm run check` (with the same `GA4_ID`) asserts both modes.
+
+## Legal pages and contact
+Always built and in the footer, sitemaps, HTML sitemap and `llms.txt`: `/privacy/`, `/terms/`, `/affiliate-disclosure/`, `/disclaimer/` (list in `LEGAL_LINKS`, `src/lib/site.ts`; revision date `LEGAL_REVISED`/`PRIVACY_REVISED`, update when wording changes). `/contact/` is gated by `CONTACT_EMAIL` (build-time env var, `src/lib/site.ts`). **Default: `contact@tiremileage.com`**, so a plain `npm run build:launch` keeps /contact/ in the footer, privacy, terms, about, sitemaps, `llms.txt` and the IndexNow list. To change the address: `CONTACT_EMAIL=other@domain npm run build:launch` (run `npm run check` with the same value). To turn contact OFF: `CONTACT_EMAIL= npm run build:launch` (page not generated; no links, no sitemap entries). The address is shipped reversed and rebuilt by a tiny script (light scraper protection). Never put a personal mailbox in the repo.

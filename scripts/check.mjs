@@ -132,6 +132,56 @@ if (!preview) {
 }
 { const ll = fs.existsSync(path.join(DIST, 'llms.txt')) ? fs.readFileSync(path.join(DIST, 'llms.txt'), 'utf8') : ''; if (!ll.includes('/where-to-buy/')) err.push('llms.txt lacks /where-to-buy/'); }
 { const sp = fs.readFileSync(path.join(DIST, 'sitemap-pages.xml'), 'utf8'); if (!sp.includes('/where-to-buy/')) err.push('sitemap-pages lacks /where-to-buy/'); }
+// ---- Legal pages (privacy, terms, affiliate disclosure, disclaimer; contact only when CONTACT_EMAIL is set) ----
+{ const rd = (f) => fs.existsSync(path.join(DIST, f)) ? fs.readFileSync(path.join(DIST, f), 'utf8') : '';
+  const contactRaw = (process.env.CONTACT_EMAIL !== undefined ? process.env.CONTACT_EMAIL : 'contact@tiremileage.com').trim(); // must mirror src/lib/site.ts
+  const contactOn = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(contactRaw) ? contactRaw : '';
+  const ga = /^G-[A-Z0-9]{4,20}$/.test((process.env.GA4_ID || '').trim()) ? process.env.GA4_ID.trim() : '';
+  const legal = ['/privacy/', '/terms/', '/affiliate-disclosure/', '/disclaimer/', ...(contactOn ? ['/contact/'] : [])];
+  const spages = rd('sitemap-pages.xml'), sitemapHtml = rd('sitemap/index.html');
+  for (const u of legal) {
+    if (!rd(u.slice(1) + 'index.html')) err.push(`legal page missing: ${u}`);
+    if (!spages.includes(`${u}</loc>`)) err.push(`sitemap-pages lacks ${u}`);
+    if (!llms.includes(u)) err.push(`llms.txt lacks ${u}`);
+    if (!sitemapHtml.includes(`href="${u}"`)) err.push(`HTML sitemap lacks ${u}`);
+    for (const f of htmls) if (!new RegExp(`<nav class="legal-links"[^>]*>[\\s\\S]*?href="${u}"[\\s\\S]*?</nav>`).test(fs.readFileSync(f, 'utf8'))) err.push(`${path.relative(DIST, f)}: footer lacks link to ${u}`);
+  }
+  // Contact gate: with CONTACT_EMAIL empty there is no /contact/ page and no link, sitemap or llms.txt entry anywhere.
+  const hasContactPage = fs.existsSync(path.join(DIST, 'contact'));
+  if (!contactOn) {
+    if (hasContactPage) err.push('/contact/ was generated although CONTACT_EMAIL is empty');
+    if (spages.includes('/contact/') || llms.includes('/contact/') || sitemapHtml.includes('/contact/')) err.push('/contact/ listed in a sitemap/llms.txt although CONTACT_EMAIL is empty');
+    for (const f of htmls) if (/href="\/contact\/?"/.test(fs.readFileSync(f, 'utf8'))) err.push(`${path.relative(DIST, f)}: links /contact/ although CONTACT_EMAIL is empty`);
+    const ab = rd('about/index.html'); if (!ab.includes('has not been set up yet')) err.push('about page lost its "contact not set up yet" wording');
+  } else {
+    const cp = rd('contact/index.html'); if (!cp) err.push('CONTACT_EMAIL set but /contact/ missing');
+    else { if (cp.includes(contactOn) || /href="mailto:/i.test(cp)) err.push('contact page exposes the email in plain HTML'); if (!/data-r="/.test(cp)) err.push('contact page lacks obfuscated address'); for (const k of ['Corrections', 'Data issues', 'Affiliate']) if (!cp.includes(k)) err.push(`contact page missing "${k}"`); }
+    if (contactOn !== 'contact@tiremileage.com' && !process.env.ALLOW_OTHER_CONTACT) console.log(`note: CONTACT_EMAIL is ${contactOn}, not the production default`);
+    if (/has not been set up yet/.test(rd('about/index.html'))) err.push('about page still says contact is not set up although CONTACT_EMAIL is set');
+  }
+  // Privacy: states what is true today; GA4 text only when GA4_ID is set.
+  const pv = rd('privacy/index.html');
+  for (const k of ['Cloudflare Web Analytics', 'Amazon', 'tiremileage-20', 'Discount Tire', 'no accounts', 'Last revised']) if (pv && !pv.includes(k)) err.push(`privacy page missing "${k}"`);
+  const GA_TEXT = /Google Analytics|GA4|gtag|googletagmanager|\b_ga\b|Global Privacy Control|Do Not Track/i;
+  if (!ga && GA_TEXT.test(pv)) err.push(`privacy page contains GA text although GA4_ID is empty: ${(pv.match(GA_TEXT) || [])[0]}`);
+  if (ga) for (const k of ['Google Analytics 4', 'Global Privacy Control', '_ga', 'opt']) if (!pv.includes(k)) err.push(`GA4 enabled but privacy page missing "${k}"`);
+  // Terms / disclaimer / affiliate disclosure content.
+  const tm = rd('terms/index.html'); for (const k of ['at your own risk', 'No warranty', 'Limitation of liability', 'Governing law', 'id="data-accuracy"', 'Intellectual property', 'Third-party links']) if (tm && !tm.includes(k)) err.push(`terms page missing "${k}"`);
+  const ds = rd('disclaimer/index.html'); for (const k of ['not safety advice', 'only comparable within the same maker', 'placard', 'sidewall', 'estimate', 'tire makers']) if (ds && !ds.includes(k)) err.push(`disclaimer page missing "${k}"`);
+  for (const [n, h] of [['terms', tm], ['disclaimer', ds]]) if (h && !h.includes('only comparable within the same maker')) err.push(`${n} lacks the data-accuracy list`);
+  const af = rd('affiliate-disclosure/index.html'); for (const k of ['As an Amazon Associate I earn from qualifying purchases.', 'Discount Tire', 'rankings', 'cost-per-mile', 'may not show the exact tire']) if (af && !af.toLowerCase().includes(k.toLowerCase())) err.push(`affiliate-disclosure page missing "${k}"`);
+  // Footer: one-line data-disclaimer pointer on every page; short disclosures link to the full affiliate disclosure.
+  for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f);
+    if (!h.includes('not safety advice (<a href="/disclaimer/">disclaimer</a>)')) err.push(`${rel}: footer lacks disclaimer pointer`);
+    if (!/class="disc"[\s\S]*?href="\/affiliate-disclosure\/"/.test(h)) err.push(`${rel}: disclosure strip lacks affiliate-disclosure link`); }
+  console.log(`Legal pages: ${legal.join(' ')}; contact ${contactOn ? 'ENABLED' : 'off (not generated)'}`); }
+// ---- GA4 (see src/layouts/Base.astro): inert when GA4_ID is empty; when set, an inline loader on every page, never a render-blocking <script src> ----
+{ const ga = /^G-[A-Z0-9]{4,20}$/.test((process.env.GA4_ID || '').trim()) ? process.env.GA4_ID.trim() : '';
+  for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f);
+    if (/<script[^>]+src="[^"]*(googletagmanager|google-analytics)/.test(h)) err.push(`${rel}: render-blocking/static Google script tag`);
+    if (!ga) { if (/googletagmanager|google-analytics|gtag\(/.test(h)) err.push(`${rel}: GA4 code present but GA4_ID is empty`); }
+    else if (!h.includes('googletagmanager.com/gtag/js') || !h.includes(ga) || !h.includes('globalPrivacyControl') || !h.includes("'load'")) err.push(`${rel}: GA4_ID set but loader missing/incomplete`); }
+  console.log(`GA4 mode: ${ga ? 'ENABLED (' + ga + ')' : 'off (inert)'}`); }
 console.log(`${guideCount} guides, ${hubCount} hub pages, ${sitemapLocs.size} sitemap URLs`);
 for (const [t, p] of titles) if (p.length > 1) err.push(`duplicate title "${t}": ${p.join(', ')}`);
 if (preview) { const hd = fs.readFileSync(path.join(DIST, '_headers'), 'utf8'); if (!/X-Robots-Tag: noindex/i.test(hd)) err.push('_headers missing X-Robots-Tag noindex'); }

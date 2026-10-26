@@ -1,3 +1,4 @@
+import { LEGAL_LINKS } from '../lib/site';
 import { GUIDES, guideUrl } from '../lib/all-guides';
 import { BANDS, TYPES, RIMS, bandUrl, typeUrl, rimUrl } from '../lib/taxonomy';
 import { siteLines, siteSizes, siteBrands, S, UPDATED, lineUrl, sizeUrl, SOURCE_URL } from '../lib/data';
@@ -9,6 +10,7 @@ export const GET = ({ site }: { site: URL }) => {
 
 ## Key pages
 - [Methodology](${u('/methodology/')}): data source, cleaning, definitions, known gaps
+${LEGAL_LINKS.map((l) => `- [${l.name}](${u(l.href)}): ${l.desc}`).join('\n')}
 - [Dataset downloads](${u('/data/')}): CSV/JSON of normalized NHTSA records
 - [Tire lines by brand](${u('/tires/')})
 - [Guides](${u('/guides/')}) ([Atom feed](${u('/guides/feed.xml')})); [HTML site map](${u('/sitemap/')})

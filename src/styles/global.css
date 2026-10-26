@@ -196,6 +196,10 @@ footer.site-f a{color:#fff}
 footer.site-f .cols3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:28px}
 @media(max-width:760px){footer.site-f .cols3{grid-template-columns:1fr}}
 footer.site-f h3,footer.site-f h4{margin:0 0 8px;color:#fff;font-size:var(--fs-1)}footer.site-f ul{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+footer.site-f .legal-links{border-top:1px solid rgba(255,255,255,.14);margin-top:22px;padding-top:14px}
+footer.site-f .legal-links ul{display:flex;flex-wrap:wrap;gap:4px 18px}
+footer.site-f .legal-links a{display:inline-block;padding:10px 0;min-height:24px}
+footer.site-f .legal-links + .fine{border-top:0;margin-top:0;padding-top:0}
 footer.site-f .fine{border-top:1px solid rgba(255,255,255,.14);margin-top:22px;padding-top:16px;font-size:var(--fs-0)}
 
 /* mobile header: logo + search on row 1, all nav items wrap onto rows below (no hidden scroller); header scrolls away instead of sticking so it cannot eat the viewport */
