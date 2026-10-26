@@ -124,7 +124,7 @@ main{padding:20px 0 56px;min-height:60vh}
 .gauge .rng{position:absolute;top:0;bottom:0;left:var(--lo);width:var(--rw);background:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 3px,transparent 3px 6px);mix-blend-mode:soft-light;opacity:.9}
 .gauge .ticks{position:absolute;inset:0;background:linear-gradient(90deg,transparent calc(20% - 1px),rgba(255,255,255,.7) calc(20% - 1px) 20%,transparent 20%,transparent calc(40% - 1px),rgba(255,255,255,.7) calc(40% - 1px) 40%,transparent 40%,transparent calc(60% - 1px),rgba(255,255,255,.7) calc(60% - 1px) 60%,transparent 60%,transparent calc(80% - 1px),rgba(255,255,255,.7) calc(80% - 1px) 80%,transparent 80%)}
 .gauge.lg .bar{height:16px}.gauge.lg .val b{font-size:var(--fs-4)}
-.gauge .scale{display:flex;justify-content:space-between;font-size:.6875rem;color:var(--mut);margin-top:3px}
+.gauge .scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--mut);margin-top:3px}
 .w1{--c:var(--w1)}.w2{--c:var(--w2)}.w3{--c:var(--w3)}.w4{--c:var(--w4)}.w5{--c:var(--w5)}
 
 /* badges: letter + word, never color alone */
@@ -135,7 +135,7 @@ main{padding:20px 0 56px;min-height:60vh}
 .badge.big{font-size:var(--fs-1);padding:5px 12px;border-radius:9px}
 
 /* tables */
-.tw{overflow-x:auto;background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--shadow);margin:10px 0;-webkit-overflow-scrolling:touch}
+.tw{overflow-x:auto;background:linear-gradient(to right,var(--surface) 30%,transparent) left center/36px 100% no-repeat local,linear-gradient(to left,var(--surface) 30%,transparent) right center/36px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.28),transparent) left center/14px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.28),transparent) right center/14px 100% no-repeat scroll,var(--surface);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--shadow);margin:10px 0;-webkit-overflow-scrolling:touch}
 table{border-collapse:collapse;width:100%;font-size:var(--fs-1);font-variant-numeric:tabular-nums}
 th,td{padding:10px 14px;text-align:left;vertical-align:middle;border-bottom:1px solid var(--bd)}
 tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
@@ -198,13 +198,14 @@ footer.site-f .cols3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:28px}
 footer.site-f h3,footer.site-f h4{margin:0 0 8px;color:#fff;font-size:var(--fs-1)}footer.site-f ul{list-style:none;padding:0;margin:0;display:grid;gap:6px}
 footer.site-f .fine{border-top:1px solid rgba(255,255,255,.14);margin-top:22px;padding-top:16px;font-size:var(--fs-0)}
 
-/* mobile header: logo + search on row 1, nav scrolls on row 2 */
+/* mobile header: logo + search on row 1, all nav items wrap onto rows below (no hidden scroller); header scrolls away instead of sticking so it cannot eat the viewport */
 @media(max-width:860px){
-  :root{--hdr:104px}
+  :root{--hdr:0px}
+  .site-h{position:static}
   .site-h .in{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:6px;gap:8px 12px}
   .search{order:2;width:auto;flex:1 1 180px;margin-left:0}
-  .nav{order:3;flex-basis:100%;overflow-x:auto;margin:0 -6px;padding-bottom:4px;scrollbar-width:none}
-  .nav a{white-space:nowrap}
+  .nav{order:3;flex-basis:100%;flex-wrap:wrap;gap:4px;margin:0 -6px;padding-bottom:4px}
+  .nav a{white-space:nowrap;min-height:44px;display:inline-flex;align-items:center;padding:6px 12px}
   .results{position:fixed;left:12px;right:12px;top:auto;margin-top:6px;min-width:0}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
@@ -263,7 +264,7 @@ td .sbtn-sm{margin:2px 0}
   .shopbar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--surface);border-top:2px solid var(--hi);box-shadow:0 -4px 16px rgba(0,0,0,.25);padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
   .shopbar-in{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .shopbar .sbtn{min-height:48px;padding:6px 8px;font-size:var(--fs-0)}
-  .shopbar-fine{margin:4px 0 0;text-align:center;font-size:.6875rem;line-height:1.2;color:var(--mut)}
+  .shopbar-fine{margin:4px 0 0;text-align:center;font-size:.75rem;line-height:1.2;color:var(--mut)}
   .shopbar-fine a{color:var(--ac)}
   body:has(.shopbar){padding-bottom:104px}
   .nav a.nav-buy{order:-1}
@@ -277,3 +278,49 @@ td .sbtn-sm{margin:2px 0}
 
 .sbtn{position:relative}
 .search{flex-basis:270px!important}
+
+/* wrapping long inline formulas */
+main code{white-space:normal;overflow-wrap:break-word;box-decoration-break:clone;-webkit-box-decoration-break:clone;line-height:1.7}
+
+/* ---- mobile touch targets (>=44px) and card layout for the size ranking ---- */
+@media(max-width:760px){
+  .sbtn-sm{min-height:44px;padding:8px 14px;font-size:var(--fs-1)}
+  td input{height:44px;font-size:1rem}
+  th button{min-height:44px}
+  .disc a{display:inline-block;padding:13px 6px;margin:-13px -6px}
+  .logo{min-height:44px}
+  .guide-meta a{display:inline-block;padding:10px 0}
+  .search input{height:44px}.search svg{top:13px}
+  .calc-form input{height:44px}
+  .tcard .name{display:inline-block;padding:11px 0}
+  ul.rel li a{display:inline-block;padding:11px 0}
+  .sec-h a{display:inline-flex;align-items:center;min-height:44px}
+  .chip{min-height:44px;display:inline-flex;align-items:center}
+
+  .tw-cards{overflow:visible;background:none;border:0;box-shadow:none;margin:10px 0}
+  #rank-table,#rank-table tbody{display:block}
+  #rank-table thead{display:block;margin:0 0 10px}
+  #rank-table thead::before{content:"Sort by";display:block;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin:0 2px 6px}
+  #rank-table thead tr{display:flex;flex-wrap:wrap;gap:6px}
+  #rank-table thead th{display:block;position:static;padding:0 12px;border:1px solid var(--bd2);border-radius:999px;background:var(--surface);text-transform:none;letter-spacing:0;font-size:var(--fs-1)}
+  #rank-table thead th[data-nosort],#rank-table thead th.hide-sm,#rank-table td.hide-sm{display:none}
+  #rank-table thead th button{min-height:44px}
+  #rank-table tbody tr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 12px;align-items:center;background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;margin:0 0 12px}
+  #rank-table td{display:block;padding:0;border:0;text-align:left;min-width:0}
+  #rank-table td[data-l]:not(.c-rank)::before{content:attr(data-l);display:block;font-size:.75rem;font-weight:600;color:var(--mut);margin-bottom:3px}
+  #rank-table .c-rank{grid-column:1/2;grid-row:1/3;align-self:start;font-size:var(--fs-4);font-weight:800}
+  #rank-table .c-rank::before{content:"#"}
+  #rank-table .c-brand{grid-column:2/-1;grid-row:1;font-size:var(--fs-0);text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--mut);align-self:end;margin-bottom:-8px}
+  #rank-table .c-line{grid-column:2/-1;grid-row:2;font-size:var(--fs-3);font-weight:700;align-self:start}
+  #rank-table .c-line a{display:inline-block;padding:8px 0;min-width:44px}
+  #rank-table .c-wear{grid-column:1/-1}
+  #rank-table .c-trac{grid-column:1/4}
+  #rank-table .c-temp{grid-column:4/-1}
+  #rank-table .c-shop{grid-column:1/-1}
+  #rank-table .shop-mini{display:flex;gap:8px;width:100%}
+  #rank-table .shop-mini .sbtn{flex:1 1 0;margin:0}
+  #rank-table .c-price{grid-column:1/3}
+  #rank-table .c-miles{grid-column:3/5}
+  #rank-table .c-cost{grid-column:5/-1;font-weight:700}
+  #rank-table td input{width:100%}
+}

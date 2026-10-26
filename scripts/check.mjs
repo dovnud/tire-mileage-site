@@ -52,7 +52,7 @@ for (const f of htmls) {
       const blk = h.slice(sh, h.indexOf('</section>', sh));
       if (!/href="https:\/\/www\.amazon\.com\/s\?k=[^"]*tires[^"]*tag=/.test(blk) || !/href="https:\/\/www\.discounttire\.com\/search\?q=/.test(blk)) err.push(`${rel}: size Shop block lacks Amazon/Discount Tire size search links`);
     }
-    const rows = (h.match(/<tr><td class="n">\d+<\/td>/g) || []).length, shops = (h.match(/data-shop-row/g) || []).length;
+    const rows = (h.match(/<tr><td class="n c-rank"[^>]*>\d+<\/td>/g) || []).length, shops = (h.match(/data-shop-row/g) || []).length;
     if (!rows || shops < rows) err.push(`${rel}: ranked rows ${rows} but only ${shops} Shop buttons`);
   }
   if (rel === 'index.html') {

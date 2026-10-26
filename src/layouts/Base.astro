@@ -43,7 +43,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Where to buy', '
   <nav class="nav" aria-label="Main">{nav.map(([n, h]) => <a class={h === '/where-to-buy/' ? 'nav-buy' : undefined} href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{n}</a>)}</nav>
   <form class="search" role="search" onsubmit="return false">
     <label class="sr" for="q">Search tire lines, brands and sizes</label>
-    <input id="q" type="search" placeholder="Search tires or size (225/65R17)" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="q-results" aria-autocomplete="list" />
+    <input id="q" type="search" placeholder="Search tires or sizes" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="q-results" aria-autocomplete="list" />
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     <ul id="q-results" class="results" role="listbox" aria-label="Search results" hidden></ul>
   </form>
