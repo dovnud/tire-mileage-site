@@ -9,6 +9,9 @@ const urls = [];
 for (const f of fs.readdirSync('dist').filter((n) => /^sitemap-.+\.xml$/.test(n) && n !== 'sitemap-index.xml')) {
   for (const m of fs.readFileSync(`dist/${f}`, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)) urls.push(m[1]);
 }
+// --only=/privacy/,/terms/  submits just those paths (must be in the sitemaps) instead of every URL.
+const onlyArg = process.argv.find((x) => x.startsWith('--only='));
+if (onlyArg) { const want = new Set(onlyArg.slice(7).split(',').filter(Boolean)); const keep = urls.filter((u) => want.has(new URL(u).pathname)); const missing = [...want].filter((p) => !keep.some((u) => new URL(u).pathname === p)); if (missing.length) { console.log('--only paths not in sitemaps:', missing.join(', ')); process.exit(1); } urls.splice(0, urls.length, ...keep); }
 console.log(`${urls.length} URLs found in dist sitemaps`);
 const ok = submit && process.env.PREVIEW === '0' && key && site && !/pages\.dev/.test(site);
 if (!ok) { console.log('DRY RUN: not sending. (needs --submit, PREVIEW=0, INDEXNOW_KEY, SITE_URL=<real domain>)'); process.exit(0); }
