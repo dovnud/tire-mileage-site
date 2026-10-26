@@ -5,6 +5,7 @@ import { BANDS, lineBand, bandUrl } from '../../../lib/taxonomy';
 import Base from '../../../layouts/Base.astro';
 import Gauge from '../../../components/Gauge.astro';
 import Badge from '../../../components/Badge.astro';
+import ShopMini from '../../../components/ShopMini.astro';
 import AdSlot from '../../../components/AdSlot.astro';
 import { siteBrands, allLines, hasLine, lineUrl, S, fmt, pct, mostCommon, SOURCE_URL, UPDATED } from '../../../lib/data';
 export function getStaticPaths() { return siteBrands.map((b) => ({ params: { brand: b.slug }, props: { b } })); }
@@ -23,10 +24,10 @@ const chips = present.map(([x, c]) => ({ label: `${x.label} (${c})`, href: bandU
   <h1>{b.name} tire treadwear ratings</h1>
   <Chips chips={chips} label={`${b.name} lines by treadwear band`} />
   <div class="answer"><strong>Quick answer:</strong> NHTSA's UTQG data lists {all.length} {b.name} tire line{all.length === 1 ? '' : 's'}. {top && <span>The highest median treadwear grade is <strong>{top.wear_median}</strong> ({top.line}); the lowest is {low.wear_median} ({low.line}).</span>} Treadwear is a relative grade, not a mileage promise.</div>
-  <p class="tbl-note">Click a column heading to sort.</p>
+  <p class="tbl-note">Click a column heading to sort. “View &amp; shop” opens the line’s page, which has the Check price buttons; lines without a page here have direct retailer search buttons. TireMileage doesn’t sell tires. <a href="/where-to-buy/">How buying works</a></p>
   <div class="tw"><table data-sortable>
-    <thead><tr><th class="n">Rank</th><th>Line</th><th class="n" aria-label="Median treadwear">Treadwear</th><th class="n hide-sm">Range</th><th class="n hide-sm">Percentile*</th><th>Traction</th><th class="hide-sm">Temp.</th><th class="n hide-sm">Records</th></tr></thead>
-    <tbody>{rated.slice(0, 150).map((l) => <tr><td class="n">{l.brand_rank}</td><td>{hasLine(l) ? <a href={lineUrl(l)}>{l.line}</a> : l.line}</td><td class="n" data-v={l.wear_median}><Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} /></td><td class="n hide-sm">{l.wear_min === l.wear_max ? l.wear_min : `${l.wear_min}–${l.wear_max}`}</td><td class="n hide-sm">{pct(l.wear_percentile)}</td><td data-v={mostCommon(l.traction) ?? ''}><Badge kind="traction" grade={mostCommon(l.traction)} /></td><td class="hide-sm" data-v={mostCommon(l.temperature) ?? ''}><Badge kind="temp" grade={mostCommon(l.temperature)} /></td><td class="n hide-sm">{l.records}</td></tr>)}</tbody>
+    <thead><tr><th class="n">Rank</th><th>Line</th><th class="n" aria-label="Median treadwear">Treadwear</th><th class="n hide-sm">Range</th><th class="n hide-sm">Percentile*</th><th>Traction</th><th class="hide-sm">Temp.</th><th class="n hide-sm">Records</th><th data-nosort>Shop</th></tr></thead>
+    <tbody>{rated.slice(0, 150).map((l) => <tr><td class="n">{l.brand_rank}</td><td>{hasLine(l) ? <a href={lineUrl(l)}>{l.line}</a> : l.line}</td><td class="n" data-v={l.wear_median}><Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} /></td><td class="n hide-sm">{l.wear_min === l.wear_max ? l.wear_min : `${l.wear_min}–${l.wear_max}`}</td><td class="n hide-sm">{pct(l.wear_percentile)}</td><td data-v={mostCommon(l.traction) ?? ''}><Badge kind="traction" grade={mostCommon(l.traction)} /></td><td class="hide-sm" data-v={mostCommon(l.temperature) ?? ''}><Badge kind="temp" grade={mostCommon(l.temperature)} /></td><td class="n hide-sm">{l.records}</td><td>{hasLine(l) ? <a class="sbtn sbtn-sm sbtn-ac" href={lineUrl(l)}>View &amp; shop<span class="sr"> {l.brand} {l.line}</span></a> : <ShopMini brand={l.brand} line={l.line} brandSlug={l.brand_slug} lineSlug={l.line_slug} />}</td></tr>)}</tbody>
   </table></div>
   <AdSlot slot="brand-mid" height={250} />
   <p class="meta">*Percentile = share of all {S.normalized_lines.toLocaleString()} lines with a lower median treadwear. Only lines with a linked name have their own page so far; more are added in stages.{rated.length > 150 && ` Showing first 150 of ${rated.length}.`}</p>

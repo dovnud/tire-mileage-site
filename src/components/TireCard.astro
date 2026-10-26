@@ -4,9 +4,10 @@ import Badge from './Badge.astro';
 import { lineUrl, mostCommon, fmt, type Line } from '../lib/data';
 const { l } = Astro.props as { l: Line };
 ---
-<a class="tcard" href={lineUrl(l)}>
-  <div><div class="brand">{l.brand}</div><div class="name">{l.line}</div></div>
+<div class="tcard">
+  <div><div class="brand">{l.brand}</div><a class="name" href={lineUrl(l)}>{l.line}</a></div>
   <Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} />
   <div class="row"><Badge kind="traction" grade={mostCommon(l.traction)} /><Badge kind="temp" grade={mostCommon(l.temperature)} /></div>
   <div class="foot">Rank #{l.brand_rank} of {l.brand_lines_rated} {l.brand} lines · {l.records} NHTSA record{l.records === 1 ? '' : 's'}</div>
-</a>
+  <a class="sbtn sbtn-ac sbtn-view" href={lineUrl(l)}>View &amp; shop<span aria-hidden="true"> →</span><span class="sr"> {l.brand} {l.line}</span></a>
+</div>

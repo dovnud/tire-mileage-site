@@ -13,7 +13,7 @@ const canonical = new URL(Astro.url.pathname, origin).href;
 const crumbLd = crumbs.length ? { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.href, origin).href })) } : null;
 const graphs = [...(crumbLd ? [crumbLd] : []), ...ld];
 const path = Astro.url.pathname;
-const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Guides', '/guides/'], ['Methodology', '/methodology/'], ['Data', '/data/'], ['About', '/about/']];
+const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Where to buy', '/where-to-buy/'], ['Guides', '/guides/'], ['Methodology', '/methodology/'], ['Data', '/data/'], ['About', '/about/']];
 ---
 <!doctype html>
 <html lang="en">
@@ -40,7 +40,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Guides', '/guide
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-h"><div class="wrap in">
   <a class="logo" href="/" aria-label={`${SITE_NAME} home`}><Logo /></a>
-  <nav class="nav" aria-label="Main">{nav.map(([n, h]) => <a href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{n}</a>)}</nav>
+  <nav class="nav" aria-label="Main">{nav.map(([n, h]) => <a class={h === '/where-to-buy/' ? 'nav-buy' : undefined} href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{n}</a>)}</nav>
   <form class="search" role="search" onsubmit="return false">
     <label class="sr" for="q">Search tire lines, brands and sizes</label>
     <input id="q" type="search" placeholder="Search tires or size (225/65R17)" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="q-results" aria-autocomplete="list" />
@@ -48,7 +48,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Guides', '/guide
     <ul id="q-results" class="results" role="listbox" aria-label="Search results" hidden></ul>
   </form>
 </div></header>
-<div class="disc"><div class="wrap"><strong>Disclosure:</strong> TireMileage is independent and sells nothing. {AMAZON_DISCLOSURE} Amazon links on this site carry our Associates tag; other retailer links are plain. It never changes a ranking.</div></div>
+<div class="disc"><div class="wrap"><strong>Disclosure:</strong> TireMileage is independent and sells nothing. {AMAZON_DISCLOSURE} Amazon links on this site carry our Associates tag; other retailer links are plain. It never changes a ranking. <a href="/where-to-buy/">Where to buy</a></div></div>
 <main id="main"><div class="wrap">
   {crumbs.length > 1 && <Crumbs items={crumbs} />}
   <slot />
@@ -57,7 +57,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Guides', '/guide
 <footer class="site-f"><div class="wrap">
   <div class="cols3">
     <div><h3>{SITE_NAME}</h3><p>An independent reference that turns the U.S. government’s tire grading data into plain-English comparisons. Early staged release.</p></div>
-    <div><h3>Explore</h3><ul><li><a href="/tires/">Tire lines</a></li><li><a href="/sizes/">Sizes</a></li><li><a href="/guides/">Guides</a></li><li><a href="/treadwear/">By treadwear</a></li><li><a href="/type/">By category</a></li><li><a href="/rim/">By rim size</a></li><li><a href="/methodology/">Methodology</a></li><li><a href="/data/">Download data</a></li></ul></div>
+    <div><h3>Explore</h3><ul><li><a href="/tires/">Tire lines</a></li><li><a href="/sizes/">Sizes</a></li><li><a href="/where-to-buy/">Where to buy</a></li><li><a href="/guides/">Guides</a></li><li><a href="/treadwear/">By treadwear</a></li><li><a href="/type/">By category</a></li><li><a href="/rim/">By rim size</a></li><li><a href="/methodology/">Methodology</a></li><li><a href="/data/">Download data</a></li></ul></div>
     <div><h3>Trust</h3><ul><li><a href="/about/">About &amp; disclosure</a></li><li><a href="https://www.nhtsa.gov/vehicle-safety/tires" rel="noopener">NHTSA TireWise</a></li><li><a href="/sitemap/">Site map</a></li><li><a href="/guides/feed.xml">Guides feed</a></li><li><a href="/llms.txt">llms.txt</a></li></ul></div>
   </div>
   <p class="fine">Source: U.S. National Highway Traffic Safety Administration (NHTSA) Uniform Tire Quality Grading data, a U.S. federal government work. Grades are assigned by tire makers; they are not mileage guarantees. Not affiliated with NHTSA or any tire maker or retailer. Prices are not shown; manufacturer warranty figures appear only where cited from the maker’s own page.</p>

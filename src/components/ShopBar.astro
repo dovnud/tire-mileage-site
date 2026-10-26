@@ -1,0 +1,12 @@
+---
+// Sticky bottom bar (mobile only) repeating the Shop CTA on tire-line pages. Fixed position, so no layout shift.
+import { enabledRetailers, buildRetailerUrl, checkPriceLabel, LINK_REL } from '../lib/retailers';
+const { brand, line, brandSlug, lineSlug } = Astro.props as { brand: string; line: string; brandSlug: string; lineSlug: string };
+const key = `${brandSlug}/${lineSlug}`;
+---
+<div class="shopbar" role="region" aria-label="Shop this tire">
+  <div class="shopbar-in">
+    {enabledRetailers().map((r) => <a class={`sbtn ${r.id === 'amazon' ? 'sbtn-amz' : 'sbtn-ac'}`} href={buildRetailerUrl(r.id, brand, line, key)} target="_blank" rel={LINK_REL} data-shop={r.id}>{checkPriceLabel(r)}<span class="sr"> (opens in a new tab)</span></a>)}
+  </div>
+  <p class="shopbar-fine">Affiliate links · we don’t sell tires · <a href="/where-to-buy/">how it works</a></p>
+</div>

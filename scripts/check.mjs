@@ -28,6 +28,42 @@ for (const f of htmls) {
     const amz = [...h.matchAll(/href="(https:\/\/www\.amazon\.com\/[^"]*)"/g)]; if (!amz.length) err.push(`${rel}: line page has no Amazon link`);
     if (!/class="buy"[\s\S]*As an Amazon Associate I earn from qualifying purchases\.[\s\S]*<\/section>/.test(h)) err.push(`${rel}: Where-to-buy block lacks Amazon disclosure`);
   }
+  // ---- Buy-path UX: every page links to /where-to-buy/, lines have a Shop CTA above "Where to buy", sizes have Shop links ----
+  if (!rel.startsWith('404') && !/<nav class="nav"[^>]*>[\s\S]*?href="\/where-to-buy\/"[\s\S]*?<\/nav>/.test(h)) err.push(`${rel}: header nav lacks Where to buy`);
+  if (/^tires\/[^/]+\/[^/]+\/index\.html$/.test(rel)) {
+    const cta = h.indexOf('class="shop-cta"'), buy = h.indexOf('class="buy"');
+    if (cta < 0) err.push(`${rel}: no Shop CTA block`);
+    else {
+      if (buy >= 0 && cta > buy) err.push(`${rel}: Shop CTA is not above the Where to buy section`);
+      const blk = h.slice(cta, h.indexOf('</section>', cta));
+      if (!/Check price on Amazon/.test(blk) || !/Check price at Discount Tire/.test(blk)) err.push(`${rel}: Shop CTA lacks Amazon/Discount Tire buttons`);
+      if (!/href="https:\/\/www\.amazon\.com\/s\?[^"]*tag=/.test(blk) || !/href="https:\/\/www\.discounttire\.com\/search\?q=/.test(blk)) err.push(`${rel}: Shop CTA links are not real retailer search links`);
+      if (!blk.includes('As an Amazon Associate I earn from qualifying purchases.')) err.push(`${rel}: Shop CTA lacks Amazon Associates disclosure`);
+      if (/<h2[^>]*>(Key facts|What these grades)/.test(h.slice(0, cta))) err.push(`${rel}: Shop CTA is below the main content (not above the fold)`);
+    }
+    if (!/class="shopbar"/.test(h)) err.push(`${rel}: no sticky mobile Shop bar`);
+    else { const bar = h.slice(h.indexOf('class="shopbar"'), h.indexOf('class="shopbar"') + 1800); if (!/Check price on Amazon/.test(bar) || !/Check price at Discount Tire/.test(bar)) err.push(`${rel}: sticky bar lacks CTA buttons`); }
+  }
+  if (/^sizes\/[^/]+\/index\.html$/.test(rel)) {
+    const sh = h.indexOf('class="shop-cta shop-size"');
+    if (sh < 0) err.push(`${rel}: size page has no Shop block`);
+    else {
+      if (sh > h.indexOf('<table')) err.push(`${rel}: Shop block is below the ranking table`);
+      const blk = h.slice(sh, h.indexOf('</section>', sh));
+      if (!/href="https:\/\/www\.amazon\.com\/s\?k=[^"]*tires[^"]*tag=/.test(blk) || !/href="https:\/\/www\.discounttire\.com\/search\?q=/.test(blk)) err.push(`${rel}: size Shop block lacks Amazon/Discount Tire size search links`);
+    }
+    const rows = (h.match(/<tr><td class="n">\d+<\/td>/g) || []).length, shops = (h.match(/data-shop-row/g) || []).length;
+    if (!rows || shops < rows) err.push(`${rel}: ranked rows ${rows} but only ${shops} Shop buttons`);
+  }
+  if (rel === 'index.html') {
+    if (!/Find tires for your size/.test(h) || !/we link to retailers/.test(h) || !/How it works/.test(h)) err.push(`${rel}: home lacks size flow / how-it-works line`);
+    if ((h.match(/<li><h3>/g) || []).length < 3) err.push(`${rel}: home lacks 3-step strip`);
+    if (!/View &amp; shop/.test(h)) err.push(`${rel}: home tire cards lack View & shop`);
+  }
+  if (rel === 'where-to-buy/index.html') {
+    if (!/id="size-lookup"/.test(h)) err.push(`${rel}: no size entry form`);
+    for (const k of ['doesn’t sell tires', 'commission', 'DOT']) if (!h.includes(k)) err.push(`${rel}: missing "${k}"`);
+  }
   const text = h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '');
   if (/\$\d/.test(text.replace(/\$\{[^}]*\}/g, '')) && !/cost-per-mile|calculator/i.test(rel)) { const m = text.match(/.{20}\$\d.{20}/); if (m && !/\$1,?000|\$\d+ price/i.test(m[0])) err.push(`${rel}: possible price string: ${m[0]}`); }
   if (/class="ad-slot[^"]*"/.test(h) && !/ad-slot[^>]*hidden/.test(h)) err.push(`${rel}: ad slot not hidden`);
@@ -94,7 +130,10 @@ if (!preview) {
   const keyFiles = files.filter((x) => path.dirname(x) === DIST && /^[a-f0-9]{32}\.txt$/.test(path.basename(x))); if (keyFiles.length !== 1) err.push('IndexNow key file missing in launch build');
   else if (fs.readFileSync(keyFiles[0], 'utf8').trim() !== path.basename(keyFiles[0], '.txt')) err.push('IndexNow key file content mismatch');
 }
+{ const ll = fs.existsSync(path.join(DIST, 'llms.txt')) ? fs.readFileSync(path.join(DIST, 'llms.txt'), 'utf8') : ''; if (!ll.includes('/where-to-buy/')) err.push('llms.txt lacks /where-to-buy/'); }
+{ const sp = fs.readFileSync(path.join(DIST, 'sitemap-pages.xml'), 'utf8'); if (!sp.includes('/where-to-buy/')) err.push('sitemap-pages lacks /where-to-buy/'); }
 console.log(`${guideCount} guides, ${hubCount} hub pages, ${sitemapLocs.size} sitemap URLs`);
 for (const [t, p] of titles) if (p.length > 1) err.push(`duplicate title "${t}": ${p.join(', ')}`);
 if (preview) { const hd = fs.readFileSync(path.join(DIST, '_headers'), 'utf8'); if (!/X-Robots-Tag: noindex/i.test(hd)) err.push('_headers missing X-Robots-Tag noindex'); }
 console.log(`${htmls.length} html pages checked; ${err.length} problem(s)`); err.slice(0, 40).forEach((e) => console.log(' -', e)); process.exit(err.length ? 1 : 0);
+

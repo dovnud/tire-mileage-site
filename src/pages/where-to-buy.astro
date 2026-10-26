@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import { sizeUrl, siteSizes, NHTSA_GUIDE } from '../lib/data';
+import { enabledRetailers, AMAZON_DISCLOSURE, CHECKED_ON } from '../lib/retailers';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Where to buy', href: '/where-to-buy/' }];
+const popular = ["225-65r17","235-65r17","205-55r16","215-60r16","235-55r19","245-45r18","265-70r17","225-45r17"].map((k) => siteSizes.find((s) => s.key === k)).filter((s) => !!s) as typeof siteSizes;
+const names = enabledRetailers().map((r) => r.name);
+---
+<Base title="Where to Buy Tires: How TireMileage Links to Retailers" description="TireMileage is a data reference and does not sell tires. See which retailers we link to, how affiliate links work, and what to check before you buy." crumbs={crumbs}>
+  <h1>Where to buy tires</h1>
+  <div class="answer"><strong>Quick answer:</strong> TireMileage doesn’t sell tires. We rank tires by NHTSA treadwear data, then send you to a retailer ({names.join(' or ')}) to check the price and buy. Enter your size below, pick a tire, and press the <strong>Check price</strong> button.</div>
+
+  <section class="card wtb-form" aria-labelledby="wtb-size-h">
+    <h2 id="wtb-size-h" style="margin-top:0">Find tires for your size</h2>
+    <form id="size-lookup" class="lookup lookup-light" action="/sizes/" role="search" aria-labelledby="wtb-size-h">
+      <label class="sr" for="size-in">Tire size, for example 225/65R17</label>
+      <input id="size-in" name="size" inputmode="text" autocomplete="off" placeholder="Enter your size, e.g. 225/65R17" aria-describedby="lookup-msg" />
+      <button type="submit">Find tires for my size</button>
+    </form>
+    <p id="lookup-msg" class="lookup-msg lookup-msg-light" role="status" aria-live="polite"></p>
+    <div class="chips" aria-label="Popular sizes">{popular.map((s) => <a class="chip" href={sizeUrl(s.key)}>{s.label}</a>)}</div>
+    <p class="meta" style="margin-bottom:0">Your size is printed on the tire sidewall (for example 225/65R17). You can also search a tire line by name in the search box at the top of the page.</p>
+  </section>
+
+  <h2>How buying works here</h2>
+  <ol class="steps">
+    <li><h3>Look up the tire</h3><p>Every tire-line page and every size page has a <strong>Shop</strong> section near the top with buttons to the retailer.</p></li>
+    <li><h3>Check price at the retailer</h3><p>The button opens the retailer’s search results for that tire. Prices change by size, store and date, so we don’t show them.</p></li>
+    <li><h3>Confirm and buy there</h3><p>Pick your exact size, confirm fit, shipping or installation, and check out on the retailer’s site, not ours.</p></li>
+  </ol>
+
+  <h2>Who we link to</h2>
+  <ul>
+    {enabledRetailers().map((r) => <li><strong>{r.name}</strong>: our buttons open {r.name}’s own search results for the tire or size. {r.id === 'amazon' ? 'This is an affiliate link (see below).' : 'This is a plain link with no tracking added by us.'}</li>)}
+  </ul>
+  <p>We only link to retailers whose search links we have tested. The links were last checked on {CHECKED_ON}. Other retailers may be added later and will be disclosed here. TireMileage is not a retailer, never takes payment, and has no control over a retailer’s prices, stock, shipping, installation or returns.</p>
+
+  <h2>Affiliate disclosure</h2>
+  <p><strong>{AMAZON_DISCLOSURE}</strong> Our Amazon links are affiliate links: if you buy after clicking one, we may earn a commission at no extra cost to you. The Discount Tire links are plain links and earn us nothing. Rankings come only from NHTSA’s grades and never depend on commissions. Read more on the <a href="/about/">about page</a>.</p>
+
+  <h2>Before you buy: a practical checklist</h2>
+  <ul>
+    <li><strong>Size and fitment.</strong> NHTSA says to buy tires the same size as the vehicle’s original tires or another size the vehicle maker recommends. Find the size in your owner’s manual or on the Tire and Loading Information label on the driver’s door edge or post. If you’re unsure, ask a tire dealer (<a href={NHTSA_GUIDE} rel="noopener">NHTSA TireWise</a>).</li>
+    <li><strong>Check the DOT date.</strong> Tires age over time, not only with miles. The last four digits of the DOT Tire Identification Number show the week and year the tire was made: “0308” means the third week of 2008. NHTSA notes some vehicle and tire makers recommend replacing tires that are six to 10 years old, regardless of tread. Ask the seller, or look on the sidewall when the tires arrive, and check both sides because the number may be on only one (<a href={NHTSA_GUIDE} rel="noopener">NHTSA TireWise</a>).</li>
+    <li><strong>Shipping and installation.</strong> Tires still need mounting and balancing. NHTSA says new tires should always be balanced when installed. Before you order, check on the retailer’s page whether they ship to you or to an installer, who installs them, what installation costs, and what the return policy is. These vary by seller and we don’t know them for you.</li>
+    <li><strong>Is it the right tire?</strong> A listed line may be discontinued or sold under a slightly different name, so confirm the exact name, size, load index and speed rating at the retailer before you pay.</li>
+    <li><strong>Price.</strong> Compare the total price for the full set, including installation and any fees, at more than one seller. Then plug your quote into our <a href="/guides/tire-cost-per-mile/">cost-per-mile guide</a>.</li>
+  </ul>
+
+  <h2>Start here</h2>
+  <p><a class="sbtn sbtn-ac" href="/sizes/">Browse tire sizes</a> <a class="sbtn sbtn-ac" href="/tires/">Browse tire lines</a></p>
+</Base>

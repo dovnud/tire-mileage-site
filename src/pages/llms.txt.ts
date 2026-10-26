@@ -12,6 +12,7 @@ export const GET = ({ site }: { site: URL }) => {
 - [Dataset downloads](${u('/data/')}): CSV/JSON of normalized NHTSA records
 - [Tire lines by brand](${u('/tires/')})
 - [Guides](${u('/guides/')}) ([Atom feed](${u('/guides/feed.xml')})); [HTML site map](${u('/sitemap/')})
+- [Where to buy](${u('/where-to-buy/')}): TireMileage does not sell tires; it links to Amazon and Discount Tire search results (affiliate disclosure, fitment and DOT-date checks)
 - [Sizes ranked by treadwear](${u('/sizes/')})
 
 ## Guides (each cites its sources and shows a last-updated date)

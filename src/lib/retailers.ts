@@ -20,7 +20,7 @@ export interface Retailer {
   name: string;
   enabled: boolean;
   verified: string; // how the pattern was verified (or why it was not)
-  search: (query: string) => string;
+  search: (query: string, opts?: { raw?: boolean }) => string; // raw: the query is already complete (don't append " tire")
 }
 
 const q = (s: string) => encodeURIComponent(s).replace(/%20/g, '+');
@@ -38,7 +38,7 @@ export const RETAILERS: Retailer[] = [
     name: 'Amazon',
     enabled: true,
     verified: 'curl 200 with server-rendered search results for several queries. Amazon sometimes returns 503 to automated clients; normal browsers are fine.',
-    search: (s) => `https://www.amazon.com/s?k=${q(`${s} tire`)}`,
+    search: (s, o) => `https://www.amazon.com/s?k=${q(o?.raw ? s : `${s} tire`)}`,
   },
   {
     id: 'tire-rack',
@@ -107,4 +107,16 @@ export function buildRetailerUrl(retailer: RetailerId, brand: string, line: stri
   return wrapAffiliate(retailer, r.search(retailerQuery(brand, line, key)));
 }
 
-export const enabledRetailers = () => RETAILERS.filter((r) => r.enabled);
+/** Size search link (e.g. Amazon k=225/65R17 tires; Discount Tire q=225/65R17). Same affiliate wrapper and rules as buildRetailerUrl. */
+export function buildSizeRetailerUrl(retailer: RetailerId, sizeLabel: string): string {
+  const r = RETAILERS.find((x) => x.id === retailer);
+  if (!r) throw new Error(`unknown retailer ${retailer}`);
+  const plain = retailer === 'amazon' ? r.search(`${sizeLabel} tires`, { raw: true }) : r.search(sizeLabel);
+  return wrapAffiliate(retailer, plain);
+}
+
+/** Button wording: "Check price on Amazon", "Check price at Discount Tire". */
+export const checkPriceLabel = (r: { id: RetailerId; name: string }) => `Check price ${r.id === 'amazon' ? 'on' : 'at'} ${r.name}`;
+
+// Amazon first, then the rest in list order (buttons read: Check price on Amazon, Check price at Discount Tire).
+export const enabledRetailers = () => RETAILERS.filter((r) => r.enabled).sort((a, b) => Number(b.id === 'amazon') - Number(a.id === 'amazon'));

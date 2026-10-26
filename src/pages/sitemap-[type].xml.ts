@@ -4,7 +4,7 @@ import { siteLines, siteSizes, siteBrands, UPDATED, lineUrl, sizeUrl } from '../
 export const getStaticPaths = () => ['pages', 'guides', 'tags', 'brands', 'tires', 'sizes'].map((type) => ({ params: { type } }));
 export const GET = ({ site, params }: { site: URL; params: { type: string } }) => {
   const paths: Record<string, string[]> = {
-    pages: ['/', '/tires/', '/sizes/', '/methodology/', '/about/', '/data/', '/sitemap/'],
+    pages: ['/', '/tires/', '/sizes/', '/where-to-buy/', '/methodology/', '/about/', '/data/', '/sitemap/'],
     guides: ['/guides/', ...GUIDES.map(guideUrl)],
     tags: ['/treadwear/', ...BANDS.map(bandUrl), '/type/', ...TYPES.map(typeUrl), '/rim/', ...RIMS.map(rimUrl)],
     brands: siteBrands.map((b) => `/tires/${b.slug}/`),
