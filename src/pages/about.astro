@@ -1,11 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
+import { AMAZON_DISCLOSURE } from '../lib/retailers';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'About', href: '/about/' }];
 ---
 <Base title="About TireMileage | Independent NHTSA Tire Data Reference" description="TireMileage is an independent, data-first reference built on public NHTSA tire grading data. No retailer controls the rankings." crumbs={crumbs}>
   <h1>About TireMileage</h1>
   <div class="answer"><strong>Quick answer:</strong> TireMileage is an independent reference that reorganizes public NHTSA tire grades so you can compare tires by size and by line. It is an early, staged release; nothing here is a sales recommendation.</div>
-  <p>We do not sell tires, test tires, or accept payment for placement. Today, retailer links are plain search links with no commission. In the future the site may include affiliate links and ads, which will be disclosed on every page and will not change rankings, which come only from NHTSA's grades.</p>
+  <p>We do not sell tires, test tires, or accept payment for placement. {AMAZON_DISCLOSURE} Our Amazon links are affiliate links and may earn us a commission at no extra cost to you; our other retailer links are plain search links with no commission. In the future the site may include more affiliate links and ads, which will be disclosed and will not change rankings, which come only from NHTSA's grades.</p>
   <p>Every page states its source and the date the data was pulled. Anything we cannot source is labeled “unverified” or left out. See the <a href="/methodology/">methodology</a> and the <a href="/data/">open dataset</a>.</p>
   <h2>Who is behind this</h2>
   <p>TireMileage is published by its owner under the site name “TireMileage”; guides are bylined to the site itself. We do not invent a persona or credentials. A named author bio will be added here when the owner publishes one.</p>

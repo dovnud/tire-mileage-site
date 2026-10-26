@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { PREVIEW, UPDATED, S, jsonLd } from '../lib/data';
 import { SITE_NAME } from '../lib/site';
+import { AMAZON_DISCLOSURE } from '../lib/retailers';
 import Crumbs from '../components/Crumbs.astro';
 import Logo from '../components/Logo.astro';
 interface Props { title: string; description: string; crumbs?: { name: string; href: string }[]; ld?: unknown[]; noindex?: boolean; og?: string; ogType?: 'website' | 'article'; published?: string; modified?: string; }
@@ -47,7 +48,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Guides', '/guide
     <ul id="q-results" class="results" role="listbox" aria-label="Search results" hidden></ul>
   </form>
 </div></header>
-<div class="disc"><div class="wrap"><strong>Disclosure:</strong> TireMileage is independent and sells nothing. Retailer links are plain links today; if we join affiliate programs later we may earn a commission, marked on the page, and it will never change a ranking.</div></div>
+<div class="disc"><div class="wrap"><strong>Disclosure:</strong> TireMileage is independent and sells nothing. {AMAZON_DISCLOSURE} Amazon links on this site carry our Associates tag; other retailer links are plain. It never changes a ranking.</div></div>
 <main id="main"><div class="wrap">
   {crumbs.length > 1 && <Crumbs items={crumbs} />}
   <slot />
@@ -60,6 +61,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Guides', '/guide
     <div><h3>Trust</h3><ul><li><a href="/about/">About &amp; disclosure</a></li><li><a href="https://www.nhtsa.gov/vehicle-safety/tires" rel="noopener">NHTSA TireWise</a></li><li><a href="/sitemap/">Site map</a></li><li><a href="/guides/feed.xml">Guides feed</a></li><li><a href="/llms.txt">llms.txt</a></li></ul></div>
   </div>
   <p class="fine">Source: U.S. National Highway Traffic Safety Administration (NHTSA) Uniform Tire Quality Grading data, a U.S. federal government work. Grades are assigned by tire makers; they are not mileage guarantees. Not affiliated with NHTSA or any tire maker or retailer. Prices are not shown; manufacturer warranty figures appear only where cited from the maker’s own page.</p>
+  <p class="fine">{AMAZON_DISCLOSURE}</p>
 </div></footer>
 <script>import '../scripts/site.ts';</script>
 </body>

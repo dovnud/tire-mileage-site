@@ -11,7 +11,9 @@ npm run build:full         # all lines + sizes with 5+ lines (~3.4k pages)
 Env: `SITE_URL` (canonical origin), `PREVIEW=0` (drop noindex), `FULL=1`.
 Data: NHTSA tire ratings API (US government work). No prices are shown. Maker warranties only where cited (`src/lib/makers.ts`). Ads are hidden (`ADS_ENABLED=false` in `src/lib/site.ts`).
 
-Retailer links: all built by `buildRetailerUrl(retailer, brand, line)` in `src/lib/retailers.ts`. Plain links today; the affiliate wrapper is a TODO stub, off by default (`AFFILIATE_ENABLED=false`) — CJ is not approved.
+Retailer links: all built by `buildRetailerUrl(retailer, brand, line)` in `src/lib/retailers.ts`. Amazon links carry the Amazon Associates tag `tag=tiremileage-20` (override with env `AMAZON_TAG` at build time; empty disables). All other retailers stay plain; CJ is not approved. `rel="sponsored nofollow noopener"` and the disclosure "As an Amazon Associate I earn from qualifying purchases." (footer, disclosure strip, Where-to-buy, About, Methodology) must stay: `npm run check` asserts both.
+
+Operational note (unverified for this account): Amazon's Associates Program Operating Agreement, section 5, requires that exact statement to be clearly and prominently displayed (https://affiliate-program.amazon.com/help/operating/agreement, read 2026-10-25). The agreement page does not state the account-approval or qualifying-sales requirements, so those are not documented here; confirm account status in Associates Central.
 
 ```
 npm run check        # broken links, duplicate titles, JSON-LD, noindex, rel attrs (needs a build)

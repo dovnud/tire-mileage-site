@@ -1,5 +1,5 @@
 ---
-import { enabledRetailers, buildRetailerUrl, retailerQuery, LINK_REL, CHECKED_ON } from '../lib/retailers';
+import { enabledRetailers, buildRetailerUrl, retailerQuery, LINK_REL, CHECKED_ON, AMAZON_DISCLOSURE } from '../lib/retailers';
 import { MAKER_FACTS } from '../lib/makers';
 const { brand, line, brandSlug, lineSlug } = Astro.props as { brand: string; line: string; brandSlug: string; lineSlug: string };
 const key = `${brandSlug}/${lineSlug}`;
@@ -15,5 +15,5 @@ const q = retailerQuery(brand, line, key);
   {fact?.warranty && (
     <div class="warranty"><b>Maker’s mileage warranty</b>{fact.warranty.text}. <a href={fact.warranty.sourceUrl} target="_blank" rel="noopener">Source: {fact.warranty.sourceLabel}</a>, read {fact.warranty.retrieved}.{fact.warranty.note && <span class="meta"><br />{fact.warranty.note}</span>}</div>
   )}
-  <p class="meta" style="margin:0"><strong>Disclosure:</strong> these are plain links to retailer search pages (checked {CHECKED_ON}). We have no affiliate relationship yet. If we add one, links will be marked and rankings will not change. A listed line may be discontinued or sold under a slightly different name.</p>
+  <p class="meta" style="margin:0"><strong>Disclosure:</strong> {AMAZON_DISCLOSURE} The Amazon link is an affiliate link; the other links go to retailer search pages with no tracking (checked {CHECKED_ON}). Rankings never depend on commissions. A listed line may be discontinued or sold under a slightly different name.</p>
 </section>

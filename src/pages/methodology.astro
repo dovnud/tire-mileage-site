@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { AMAZON_DISCLOSURE } from '../lib/retailers';
 import { S, UPDATED, SOURCE_URL, NHTSA_GUIDE, CFR_URL } from '../lib/data';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/methodology/' }];
 ---
@@ -31,7 +32,7 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/meth
   </ul>
   <h2>Retailer links and maker warranties</h2>
   <ul>
-    <li><strong>Retailer links</strong> on tire-line pages are plain search links to Discount Tire and Amazon, built in one place (<code>src/lib/retailers.ts</code>). We checked on 2026-10-25 that each pattern returns search results. They are marked <code>rel="sponsored nofollow noopener"</code>. We have no affiliate relationship today; if we join a program later, affected links will be disclosed on the page. Rankings use only NHTSA grades, never retailer or commission data.</li>
+    <li><strong>Retailer links</strong> on tire-line pages are search links to Discount Tire and Amazon, built in one place (<code>src/lib/retailers.ts</code>). We checked on 2026-10-25 that each pattern returns search results. They are marked <code>rel="sponsored nofollow noopener"</code>. {AMAZON_DISCLOSURE} The Amazon links carry our Amazon Associates tag (tag=tiremileage-20); the Discount Tire links are plain, with no tracking or commission. Any future affiliate links will be disclosed on the page. Rankings use only NHTSA grades, never retailer or commission data.</li>
     <li><strong>Maker warranty mileage</strong> is shown only where a maker's own public page or flyer states it, with the source URL and the date we read it. Names differ between NHTSA (for example “Defender 2”) and makers (“Defender2”); we match them by hand. A warranty is not a prediction of how long a tire will last.</li>
     <li>We do not scrape prices, so no price is displayed anywhere.</li>
   </ul>

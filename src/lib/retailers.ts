@@ -1,12 +1,17 @@
 // Central place for every outbound retailer link. Nothing else in the site should hand-build a retailer URL.
 //
-// Rules (set by Dov): plain, non-affiliate links only. CJ/Awin/Amazon Associates are NOT approved yet.
+// Rules (set by Dov): Amazon links carry his Amazon Associates tracking tag (AMAZON_TAG, default tiremileage-20).
+// Every other retailer stays plain (no CJ/Awin yet). Amazon's account must be approved/active for the tag to pay.
 // No prices are scraped or shown. Each retailer's URL pattern below was checked on 2026-10-25 (see `verified`).
 // Tire Rack and SimpleTire are listed but DISABLED: both block automated requests from our test machine
 // (Tire Rack returns an "unavailable" page, SimpleTire returns 403 Access Denied), so a pattern could not be verified.
 
-export const AFFILIATE_ENABLED = false; // TODO(affiliate): flip only after a program approves the site; then fill AFFILIATE below.
-export const LINK_REL = 'sponsored nofollow noopener'; // correct for current plain links and for future affiliate links
+export const AFFILIATE_ENABLED = true; // Amazon Associates only; other retailers have no entry in AFFILIATE below, so they stay plain.
+export const DEFAULT_AMAZON_TAG = 'tiremileage-20';
+// Configurable at build time: AMAZON_TAG=other-20 npm run build:launch. Set AMAZON_TAG= (empty) to turn the tag off.
+export const AMAZON_TAG: string = (typeof process !== 'undefined' && process.env?.AMAZON_TAG !== undefined ? process.env.AMAZON_TAG : DEFAULT_AMAZON_TAG).trim();
+export const AMAZON_DISCLOSURE = 'As an Amazon Associate I earn from qualifying purchases.'; // wording required by Amazon's Associates Program Operating Agreement, section 5
+export const LINK_REL = 'sponsored nofollow noopener'; // correct for plain and affiliate links
 export const CHECKED_ON = '2026-10-25';
 
 export type RetailerId = 'discount-tire' | 'amazon' | 'tire-rack' | 'simpletire' | 'priority-tire';
@@ -58,11 +63,14 @@ export const RETAILERS: Retailer[] = [
   },
 ];
 
-// ---- Affiliate wrapper (OFF by default) ----------------------------------------------------------
-// TODO(affiliate): once a program is approved, put the deep-link / tracking template per retailer here, e.g.
+// ---- Affiliate wrapper ---------------------------------------------------------------------------
+// Amazon: append tag=<AMAZON_TAG> to the amazon.com search URL. Other retailers: no entry, plain URL.
+// TODO(cj): when CJ approves a retailer, add e.g.
 //   'discount-tire': (url) => `https://www.anrdoezrs.net/click-<PID>-<AID>?url=${encodeURIComponent(url)}`,
-// Keep the plain URL as the fallback and keep LINK_REL + the on-page disclosure.
-const AFFILIATE: Partial<Record<RetailerId, (plainUrl: string) => string>> = {};
+// Keep LINK_REL and the on-page disclosure.
+const AFFILIATE: Partial<Record<RetailerId, (plainUrl: string) => string>> = {
+  amazon: (url) => (AMAZON_TAG ? `${url}${url.includes('?') ? '&' : '?'}tag=${encodeURIComponent(AMAZON_TAG)}` : url),
+};
 function wrapAffiliate(id: RetailerId, plainUrl: string): string {
   if (!AFFILIATE_ENABLED) return plainUrl;
   return AFFILIATE[id]?.(plainUrl) ?? plainUrl;

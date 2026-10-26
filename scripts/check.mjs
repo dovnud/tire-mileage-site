@@ -14,6 +14,20 @@ for (const f of htmls) {
   for (const m of h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) { try { const j = JSON.parse(m[1]); if (!j['@context']) err.push(`${rel}: JSON-LD missing @context`); } catch (e) { err.push(`${rel}: invalid JSON-LD ${e.message}`); } }
   if (preview && !/<meta name="robots" content="noindex/.test(h) && !rel.startsWith('404')) err.push(`${rel}: missing noindex meta`);
   for (const m of h.matchAll(/<a [^>]*href="https?:\/\/(?:www\.)?(?:discounttire|amazon)\.com[^"]*"[^>]*>/g)) if (!/rel="sponsored nofollow noopener/.test(m[0])) err.push(`${rel}: retailer link without rel: ${m[0].slice(0, 80)}`);
+  // Affiliate rules: Amazon links carry tag=AMAZON_TAG; no other retailer link carries affiliate params; Amazon disclosure on every page.
+  const AMZ_TAG = process.env.AMAZON_TAG ?? 'tiremileage-20';
+  for (const m of h.matchAll(/<a [^>]*href="(https?:\/\/[^"]+)"[^>]*>/g)) {
+    let u; try { u = new URL(m[1].replace(/&amp;/g, '&')); } catch { continue; }
+    const host = u.hostname.replace(/^www\./, '');
+    if (host === 'amazon.com') { if (AMZ_TAG && u.searchParams.get('tag') !== AMZ_TAG) err.push(`${rel}: Amazon link missing tag=${AMZ_TAG}: ${m[1].slice(0, 90)}`); }
+    else if (/^(discounttire\.com|tirerack\.com|simpletire\.com|prioritytire\.com)$/.test(host)) { const bad = [...u.searchParams.keys()].filter((k) => k !== 'q' && k !== 'searchTerm'); if (bad.length) err.push(`${rel}: ${host} link has extra params (${bad.join(',')})`); }
+    else if (/(anrdoezrs|jdoqocy|tkqlhce|dpbolvw|kqzyfj|awin1|shareasale|linksynergy|go\.skimresources|click\.linksynergy)\./.test(u.hostname)) err.push(`${rel}: unexpected affiliate network link ${u.hostname}`);
+  }
+  if (!h.includes('As an Amazon Associate I earn from qualifying purchases.')) err.push(`${rel}: missing Amazon Associates disclosure`);
+  if (/^tires\/[^/]+\/[^/]+\/index\.html$/.test(rel)) {
+    const amz = [...h.matchAll(/href="(https:\/\/www\.amazon\.com\/[^"]*)"/g)]; if (!amz.length) err.push(`${rel}: line page has no Amazon link`);
+    if (!/class="buy"[\s\S]*As an Amazon Associate I earn from qualifying purchases\.[\s\S]*<\/section>/.test(h)) err.push(`${rel}: Where-to-buy block lacks Amazon disclosure`);
+  }
   const text = h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '');
   if (/\$\d/.test(text.replace(/\$\{[^}]*\}/g, '')) && !/cost-per-mile|calculator/i.test(rel)) { const m = text.match(/.{20}\$\d.{20}/); if (m && !/\$1,?000|\$\d+ price/i.test(m[0])) err.push(`${rel}: possible price string: ${m[0]}`); }
   if (/class="ad-slot[^"]*"/.test(h) && !/ad-slot[^>]*hidden/.test(h)) err.push(`${rel}: ad slot not hidden`);
