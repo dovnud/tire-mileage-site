@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import GuideLinks from '../../components/GuideLinks.astro';
+import { guidesForTreadwearIndex } from '../../lib/guide-picks';
 import { BANDS, inBand, bandUrl, ratedLines, share, medianOf } from '../../lib/taxonomy';
 import { UPDATED, fmt } from '../../lib/data';
 const rows = BANDS.map((b) => ({ b, n: inBand(b).length }));
@@ -16,5 +17,5 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Tire
   </tbody></table></div>
   <p class="tbl-note">Source: NHTSA UTQG ratings pulled {UPDATED}; {fmt(medianOf(ratedLines))} is the median line grade overall. Each band page lists brands, categories, grade mixes and lines.</p>
   <div class="cardgrid">{rows.map((r) => <a class="gcard" href={bandUrl(r.b)}><b>Treadwear {r.b.label}</b><span>{r.b.blurb}</span><small>{r.n.toLocaleString()} lines</small></a>)}</div>
-  <GuideLinks slugs={['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'how-to-find-longest-lasting-tires-for-your-size']} />
+  <GuideLinks slugs={guidesForTreadwearIndex()} />
 </Base>

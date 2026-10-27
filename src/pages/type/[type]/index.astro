@@ -1,6 +1,7 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import GuideLinks from '../../../components/GuideLinks.astro';
+import { guidesForType } from '../../../lib/guide-picks';
 import FaqList from '../../../components/FaqList.astro';
 import LineTable from '../../../components/LineTable.astro';
 import BrandTable from '../../../components/BrandTable.astro';
@@ -9,6 +10,7 @@ import { BANDS, TYPES, inType, bandUrl, typeUrl, ratedLines, share, medianOf, br
 import { hasLine, lineUrl, UPDATED, fmt } from '../../../lib/data';
 export function getStaticPaths() { return TYPES.map((t) => ({ params: { type: t.slug }, props: { t } })); }
 const { t } = Astro.props as { t: (typeof TYPES)[number] };
+const guideSlugs = guidesForType(t.slug);
 const ls = inType(t);
 const n = ls.length, brands = brandBreakdown(ls);
 const bandRows = BANDS.map((b) => ({ b, c: ls.filter((l) => lineBand(l).slug === b.slug).length })).filter((x) => x.c > 0);
@@ -46,7 +48,7 @@ const ld = [
   <h2>{t.label} lines</h2>
   <LineTable lines={ls} limit={40} />
   <p class="relblock">Other categories: {TYPES.filter((x) => x.slug !== t.slug).map((x, k, a) => <span><a href={typeUrl(x)}>{x.label}</a>{k < a.length - 1 ? ' · ' : ''}</span>)}</p>
-  <GuideLinks slugs={['all-season-vs-all-weather-vs-winter-tires', 'what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage']} />
+  <GuideLinks slugs={guideSlugs} />
   <FaqList faqs={faqs} />
   <p class="meta">Source: NHTSA UTQG ratings pulled {UPDATED}. <a href="/methodology/">Methodology</a>.</p>
 </Base>

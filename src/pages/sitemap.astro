@@ -9,7 +9,7 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Site map', href: '/sitemap
 <Base title="Site Map: Every Page on TireMileage" description="HTML site map: guides, treadwear bands, tire categories, rim sizes, brands, sizes and tire lines." crumbs={crumbs} og="default">
   <h1>Site map</h1>
   <div class="sitemap-h">
-    <h2>Main</h2><ul><li><a href="/">Home</a></li><li><a href="/where-to-buy/">Where to buy</a></li><li><a href="/methodology/">Methodology</a></li><li><a href="/data/">Dataset downloads</a></li><li><a href="/about/">About &amp; corrections</a></li>{LEGAL_LINKS.map((l) => <li><a href={l.href}>{l.name}</a></li>)}<li><a href="/llms.txt">llms.txt</a></li><li><a href="/guides/feed.xml">Guides Atom feed</a></li></ul>
+    <h2>Main</h2><ul><li><a href="/">Home</a></li><li><a href="/sitemap.xml">XML sitemap</a></li><li><a href="/sitemap-index.xml">XML sitemap index</a></li><li><a href="/where-to-buy/">Where to buy</a></li><li><a href="/methodology/">Methodology</a></li><li><a href="/data/">Dataset downloads</a></li><li><a href="/about/">About &amp; corrections</a></li>{LEGAL_LINKS.map((l) => <li><a href={l.href}>{l.name}</a></li>)}<li><a href="/llms.txt">llms.txt</a></li><li><a href="/guides/feed.xml">Guides Atom feed</a></li></ul>
     <h2>Guides</h2><ul><li><a href="/guides/">All guides</a></li>{GUIDES.map((g) => <li><a href={guideUrl(g)}>{g.h1}</a></li>)}</ul>
     <h2>By treadwear band</h2><ul><li><a href="/treadwear/">All bands</a></li>{BANDS.map((b) => <li><a href={bandUrl(b)}>Treadwear {b.label}</a></li>)}</ul>
     <h2>By category</h2><ul><li><a href="/type/">All categories</a></li>{TYPES.map((t) => <li><a href={typeUrl(t)}>{t.label}</a></li>)}</ul>

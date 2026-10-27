@@ -1,6 +1,6 @@
 # Tire Mileage: build plan (prototype 2026-10-25)
 
-Domain: **tiremileage.com** (purchased by Dov via Cloudflare Registrar 2026-10-25; attached to Pages project `tiremileage`; www 301s to apex). **Launched 2026-10-25 as tranche 1 only** (`npm run build:launch`: PREVIEW=0 TRANCHE=1 SITE_URL=https://tiremileage.com): 300 top lines (by explicit-size NHTSA records, major brands break ties), 155 sizes with 10+ lines, 79 brand hubs, 10 guides, 25 taxonomy hubs = 580 indexable pages. FULL=1 is NOT used; tranche 2/3 follow the schedule and kill rule in section 7. `*.pages.dev` stays noindex via `_headers` host rule. No affiliate sign-ups, no live affiliate links, no ads.
+Domain: **tiremileage.com** (purchased by the site owner via Cloudflare Registrar 2026-10-25; attached to Pages project `tiremileage`; www 301s to apex). **Launched 2026-10-25 as tranche 1 only** (`npm run build:launch`: PREVIEW=0 TRANCHE=1 SITE_URL=https://tiremileage.com): 300 top lines (by explicit-size NHTSA records, major brands break ties), 155 sizes with 10+ lines, 79 brand hubs, 10 guides, 25 taxonomy hubs = 580 indexable pages. FULL=1 is NOT used; tranche 2/3 follow the schedule and kill rule in section 7. `*.pages.dev` stays noindex via `_headers` host rule. No affiliate sign-ups, no live affiliate links, no ads.
 
 ## 1. Architecture
 - Static **Astro 7** site, output `dist/`, deployed to **Cloudflare Pages** (direct upload via wrangler now; Git-connected builds later). Build needs Node >= 22.23.4 (`.nvmrc`).
@@ -45,10 +45,10 @@ Unique title (<~70 chars) + meta description per page; self-referencing canonica
 ## 6. GEO checklist
 `/llms.txt` listing key pages; `robots.txt` explicitly allows GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-SearchBot, PerplexityBot, Google-Extended, Applebot-Extended, CCBot etc.; self-contained answer sentences with numbers at top of each page; tables with explicit column headers; stable definitions in `/methodology/`; downloadable dataset to invite citation; explicit source/date on every page. To add post-launch: Bing Webmaster Tools + IndexNow, monitor AI-referral traffic.
 
-## 7. 30-day launch plan (after Dov decisions: domain, affiliate applications)
-- **Days 1-3:** buy/attach domain (Dov decision), set `SITE_URL`, `PREVIEW=0`, verify in Google Search Console + Bing; submit `sitemap-index.xml`; real contact page, privacy policy, final disclosure text.
+## 7. 30-day launch plan (after site-owner decisions: domain, affiliate applications)
+- **Days 1-3:** buy/attach domain (site-owner decision), set `SITE_URL`, `PREVIEW=0`, verify in Google Search Console + Bing; submit `sitemap-index.xml`; real contact page, privacy policy, final disclosure text.
 - **Days 3-7, tranche 1 (~500 pages):** 155 sizes with 10+ lines, top ~300 lines by explicit-size record count (major brands first), all brand hubs for those. Watch Index Coverage and "Crawled - not indexed" daily.
-- **Days 8-14:** if >60% indexed, tranche 2 (+~800: sizes with 5-9 lines, next 600 lines). Apply to affiliate programs (Dov-approved) and test feed fields.
+- **Days 8-14:** if >60% indexed, tranche 2 (+~800: sizes with 5-9 lines, next 600 lines). Apply to affiliate programs (site-owner-approved) and test feed fields.
 - **Days 15-21:** tranche 3 (remaining lines with rated records, up to ~3,400 total) only if tranche 2 is indexing; otherwise prune/merge thin pages. Add 5-8 explainers (what treadwear 600 means, UTQG vs mileage warranty, cost-per-mile guide).
 - **Days 22-30:** integrate price feed if approved (price + warranty fields only from the licensed feed), turn on affiliate links with disclosure, evaluate ad network (needs traffic thresholds). Review GSC queries/impressions, CTR, indexation ratio, AI referral logs; decide go/no-go on vehicle pages.
 - Kill criteria: <30% indexed by day 21 or no impressions growth by day 30 -> stop expanding, keep what is indexed.

@@ -1,11 +1,13 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import GuideLinks from '../../../components/GuideLinks.astro';
+import { guidesForRim } from '../../../lib/guide-picks';
 import FaqList from '../../../components/FaqList.astro';
 import { BANDS, RIMS, rimUrl, rimSlug, sizesForRim, bandOf, share } from '../../../lib/taxonomy';
 import { sizeSet, sizeUrl, siteBrands, median, UPDATED, fmt } from '../../../lib/data';
 export function getStaticPaths() { return RIMS.map((r, i) => ({ params: { rim: rimSlug(r) }, props: { r, i } })); }
 const { r, i } = Astro.props as { r: number; i: number };
+const guideSlugs = guidesForRim(r);
 const ss = sizesForRim(r);
 const per = ss.map((s) => { const w = s.rows.filter((x) => x.wear_min != null).map((x) => x.wear_min as number); return { s, n: w.length, hi: w.length ? Math.max(...w) : null, med: median(w) }; }).filter((x) => x.n > 0).sort((a, b) => b.n - a.n || a.s.key.localeCompare(b.s.key));
 const all = ss.flatMap((s) => s.rows.filter((x) => x.wear_min != null));
@@ -51,7 +53,7 @@ const ld = [
   <h2>Highest treadwear grades at {r} inches</h2>
   <div class="tw"><table><thead><tr><th>Tire line</th><th>Size</th><th class="n">Treadwear</th></tr></thead><tbody>{topCombos.map((x) => <tr><td>{x.brand} {x.line}</td><td>{comboSize(x).label}</td><td class="n">{x.wear_min}</td></tr>)}</tbody></table></div>
   <p class="relblock">{prev && <a href={rimUrl(prev)}>← {prev}-inch</a>}{prev && next && ' · '}{next && <a href={rimUrl(next)}>{next}-inch →</a>} · <a href="/rim/">All rim sizes</a></p>
-  <GuideLinks slugs={['how-to-read-a-tire-sidewall', 'how-to-find-longest-lasting-tires-for-your-size', 'when-to-replace-tires']} />
+  <GuideLinks slugs={guideSlugs} />
   <FaqList faqs={faqs} />
   <p class="meta">Source: NHTSA UTQG ratings pulled {UPDATED}. <a href="/methodology/">Methodology</a>.</p>
 </Base>

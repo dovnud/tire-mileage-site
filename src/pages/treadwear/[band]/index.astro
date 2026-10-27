@@ -1,6 +1,7 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import GuideLinks from '../../../components/GuideLinks.astro';
+import { guidesForBand } from '../../../lib/guide-picks';
 import FaqList from '../../../components/FaqList.astro';
 import LineTable from '../../../components/LineTable.astro';
 import BrandTable from '../../../components/BrandTable.astro';
@@ -9,6 +10,7 @@ import { BANDS, TYPES, inBand, bandUrl, typeUrl, ratedLines, share, medianOf, br
 import { allSizes, sizeSet, sizeUrl, hasLine, lineUrl, UPDATED, fmt } from '../../../lib/data';
 export function getStaticPaths() { return BANDS.map((b, i) => ({ params: { band: b.slug }, props: { b, i } })); }
 const { b, i } = Astro.props as { b: (typeof BANDS)[number]; i: number };
+const guideSlugs = guidesForBand(b.slug);
 const ls = inBand(b);
 const n = ls.length, brands = brandBreakdown(ls);
 const lo = Math.min(...ls.map((l) => l.wear_min as number)), hi = Math.max(...ls.map((l) => l.wear_max as number));
@@ -53,7 +55,7 @@ const ld = [
   {topSizes.length > 0 && <><h2>Sizes with the most {b.label} lines</h2>
   <p>Where NHTSA records show a line in this band at a given size, by number of lines: {topSizes.map(({ s, c }, k) => <span>{sizeSet.has(s.key) ? <a href={sizeUrl(s.key)}>{s.label}</a> : s.label} ({c}){k < topSizes.length - 1 ? ', ' : ''}</span>)}. Browse by rim: {RIMS.filter((r) => [16, 17, 18, 19, 20].includes(r)).map((r) => <a href={rimUrl(r)}>{r}-inch </a>)}</p></>}
   <p class="relblock">{prev && <a href={bandUrl(prev)}>← Treadwear {prev.label}</a>}{prev && next && ' · '}{next && <a href={bandUrl(next)}>Treadwear {next.label} →</a>} · <a href="/treadwear/">All bands</a></p>
-  <GuideLinks slugs={['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'tire-cost-per-mile']} />
+  <GuideLinks slugs={guideSlugs} />
   <FaqList faqs={faqs} />
   <p class="meta">Source: NHTSA UTQG ratings pulled {UPDATED}; bands use each line’s median record. <a href="/methodology/">Methodology</a>.</p>
 </Base>

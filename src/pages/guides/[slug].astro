@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import CostCalc from '../../components/CostCalc.astro';
 import FaqList from '../../components/FaqList.astro';
 import GuideLinks from '../../components/GuideLinks.astro';
+import ShopSize from '../../components/ShopSize.astro';
 import { GUIDES, guideBySlug, guideUrl } from '../../lib/all-guides';
 import { SRC } from '../../lib/guides';
 import { lineOf } from '../../lib/guides';
@@ -32,6 +33,7 @@ const rel = g.related.map((s) => guideBySlug(s));
     <h1>{g.h1}</h1>
     <p class="guide-meta"><span>By {SITE_NAME}</span><span>Last updated <time datetime={g.updated}>{g.updated}</time></span><span>{srcs.length} sources cited</span><a href="/methodology/">How we work</a></p>
     <div class="answer"><strong>Short answer:</strong> {g.answer}</div>
+    {sizes[0] && <ShopSize label={sizes[0].label} />}
     {toc.length > 2 && <nav class="toc" aria-label="On this page"><strong>On this page</strong><ol>{toc.map((x) => <li><a href={`#${x.id}`}>{x.t}</a></li>)}</ol></nav>}
     {parts.map((p, i) => <><Fragment set:html={p} />{i < parts.length - 1 && <CostCalc />}</>)}
     <FaqList faqs={g.faqs} />

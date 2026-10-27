@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { sizeUrl, siteSizes, NHTSA_GUIDE } from '../lib/data';
-import { enabledRetailers, AMAZON_DISCLOSURE, CHECKED_ON } from '../lib/retailers';
+import { enabledRetailers, AMAZON_DISCLOSURE, CHECKED_ON, buildSizeRetailerUrl, LINK_REL } from '../lib/retailers';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Where to buy', href: '/where-to-buy/' }];
 const popular = ["225-65r17","235-65r17","205-55r16","215-60r16","235-55r19","245-45r18","265-70r17","225-45r17"].map((k) => siteSizes.find((s) => s.key === k)).filter((s) => !!s) as typeof siteSizes;
 const names = enabledRetailers().map((r) => r.name);
@@ -19,6 +19,10 @@ const names = enabledRetailers().map((r) => r.name);
     </form>
     <p id="lookup-msg" class="lookup-msg lookup-msg-light" role="status" aria-live="polite"></p>
     <div class="chips" aria-label="Popular sizes">{popular.map((s) => <a class="chip" href={sizeUrl(s.key)}>{s.label}</a>)}</div>
+    <ul>
+      {popular.slice(0, 4).map((s) => <li><a href={sizeUrl(s.key)}>{s.label} ranked by treadwear</a>{enabledRetailers().map((r) => <> · <a href={buildSizeRetailerUrl(r.id, s.label)} target="_blank" rel={LINK_REL}>Shop {s.label} {r.id === 'amazon' ? 'on' : 'at'} {r.name}</a></>)}</li>)}
+    </ul>
+    <p class="meta">{AMAZON_DISCLOSURE} Amazon links on this page use our Associates tag. Discount Tire links do not.</p>
     <p class="meta" style="margin-bottom:0">Your size is printed on the tire sidewall (for example 225/65R17). You can also search a tire line by name in the search box at the top of the page.</p>
   </section>
 

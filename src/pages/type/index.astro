@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import GuideLinks from '../../components/GuideLinks.astro';
+import { guidesForTypeIndex } from '../../lib/guide-picks';
 import { TYPES, inType, typeUrl, ratedLines, share, medianOf } from '../../lib/taxonomy';
 import { fmt } from '../../lib/data';
 const rows = TYPES.map((t) => ({ t, ls: inType(t) }));
@@ -15,5 +16,5 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Tire
   </tbody></table></div>
   <p class="tbl-note">A line can match more than one marker. Out of {ratedLines.length.toLocaleString()} rated lines.</p>
   <div class="cardgrid">{rows.map((r) => <a class="gcard" href={typeUrl(r.t)}><b>{r.t.label}</b><span>{r.t.blurb}</span><small>{r.ls.length} lines · median treadwear {fmt(medianOf(r.ls))}</small></a>)}</div>
-  <GuideLinks slugs={['all-season-vs-all-weather-vs-winter-tires', 'what-does-treadwear-rating-mean', 'how-to-read-a-tire-sidewall']} />
+  <GuideLinks slugs={guidesForTypeIndex()} />
 </Base>

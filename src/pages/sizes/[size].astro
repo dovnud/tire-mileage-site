@@ -1,6 +1,7 @@
 ---
 import Chips from '../../components/Chips.astro';
 import GuideLinks from '../../components/GuideLinks.astro';
+import { guidesForSize } from '../../lib/guide-picks';
 import { sizeChips, rimOf, RIMS, rimUrl } from '../../lib/taxonomy';
 import Base from '../../layouts/Base.astro';
 import Gauge from '../../components/Gauge.astro';
@@ -36,6 +37,7 @@ const faqs = [
   { q: `What is the cost per mile of ${label} tires?`, a: `We have no licensed price or warranty-mileage feed yet, so cost per mile is not computed. Use cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000) with your own quote; the table below has inputs for each line.` },
 ];
 const hasRim = RIMS.includes(rimOf(s.key));
+const guideSlugs = guidesForSize(s.key);
 const chips = hasRim ? sizeChips(s.key) : [];
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Sizes', href: '/sizes/' }, ...(hasRim ? [{ name: `${rimOf(s.key)}-inch`, href: rimUrl(rimOf(s.key)) }] : []), { name: label, href: sizeUrl(s.key) }];
 const ld = [
@@ -78,6 +80,8 @@ const ld = [
     <li><strong>Coverage:</strong> NHTSA lists a specific size for only {Math.round(100 * S.records_with_explicit_size / S.raw_records)}% of its records ({S.records_with_explicit_size.toLocaleString()} of {S.raw_records.toLocaleString()}); the rest are filed as “All sizes” or size ranges. Those lines may well be sold in {label} but cannot be placed here, so this is a lower bound, not a full catalog. A size catalog feed is needed for completeness.</li>
     <li><strong>Size types in records:</strong> {types}. Load index and speed rating are not compared here.</li>
     <li>Treadwear grades are set by each manufacturer and are most reliable for comparing tires of the same maker. See <a href="/methodology/">methodology</a> and <a href={NHTSA_GUIDE}>NHTSA TireWise</a>.</li>
+    <li>A line filed only as “All sizes” cannot appear in this table. <a href="/guides/why-your-size-may-be-missing/">Why your size may be missing a tire</a>.</li>
+    <li>If you are replacing only two tires, mount them using the rear-axle rule in <a href="/guides/replacing-two-tires-instead-of-four/">replacing two tires instead of four</a>. The pressure light is not a substitute for a gauge: <a href="/guides/what-tpms-does-not-tell-you/">what TPMS does not tell you</a>.</li>
   </ul>
   {related.length > 0 && <p>Related sizes: {related.map((x, i) => <span><a href={sizeUrl(x.key)}>{x.label}</a>{i < related.length - 1 ? ', ' : ''}</span>)}.</p>}
 
@@ -90,5 +94,5 @@ const ld = [
       p.addEventListener('input',u);m.addEventListener('input',u);
     });
   </script>
-  <GuideLinks slugs={['how-to-find-longest-lasting-tires-for-your-size', 'how-to-read-a-tire-sidewall', 'tire-cost-per-mile']} />
+  <GuideLinks slugs={guideSlugs} />
 </Base>

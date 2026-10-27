@@ -1,6 +1,6 @@
 // Central place for every outbound retailer link. Nothing else in the site should hand-build a retailer URL.
 //
-// Rules (set by Dov): Amazon links carry his Amazon Associates tracking tag (AMAZON_TAG, default tiremileage-20).
+// Amazon links carry this site's Amazon Associates tracking tag (AMAZON_TAG, default tiremileage-20).
 // Every other retailer stays plain (no CJ/Awin yet). Amazon's account must be approved/active for the tag to pay.
 // No prices are scraped or shown. Each retailer's URL pattern below was checked on 2026-10-25 (see `verified`).
 // Tire Rack and SimpleTire are listed but DISABLED: both block automated requests from our test machine
@@ -105,6 +105,14 @@ export function buildRetailerUrl(retailer: RetailerId, brand: string, line: stri
   const r = RETAILERS.find((x) => x.id === retailer);
   if (!r) throw new Error(`unknown retailer ${retailer}`);
   return wrapAffiliate(retailer, r.search(retailerQuery(brand, line, key)));
+}
+
+/** Free-text retailer search. Amazon queries are sent as-is (raw); the tag is still applied. */
+export function buildFreeQueryUrl(retailer: RetailerId, query: string): string {
+  const r = RETAILERS.find((x) => x.id === retailer);
+  if (!r) throw new Error(`unknown retailer ${retailer}`);
+  const plain = retailer === 'amazon' ? r.search(query, { raw: true }) : r.search(query);
+  return wrapAffiliate(retailer, plain);
 }
 
 /** Size search link (e.g. Amazon k=225/65R17 tires; Discount Tire q=225/65R17). Same affiliate wrapper and rules as buildRetailerUrl. */

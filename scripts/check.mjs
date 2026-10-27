@@ -117,7 +117,8 @@ if (guideCount < 8) err.push(`only ${guideCount} guides built (want 8+)`);
 const feed = fs.existsSync(path.join(DIST, 'guides/feed.xml')) ? fs.readFileSync(path.join(DIST, 'guides/feed.xml'), 'utf8') : '';
 if ((feed.match(/<entry>/g) || []).length !== guideCount) err.push(`feed entries (${(feed.match(/<entry>/g) || []).length}) != guides (${guideCount})`);
 const llms = fs.readFileSync(path.join(DIST, 'llms.txt'), 'utf8'); if (!/\/guides\//.test(llms) || !/\/treadwear\//.test(llms)) err.push('llms.txt missing guides/treadwear links');
-if (!/Sitemap: /.test(fs.readFileSync(path.join(DIST, 'robots.txt'), 'utf8'))) err.push('robots.txt has no Sitemap line');
+{ const robots = fs.readFileSync(path.join(DIST, 'robots.txt'), 'utf8'); if (!/Sitemap: /.test(robots)) err.push('robots.txt has no Sitemap line'); if (!robots.includes('/sitemap.xml')) err.push('robots.txt missing /sitemap.xml'); if (!robots.includes('/sitemap-index.xml')) err.push('robots.txt missing /sitemap-index.xml'); }
+{ const a = path.join(DIST, 'sitemap.xml'), b = path.join(DIST, 'sitemap-index.xml'); if (!fs.existsSync(a)) err.push('sitemap.xml missing (conventional URL would 404)'); else if (fs.readFileSync(a, 'utf8') !== fs.readFileSync(b, 'utf8')) err.push('sitemap.xml differs from sitemap-index.xml'); }
 if (preview && files.some((f) => /^[A-Za-z0-9-]{8,128}\.txt$/.test(path.basename(f)) && !/robots|llms/.test(f) && path.dirname(f) === DIST)) err.push('IndexNow key file present in a preview build');
 if (!preview) {
   const hd = fs.readFileSync(path.join(DIST, '_headers'), 'utf8');
@@ -125,7 +126,7 @@ if (!preview) {
   if (!/https:\/\/:project\.pages\.dev\/\*\s*\n\s+X-Robots-Tag: noindex/.test(hd)) err.push('launch _headers missing pages.dev noindex rule');
   for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f); if (/name="robots" content="noindex/.test(h) && !rel.startsWith('404') && !/^sitemap\/index/.test(rel)) err.push(`${rel}: noindex in launch build`); }
   if (!/^https:\/\/tiremileage\.com$/.test(ORIGIN)) err.push(`launch origin is ${ORIGIN}, expected https://tiremileage.com`);
-  for (const f of ['robots.txt', 'llms.txt', 'sitemap-index.xml', ...files.filter((x) => /sitemap-[a-z]+\.xml$/.test(x)).map((x) => path.relative(DIST, x)), 'guides/feed.xml']) { const t = fs.readFileSync(path.join(DIST, f), 'utf8'); if (/pages\.dev|localhost/.test(t)) err.push(`${f}: references pages.dev/localhost`); }
+  for (const f of ['robots.txt', 'llms.txt', 'sitemap.xml', 'sitemap-index.xml', ...files.filter((x) => /sitemap-[a-z]+\.xml$/.test(x)).map((x) => path.relative(DIST, x)), 'guides/feed.xml']) { const t = fs.readFileSync(path.join(DIST, f), 'utf8'); if (/pages\.dev|localhost/.test(t)) err.push(`${f}: references pages.dev/localhost`); }
   for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); if (/pages\.dev/.test(h)) err.push(`${path.relative(DIST, f)}: references pages.dev`); }
   const keyFiles = files.filter((x) => path.dirname(x) === DIST && /^[a-f0-9]{32}\.txt$/.test(path.basename(x))); if (keyFiles.length !== 1) err.push('IndexNow key file missing in launch build');
   else if (fs.readFileSync(keyFiles[0], 'utf8').trim() !== path.basename(keyFiles[0], '.txt')) err.push('IndexNow key file content mismatch');
