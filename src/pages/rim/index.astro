@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import GuideLinks from '../../components/GuideLinks.astro';
+import { guidesForRimIndex } from '../../lib/guide-picks';
 import { RIMS, rimUrl, sizesForRim } from '../../lib/taxonomy';
 import { median, fmt } from '../../lib/data';
 const rows = RIMS.map((r) => { const ss = sizesForRim(r); const w = ss.flatMap((s) => s.rows.filter((x) => x.wear_min != null).map((x) => x.wear_min as number)); return { r, sizes: ss.length, combos: w.length, med: median(w) }; });
@@ -14,5 +15,5 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Tire
     {rows.map((x) => <tr><td><a href={rimUrl(x.r)}>{x.r}-inch</a></td><td class="n">{x.sizes}</td><td class="n">{x.combos.toLocaleString()}</td><td class="n">{fmt(x.med)}</td></tr>)}
   </tbody></table></div>
   <p class="tbl-note">“Line × size grades” counts each (line, size) pair with a treadwear grade in the NHTSA file; the median is over those pairs.</p>
-  <GuideLinks slugs={['how-to-read-a-tire-sidewall', 'how-to-find-longest-lasting-tires-for-your-size', 'when-to-replace-tires']} />
+  <GuideLinks slugs={guidesForRimIndex()} />
 </Base>

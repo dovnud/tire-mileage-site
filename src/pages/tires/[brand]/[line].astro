@@ -1,6 +1,8 @@
 ---
 import Chips from '../../../components/Chips.astro';
 import GuideLinks from '../../../components/GuideLinks.astro';
+import { guidesForLine } from '../../../lib/guide-picks';
+import { guideBySlug, guideUrl } from '../../../lib/all-guides';
 import { lineChips, lineBand } from '../../../lib/taxonomy';
 import { ogSlugForLine } from '../../../lib/og';
 import Base from '../../../layouts/Base.astro';
@@ -47,6 +49,8 @@ const ld = [
 ];
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire lines', href: '/tires/' }, { name: l.brand, href: `/tires/${l.brand_slug}/` }, { name: l.line, href: lineUrl(l) }];
 const chips = lineChips(l);
+const guideSlugs = guidesForLine(l);
+const linkedGuide = guideBySlug(guideSlugs[3] ?? guideSlugs[0]);
 const tband = lineBand(l);
 const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !== l.brand_slug && hasLine(x) && lineBand(x).slug === tband.slug).sort((a, b) => Math.abs((a.wear_median as number) - (l.wear_median as number)) - Math.abs((b.wear_median as number) - (l.wear_median as number)) || a.brand.localeCompare(b.brand)).slice(0, 6);
 ---
@@ -94,6 +98,7 @@ const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !==
     <li><strong>Treadwear {fmt(l.wear_median)}:</strong> this is {band.text} Under UTQG a grade of 200 should wear twice as long as the grade-100 control tire on NHTSA's test course; real-world mileage varies with driving, rotation, alignment and climate.</li>
     {trac && <li><strong>Traction {trac}:</strong> {TRACTION[trac]} Traction is straight-ahead wet braking only; it does not measure cornering or hydroplaning.</li>}
     {temp && <li><strong>Temperature {temp}:</strong> {TEMPERATURE[temp]}</li>}
+    <li>Grades on one line often change by size: <a href="/guides/why-treadwear-grades-differ-by-size/">why treadwear grades differ by size</a>. Age is a separate mark: <a href="/guides/dot-tire-date-code/">how to read the DOT date code</a>. Also: <a href={guideUrl(linkedGuide)}>{linkedGuide.h1}</a>.</li>
     {above && <li>Ranked just above in {l.brand}: <a href={hasLine(above) ? lineUrl(above) : `/tires/${l.brand_slug}/`}>{above.line}</a> (median {fmt(above.wear_median)}).</li>}
     {below && <li>Ranked just below in {l.brand}: <a href={hasLine(below) ? lineUrl(below) : `/tires/${l.brand_slug}/`}>{below.line}</a> (median {fmt(below.wear_median)}).</li>}
   </ul>
@@ -117,7 +122,7 @@ const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !==
   <p><a href={`/tires/${l.brand_slug}/`}>All {l.brand} lines →</a></p>
 
   {similar.length > 0 && <section class="relblock"><h2>Similar treadwear from other brands</h2><p>Other lines in the same treadwear band (<a href={`/treadwear/${tband.slug}/`}>{tband.label}</a>) with a page here: {similar.map((x, i) => <span><a href={lineUrl(x)}>{x.brand} {x.line}</a> ({fmt(x.wear_median)}){i < similar.length - 1 ? ', ' : ''}</span>)}.</p></section>}
-  <GuideLinks slugs={['what-does-treadwear-rating-mean', 'treadwear-vs-warranty-mileage', 'how-to-make-tires-last-longer']} />
+  <GuideLinks slugs={guideSlugs} />
 
   <h2>FAQ</h2>
   {faqs.map((f) => <details open><summary>{f.q}</summary><p>{f.a}</p></details>)}

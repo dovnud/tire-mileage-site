@@ -39,13 +39,13 @@ ${table(['Made-up input', 'Tire A', 'Tire B'], [['Installed price for the set', 
     slug: 'when-to-replace-tires', kicker: 'Safety', updated: R,
     title: 'When to Replace Tires: 2/32 Inch, the Penny Test and Tire Age', h1: 'When to replace your tires',
     description: 'Replace tires at 2/32 inch of tread, when wear bars are flush, on visible damage, and consider age. How to do the penny test and read the DOT date code, with NHTSA, TIA and USTMA sources.',
-    answer: 'Replace tires when the tread is worn to 2/32 of an inch (wear bars level with the tread, or the top of Lincoln’s head visible in the penny test), when you see damage such as bulges or exposed cord, and ask a professional about tires that are six to 10 years old even if the tread looks fine.',
+    answer: 'Replace tires when the tread is worn to 2/32 of an inch (wear bars level with the tread, or the top of the portrait visible in the penny test), when you see damage such as bulges or exposed cord, and ask a professional about tires that are six to 10 years old even if the tread looks fine.',
     body: `
 <h2>1. Tread depth: 2/32 inch</h2>
 <p>NHTSA: “Tires are not safe and should be replaced when the tread is worn down to 2/32 of an inch,” and it recommends checking tread at least monthly. Two checks (${X('nhtsa', 'NHTSA')}, ${X('tiaReplace', 'TIA')}, ${X('ustma', 'USTMA')}):</p>
 <ul>
 <li><strong>Wear bars:</strong> small raised rubber humps molded into the main grooves at 2/32 inch. When the tread is level with them, replace the tire.</li>
-<li><strong>Penny test:</strong> place a penny upside down in a major groove with Lincoln’s head facing you. If you can see the top of his head, replace the tire (NHTSA). TIA says to check at any point in any major groove and then see a tire professional.</li>
+<li><strong>Penny test:</strong> place a penny upside down in a major groove with the portrait facing you. If you can see the top of the portrait, replace the tire (NHTSA). TIA says to check at any point in any major groove and then see a tire professional.</li>
 </ul>
 <p>Continental’s mileage warranty counts a tire as worn out at the same point, 2/32 inch (1.6 mm) (${X('contiWarranty', 'Continental')}); the ${A('/guides/tire-cost-per-mile/', 'cost-per-mile math')} uses the same endpoint.</p>
 <h2>2. Damage and irregular wear</h2>
@@ -63,7 +63,7 @@ ${table(['Made-up input', 'Tire A', 'Tire B'], [['Installed price for the set', 
 <h2>Choosing replacements</h2>
 <p>Compare candidates for your size on a size page, for example ${Z('225-65r17')}, ${Z('215-65r16')} or ${Z('265-70r17')}, and see ${A('/guides/how-to-find-longest-lasting-tires-for-your-size/', 'how to find long-lasting tires')}. Help the next set last with ${A('/guides/how-to-make-tires-last-longer/', 'rotation, pressure and alignment')}.</p>`,
     faqs: [
-      { q: 'How do I do the penny test?', a: 'Put a penny upside down in a major tread groove with Lincoln’s head facing you. If you can see the top of his head, the tread is at or below 2/32 inch and the tire should be replaced (NHTSA).' },
+      { q: 'How do I do the penny test?', a: 'Put a penny upside down in a major tread groove with the portrait facing you. If you can see the top of the portrait, the tread is at or below 2/32 inch and the tire should be replaced (NHTSA).' },
       { q: 'How old is too old for tires?', a: 'NHTSA says some vehicle and tire manufacturers recommend replacing tires that are six to 10 years old regardless of treadwear, and that you can’t tell aging by looking. Check your owner’s manual and ask a tire professional.' },
       { q: 'How do I read the DOT date code?', a: 'The last four digits of the DOT Tire Identification Number are the week and year of manufacture: 0308 is the third week of 2008.' },
       { q: 'If I only replace two tires, where do they go?', a: 'On the rear axle, according to the Tire Industry Association, because new tires on the front with worn tires on the rear can make the vehicle more likely to lose control when turning in wet or slippery conditions.' },

@@ -21,7 +21,7 @@ Site is LIVE at https://tiremileage.com (tranche 1 only: 580 URLs). www 301-redi
 - No noindex meta or X-Robots-Tag on tiremileage.com. `*.pages.dev` hosts send `X-Robots-Tag: noindex, nofollow` (via `_headers` host rule) and canonicalize to the apex.
 - IndexNow: key `132af5ae30527fe60ecbefc2202789c1`, file at https://tiremileage.com/132af5ae30527fe60ecbefc2202789c1.txt. All 580 URLs submitted to api.indexnow.org and www.bing.com/indexnow on 2026-10-25 (HTTP 200 on both).
 
-## Still needed from Dov (ownership verification; cannot be done by the bot without a login or token)
+## Still needed from the site owner (ownership verification; cannot be done by the bot without a login or token)
 ### Google Search Console (Domain property, DNS TXT)
 1. https://search.google.com/search-console -> Add property -> **Domain** -> `tiremileage.com`.
 2. Google shows a TXT record like `google-site-verification=XXXXXXXX`. Give that exact string to the bot (or add it yourself).

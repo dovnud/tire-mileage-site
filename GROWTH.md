@@ -2,8 +2,8 @@
 
 Written 2026-10-25 (America/Los_Angeles). Preview only (https://tiremileage.pages.dev, **noindex ON**). No domain bought, nothing sent, no accounts opened, no money spent.
 
-**Honesty labels used below:** ✅ verified in the built `dist/` this session · 🔍 observed in a live WebSearch this session (snapshot, not a ranking study) · ❓ unverified assumption/need to measure · 🧑 needs Dov.
-**No search volumes, traffic or ranking numbers appear anywhere here because we have none.** Volumes must come from Search Console after launch or from a keyword tool Dov chooses to pay for.
+**Honesty labels used below:** ✅ verified in the built `dist/` this session · 🔍 observed in a live WebSearch this session (snapshot, not a ranking study) · ❓ unverified assumption/need to measure · 🧑 needs the site owner.
+**No search volumes, traffic or ranking numbers appear anywhere here because we have none.** Volumes must come from Search Console after launch or from a keyword tool the site owner chooses to pay for.
 
 ---
 
@@ -13,7 +13,7 @@ Written 2026-10-25 (America/Los_Angeles). Preview only (https://tiremileage.page
 2. 🧑 **Decide the accountable identity** (name, short bio, contact for corrections) for About and the guide bylines. Guides are currently bylined “TireMileage” (Organization). Credibility and citations depend on a real, reachable owner; we will not invent one.
 3. 🧑 **Verify the site in Google Search Console and Bing Webmaster Tools and submit `sitemap-index.xml`** (steps in §3). Then release pages in tranches (PLAN.md) and watch indexing.
 4. **Publish the data assets that other sites can cite**: yearly “longest-lasting tires by size” report with a stable URL, downloadable dataset, embeddable charts (§2). The dataset and methodology exist; the report and embeds do not yet.
-5. **Manual, honest participation** by Dov in forums/Reddit/owner groups with the guides and size pages as answers (never drop links without answering). Plus a small, targeted outreach list built from our own data findings (§2.4), with Dov sending.
+5. **Manual, honest participation** by the site owner in forums/Reddit/owner groups with the guides and size pages as answers (never drop links without answering). Plus a small, targeted outreach list built from our own data findings (§2.4), with the site owner sending.
 
 ---
 
@@ -48,9 +48,9 @@ Competitors named in PLAN.md: treadgrade.com (~4,500 pages), Tire Rack, Discount
 ### 1.4 Channel sequence
 1. **Google + Bing organic (core).** After launch: tranche releases, watch indexing. Bing matters because ChatGPT-style and other answer tools may draw on Bing-index results ❓ (not verified here; low-cost to do anyway).
 2. **AI answers / GEO.** Done on our side: `llms.txt`, AI-bot allow-list in `robots.txt`, answer-first boxes, extractable tables, dated and cited facts (all ✅). Whether any assistant cites us is ❓ and must be tested by hand with real prompts after indexing.
-3. **Reddit/forums, by Dov manually, ≥2 weeks after launch.** Answer specific questions (“what's a long-lasting tire for X”) with substance first, link second, disclose ownership, follow each community's self-promotion rules. We will not automate or post.
+3. **Reddit/forums, by the site owner, manually, ≥2 weeks after launch.** Answer specific questions (“what's a long-lasting tire for X”) with substance first, link second, disclose ownership, follow each community's self-promotion rules. We will not automate or post.
 4. **Newsletters / auto & personal-finance writers:** pitch with data (§2.4), no mass mail.
-5. **YouTube/shorts (optional, later):** 60-second explainers (“treadwear isn't miles”) driving to guides. Only if Dov wants to be on camera or we use a voiceover; not started.
+5. **YouTube/shorts (optional, later):** 60-second explainers (“treadwear isn't miles”) driving to guides. Only if the site owner wants to be on camera or we use a voiceover; not started.
 
 ---
 
@@ -65,14 +65,14 @@ Competitors named in PLAN.md: treadgrade.com (~4,500 pages), Tire Rack, Discount
 | “Treadwear vs warranty” analysis (Continental warranty table joined to NHTSA grades; Michelin maker-test joined to NHTSA grades; the spread of 47,700–94,400 miles among four lines graded 700–840) | ✅ in guides; a standalone report page is ❌ |
 | Data-quality findings (e.g. 77 of 7,625 treadwear records are not multiples of 20; dataset vs NHTSA's “current tires” distributions differ) | ✅ stated in guides; worth a short methods note ❌ |
 | **Yearly “Longest-lasting tires by size” report**, e.g. `/reports/2027/` as permanent URL, frozen dataset snapshot per year | ❌ not built. Plan: build after launch; each year's snapshot is immutable |
-| **DOI-like stable identifier** | ❌ A real DOI needs a registry account (e.g. a Zenodo dataset deposit) 🧑 Dov decision; until then use permanent `/reports/<year>/` + `/data/` file names with the pull date |
+| **DOI-like stable identifier** | ❌ A real DOI needs a registry account (e.g. a Zenodo dataset deposit) 🧑 site-owner decision; until then use permanent `/reports/<year>/` + `/data/` file names with the pull date |
 | **Embeddable charts with attribution** (SVG/iframe, “Source: TireMileage / NHTSA, <date>” + link) | ❌ not built; next build item |
 
 ### 2.2 Credibility signals
 | Signal | Status |
 |---|---|
 | Methodology page (source, cleaning, definitions, known gaps; now covers bands/categories/rim/guides) | ✅ |
-| Every guide: answer-first box, cited sources list with retrieval date, “last updated”, FAQ | ✅ (10/10, enforced by `npm run check`) |
+| Every guide: answer-first box, cited sources list with retrieval date, “last updated”, FAQ | ✅ (enforced by `npm run check`) |
 | Primary sources: 49 CFR 575.104, 49 CFR 574.5, NHTSA TireWise, TIA, USTMA, maker pages | ✅ only pages actually read are cited |
 | Maker claims labeled as the maker's own; worked examples labeled “made-up”; no prices shown | ✅ |
 | Corrections policy + review cadence | ✅ text on About; ❌ contact method (🧑) |
@@ -81,7 +81,7 @@ Competitors named in PLAN.md: treadgrade.com (~4,500 pages), Tire Rack, Discount
 | Last-reviewed dates | ✅ on guides/data pages (all 2026-10-25 = pull date); needs a real review process after launch |
 
 ### 2.3 Rules for outreach/PR (no sending in this task)
-- Everything that goes out is sent by Dov (or approved by him message by message). Nothing is drafted into a mailbox here.
+- Everything that goes out is sent by the site owner (or approved by the site owner message by message). Nothing is drafted into a mailbox here.
 - Pitches lead with a verifiable finding and link to the dataset, never with “link to us.”
 - Wikipedia/Wikidata: only add a citation where our dataset is legitimately a reliable, notable source for the claim, disclose the conflict of interest, use talk pages. Don't expect this early (❓ notability not established). No self-promotion edits.
 
@@ -116,11 +116,11 @@ Competitors named in PLAN.md: treadgrade.com (~4,500 pages), Tire Rack, Discount
 | Vehicle pages; embeddable charts; yearly report | ❌ |
 | Image alt text / video | n/a (no content images yet) |
 
-**Search Console + Bing steps (for Dov, after the domain is attached):**
+**Search Console + Bing steps (for the site owner, after the domain is attached):**
 1. Search Console → add *Domain* property → add the DNS TXT record at the registrar/Cloudflare → verify.
 2. Submit `https://<domain>/sitemap-index.xml`. Use URL Inspection on `/`, one guide, one size page, one line page → “Request indexing” (limited quota).
 3. Bing Webmaster Tools → import from Search Console (fastest) or verify by DNS → submit the same sitemap.
-4. Set `INDEXNOW_KEY` (any 8–128 char alphanumeric/dash string), build with `PREVIEW=0`, deploy, confirm `https://<domain>/<key>.txt` returns the key, then `npm run indexnow -- --submit` (Dov's call; sends URLs to the IndexNow endpoint).
+4. Set `INDEXNOW_KEY` (any 8–128 char alphanumeric/dash string), build with `PREVIEW=0`, deploy, confirm `https://<domain>/<key>.txt` returns the key, then `npm run indexnow -- --submit` (the site owner's call; sends URLs to the IndexNow endpoint).
 5. Watch Pages/Indexing report weekly; record “Crawled, currently not indexed” and “Discovered, not indexed” counts, since those drive the kill rule.
 
 ---
@@ -131,15 +131,15 @@ Targets below are **thresholds we set to make decisions, not forecasts**.
 
 | Window | Do | Measure (from Search Console unless noted) |
 |---|---|---|
-| **Days 0–30** | Domain + verification + sitemap; tranche 1 (~500 pages: 10+ line sizes, top lines, brand hubs, all guides/hubs); contact/privacy/author pages; first 5 manual forum answers by Dov | % of submitted URLs indexed; impressions/week (trend); queries by cluster (A–F); crawl errors; guide pages indexed |
-| **Days 31–60** | Tranche 2 only if indexing is healthy; publish data report v1 + embeddable charts; pitch 10–20 hand-picked outreach targets (Dov sends); check AI assistants manually with 10 fixed prompts (record whether we are cited) | Indexed %; clicks and impressions trend; first referring domains (Search Console Links / Bing); branded queries; pages with impressions but position >20 → improve content |
+| **Days 0–30** | Domain + verification + sitemap; tranche 1 (~500 pages: 10+ line sizes, top lines, brand hubs, all guides/hubs); contact/privacy/author pages; first 5 manual forum answers by the site owner | % of submitted URLs indexed; impressions/week (trend); queries by cluster (A–F); crawl errors; guide pages indexed |
+| **Days 31–60** | Tranche 2 only if indexing is healthy; publish data report v1 + embeddable charts; pitch 10–20 hand-picked outreach targets (the site owner sends); check AI assistants manually with 10 fixed prompts (record whether we are cited) | Indexed %; clicks and impressions trend; first referring domains (Search Console Links / Bing); branded queries; pages with impressions but position >20 → improve content |
 | **Days 61–90** | Tranche 3 or prune/merge thin pages; refresh the dataset (re-pull NHTSA) and the “last updated” dates; decide on affiliates/ads only after traffic and feed terms are verified | Same metrics; click-through rate on top 20 pages; indexed vs not; which cluster is working → double down there |
 
 **Kill rule (from PLAN.md):** if <30% of submitted URLs are indexed by day 21, or impressions show no growth by day 30, **stop expanding**: no more tranches, prune/merge thin pages, keep what is indexed, and reassess before spending anything. Added guardrail (our addition): do not apply for ads/affiliates until indexed pages and impressions are growing.
 
 ---
 
-## 5. Decisions and accounts needed from Dov 🧑
+## 5. Decisions and accounts needed from the site owner 🧑
 1. **Domain** (name, registrar; `tiremileage.com` is *not* bought). Also whether “TireMileage” stays as the name.
 2. **Author/owner identity**: public name or business name, short bio, a corrections contact email. Used on About, guide bylines and Article JSON-LD (replace the Organization placeholder if you want a person).
 3. **Google Search Console** and **Bing Webmaster Tools** access (DNS control to add TXT records).
@@ -147,5 +147,5 @@ Targets below are **thresholds we set to make decisions, not forecasts**.
 5. **Affiliate approvals** (CJ/SimpleTire, Tire Rack, Awin/Priority Tire, Amazon Associates): terms unverified, none applied for; wait until traffic exists.
 6. **Data-asset accounts** if wanted: Zenodo (or similar) for a DOI-backed dataset deposit; Kaggle/data-portal hosting.
 7. **Privacy policy / contact page** text and any analytics choice (none installed).
-8. **Outreach/forum posting**: Dov decides who gets contacted and sends/posts personally.
+8. **Outreach/forum posting**: The site owner decides who gets contacted and sends/posts personally.
 9. Whether to fund a keyword tool or Search Console-only data for volumes (we have none).
