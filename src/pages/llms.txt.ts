@@ -9,6 +9,7 @@ export const GET = ({ site }: { site: URL }) => {
 > Tire treadwear (UTQG) grades from NHTSA data, organized by tire line and by tire size, with a cost-per-mile formula. Source: ${SOURCE_URL} (pulled ${UPDATED}; ${S.raw_records} records, ${S.normalized_lines} lines, ${S.normalized_brands} brands). No prices are included. Maker warranty mileage appears only on a few lines, with the maker's source URL. Amazon retailer links are affiliate links (As an Amazon Associate I earn from qualifying purchases); other retailer links are plain search links. Ads are not live. Pages are being published in stages.
 
 ## Key pages
+- [Full text corpus](${u('/llms-full.txt')}): markdown body of the guides and key pages
 - [Methodology](${u('/methodology/')}): data source, cleaning, definitions, known gaps
 ${LEGAL_LINKS.map((l) => `- [${l.name}](${u(l.href)}): ${l.desc}`).join('\n')}
 - [Dataset downloads](${u('/data/')}): CSV/JSON of normalized NHTSA records
