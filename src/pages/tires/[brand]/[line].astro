@@ -60,9 +60,9 @@ const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !==
       <p class="eyebrow">{l.brand} · tire line</p>
       <h1>{name}: treadwear rating &amp; UTQG grades</h1>
       {maker && maker.makerName !== l.line && <p class="sub">Sold by {l.brand} as <strong>{l.brand} {maker.makerName}</strong>; NHTSA files it as “{l.line}”.</p>}
+      <ShopCta brand={l.brand} line={l.line} brandSlug={l.brand_slug} lineSlug={l.line_slug} />
       <Chips chips={chips} label="Tags for this tire line" />
       <div class="answer"><strong>Quick answer:</strong> {answer}</div>
-      <ShopCta brand={l.brand} line={l.line} brandSlug={l.brand_slug} lineSlug={l.line_slug} />
     </div>
     <div class="card score" aria-label="Grade summary">
       <div class="t"><h2 style="margin:0;font-size:var(--fs-3)">Grade summary</h2><span class="meta">NHTSA UTQG</span></div>

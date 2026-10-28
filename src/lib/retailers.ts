@@ -123,8 +123,8 @@ export function buildSizeRetailerUrl(retailer: RetailerId, sizeLabel: string): s
   return wrapAffiliate(retailer, plain);
 }
 
-/** Button wording: "Check price on Amazon", "Check price at Discount Tire". */
-export const checkPriceLabel = (r: { id: RetailerId; name: string }) => `Check price ${r.id === 'amazon' ? 'on' : 'at'} ${r.name}`;
+/** These URLs open a retailer search, not a product page and not a price. */
+export const checkPriceLabel = (r: { id: RetailerId; name: string }) => (r.id === 'amazon' ? 'Search on Amazon' : `Search at ${r.name}`);
 
-// Amazon first, then the rest in list order (buttons read: Check price on Amazon, Check price at Discount Tire).
+// Amazon first, then the rest in list order (filled button: Search on Amazon; other retailers are plain text links).
 export const enabledRetailers = () => RETAILERS.filter((r) => r.enabled).sort((a, b) => Number(b.id === 'amazon') - Number(a.id === 'amazon'));

@@ -63,3 +63,11 @@ Same as fixes 1, 3, 5, and 6: four header links under 860px, one-line mobile dis
 | Later: “email this size ranking” at contact@tiremileage.com, and product links only from a licensed catalog (no invented prices) | 9 → 10 | L | Leads, affiliate |
 
 **Would lower the score:** a sticky ad plus the shop bar, or any ad above the H1; extra equal buttons, timers, stock claims, or reviews; dropping the Associates sentence or using any tag other than `tiremileage-20`; ads while privacy still says there are none; thin doorway pages; scraped prices. Fix 1–6 above are the wording and the files.
+
+## 7. Implemented
+
+Built the affiliate S and M items (fixes 1–8 and the quick wins). Buttons say **Search on Amazon** because the URL is a search. `rel="sponsored nofollow noopener"` and the Associates sentence stay next to those buttons. Discount Tire is a plain text link. On a phone, Methodology, Data, and About leave the header (they stay in the footer), and the disclosure strip keeps the Associates sentence on one line. The size field is on the first screen at 390×844. Homepage cards, guides (above the answer, plus a text repeat before Sources), Where to buy, and brand hubs have an Amazon search button. Size pages have that button under the H1, a three-row traction A/AA list, and a mobile bar that appears only after the in-page shop block scrolls away. Line pages put the shop block under the H1. View & shop links land on `#shop-this-tire`.
+
+**New moneymaker score: 6/10** (expert estimate, not measured). Affiliate moves from 4/10 to 6/10 along the path table (3→4→5→6). AdSense stays 2/10.
+
+**Skipped:** AdSense slots, `ads.txt`, and privacy edits (too new and low traffic for ads). A second affiliate program (no approval and no new ID; Tire Rack, SimpleTire, and Priority Tire stay disabled and unlinked). New content clusters and an email capture (larger, later steps). Contact remains contact@tiremileage.com. The byline stays TireMileage.

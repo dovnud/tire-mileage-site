@@ -2,7 +2,8 @@
 import Chips from '../../../components/Chips.astro';
 import GuideLinks from '../../../components/GuideLinks.astro';
 import { guidesForBrand } from '../../../lib/guide-picks';
-import { enabledRetailers, buildFreeQueryUrl, LINK_REL, AMAZON_DISCLOSURE, checkPriceLabel } from '../../../lib/retailers';
+import ShopLinks from '../../../components/ShopLinks.astro';
+import { enabledRetailers, buildFreeQueryUrl, AMAZON_DISCLOSURE } from '../../../lib/retailers';
 import { BANDS, lineBand, bandUrl } from '../../../lib/taxonomy';
 import Base from '../../../layouts/Base.astro';
 import Gauge from '../../../components/Gauge.astro';
@@ -22,6 +23,9 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'ItemList', name: `${b.
 const present = BANDS.map((x) => [x, rated.filter((l) => lineBand(l).slug === x.slug).length] as const).filter(([, c]) => c > 0);
 const chips = present.map(([x, c]) => ({ label: `${x.label} (${c})`, href: bandUrl(x), kind: 'treadwear' as const }));
 const guideSlugs = guidesForBrand(b.slug);
+const retailers = enabledRetailers();
+const amazon = retailers.find((r) => r.id === 'amazon');
+const plainRetail = retailers.filter((r) => r.id !== 'amazon').map((r) => ({ id: r.id, href: buildFreeQueryUrl(r.id, `${b.name} tires`), label: `Search at ${r.name}` }));
 ---
 <Base title={title} description={description} crumbs={crumbs} ld={ld} og={`brand/${b.slug}`}>
   <h1>{b.name} tire treadwear ratings</h1>
@@ -29,16 +33,14 @@ const guideSlugs = guidesForBrand(b.slug);
   <div class="answer"><strong>Quick answer:</strong> NHTSA's UTQG data lists {all.length} {b.name} tire line{all.length === 1 ? '' : 's'}. {top && <span>The highest median treadwear grade is <strong>{top.wear_median}</strong> ({top.line}); the lowest is {low.wear_median} ({low.line}).</span>} Treadwear is a relative grade, not a mileage promise. Factory tires and later replacements are not the same warranty case: <a href="/guides/original-equipment-vs-replacement-tires/">original equipment vs. replacement tires</a>.</div>
   <section class="shop-cta" aria-labelledby="shop-brand-h">
     <h2 id="shop-brand-h">Shop {b.name} tires</h2>
-    <p class="shop-sub">TireMileage doesn’t sell tires. Search {b.name} tires at a retailer, or open a line below and use its Check price buttons.</p>
-    <div class="shop-btns">
-      {enabledRetailers().map((r) => <a class={`sbtn ${r.id === 'amazon' ? 'sbtn-amz' : 'sbtn-ac'}`} href={buildFreeQueryUrl(r.id, `${b.name} tires`)} target="_blank" rel={LINK_REL}>{checkPriceLabel(r)}<span aria-hidden="true"> ↗</span><span class="sr"> (opens in a new tab)</span></a>)}
-    </div>
+    <p class="shop-sub">TireMileage doesn’t sell tires. Search on Amazon opens a search for {b.name} tires. Open a line below for that line’s search.</p>
+    <ShopLinks amazonHref={amazon ? buildFreeQueryUrl('amazon', `${b.name} tires`) : undefined} amazonLabel={`Search ${b.name} tires on Amazon`} plain={plainRetail} />
     <p class="shop-fine">{AMAZON_DISCLOSURE} The Amazon button is an affiliate link and may earn us a commission at no cost to you. Confirm size, load index, and speed rating before you buy. <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
   </section>
-  <p class="tbl-note">Click a column heading to sort. “View &amp; shop” opens the line’s page, which has the Check price buttons; lines without a page here have direct retailer search buttons. TireMileage doesn’t sell tires. <a href="/where-to-buy/">How buying works</a></p>
+  <p class="tbl-note">Click a column heading to sort. “View &amp; shop” opens the line’s page at the shop block. Lines without a page here have a Search on Amazon button. TireMileage doesn’t sell tires. <a href="/where-to-buy/">How buying works</a></p>
   <div class="tw"><table data-sortable>
     <thead><tr><th class="n">Rank</th><th>Line</th><th class="n" aria-label="Median treadwear">Treadwear</th><th class="n hide-sm">Range</th><th class="n hide-sm">Percentile*</th><th>Traction</th><th class="hide-sm">Temp.</th><th class="n hide-sm">Records</th><th data-nosort>Shop</th></tr></thead>
-    <tbody>{rated.slice(0, 150).map((l) => <tr><td class="n">{l.brand_rank}</td><td>{hasLine(l) ? <a href={lineUrl(l)}>{l.line}</a> : l.line}</td><td class="n" data-v={l.wear_median}><Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} /></td><td class="n hide-sm">{l.wear_min === l.wear_max ? l.wear_min : `${l.wear_min}–${l.wear_max}`}</td><td class="n hide-sm">{pct(l.wear_percentile)}</td><td data-v={mostCommon(l.traction) ?? ''}><Badge kind="traction" grade={mostCommon(l.traction)} /></td><td class="hide-sm" data-v={mostCommon(l.temperature) ?? ''}><Badge kind="temp" grade={mostCommon(l.temperature)} /></td><td class="n hide-sm">{l.records}</td><td>{hasLine(l) ? <a class="sbtn sbtn-sm sbtn-ac" href={lineUrl(l)}>View &amp; shop<span class="sr"> {l.brand} {l.line}</span></a> : <ShopMini brand={l.brand} line={l.line} brandSlug={l.brand_slug} lineSlug={l.line_slug} />}</td></tr>)}</tbody>
+    <tbody>{rated.slice(0, 150).map((l) => <tr><td class="n">{l.brand_rank}</td><td>{hasLine(l) ? <a href={lineUrl(l)}>{l.line}</a> : l.line}</td><td class="n" data-v={l.wear_median}><Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} /></td><td class="n hide-sm">{l.wear_min === l.wear_max ? l.wear_min : `${l.wear_min}–${l.wear_max}`}</td><td class="n hide-sm">{pct(l.wear_percentile)}</td><td data-v={mostCommon(l.traction) ?? ''}><Badge kind="traction" grade={mostCommon(l.traction)} /></td><td class="hide-sm" data-v={mostCommon(l.temperature) ?? ''}><Badge kind="temp" grade={mostCommon(l.temperature)} /></td><td class="n hide-sm">{l.records}</td><td>{hasLine(l) ? <a class="sbtn sbtn-sm sbtn-ac" href={`${lineUrl(l)}#shop-this-tire`}>View &amp; shop<span class="sr"> {l.brand} {l.line}</span></a> : <ShopMini brand={l.brand} line={l.line} brandSlug={l.brand_slug} lineSlug={l.line_slug} />}</td></tr>)}</tbody>
   </table></div>
   <AdSlot slot="brand-mid" height={250} />
   <p class="meta">*Percentile = share of all {S.normalized_lines.toLocaleString()} lines with a lower median treadwear. Only lines with a linked name have their own page so far; more are added in stages.{rated.length > 150 && ` Showing first 150 of ${rated.length}.`}</p>

@@ -1,10 +1,14 @@
 ---
-// Compact per-row Shop buttons for tables (size ranking, brand lists). Retailer search for that tire line.
+// Compact per-row shop actions. Amazon is the filled button; other retailers are plain text links.
 import { enabledRetailers, buildRetailerUrl, LINK_REL } from '../lib/retailers';
 const { brand, line, brandSlug, lineSlug } = Astro.props as { brand: string; line: string; brandSlug: string; lineSlug: string };
 const key = `${brandSlug}/${lineSlug}`;
 const name = `${brand} ${line}`;
+const retailers = enabledRetailers();
+const amazon = retailers.find((r) => r.id === 'amazon');
+const plain = retailers.filter((r) => r.id !== 'amazon');
 ---
 <span class="shop-mini" data-shop-row>
-  {enabledRetailers().map((r) => <a class={`sbtn sbtn-sm ${r.id === 'amazon' ? 'sbtn-amz' : 'sbtn-ac'}`} href={buildRetailerUrl(r.id, brand, line, key)} target="_blank" rel={LINK_REL} data-shop={r.id}>{r.name}<span class="sr"> – shop {name} (opens in a new tab)</span></a>)}
+  {amazon && <a class="sbtn sbtn-sm sbtn-amz" href={buildRetailerUrl('amazon', brand, line, key)} target="_blank" rel={LINK_REL} data-shop="amazon">Search on Amazon<span class="sr"> for {name} (opens in a new tab)</span></a>}
+  {plain.map((r) => <a class="shop-text" href={buildRetailerUrl(r.id, brand, line, key)} target="_blank" rel={LINK_REL} data-shop={r.id}>Search at {r.name}<span class="sr"> for {name} (opens in a new tab, plain link)</span></a>)}
 </span>

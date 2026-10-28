@@ -13,9 +13,8 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
     <p class="eyebrow" style="color:#9fb8d6;position:relative">Independent · built on U.S. government data</p>
     <h1 id="h1">Find tires that actually last.</h1>
     <p class="lead">Compare treadwear, wet traction and heat grades for {S.normalized_lines.toLocaleString()} tire lines from {S.normalized_brands} brands, ranked by size, then click through to a retailer to buy.</p>
-    <h2 class="flow-h" id="find-h">Find tires for your size</h2>
-    <form id="size-lookup" class="lookup" action="/sizes/" role="search" aria-labelledby="find-h">
-      <label class="sr" for="size-in">Tire size, for example 225/65R17</label>
+    <form id="size-lookup" class="lookup" action="/sizes/" role="search">
+      <label class="sr" for="size-in">Find tires for your size, for example 225/65R17</label>
       <input id="size-in" name="size" inputmode="text" autocomplete="off" placeholder="Enter your size, e.g. 225/65R17" aria-describedby="lookup-msg how-line" />
       <button type="submit">Find tires for my size</button>
     </form>
@@ -29,7 +28,7 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
     <ol class="steps">
       <li><h3>Enter your size</h3><p>Type the size from your sidewall (like 225/65R17). We rank every tire line NHTSA lists for it.</p></li>
       <li><h3>Compare the grades</h3><p>Treadwear gauge plus color-coded traction and temperature badges. Optional: work out cost per 1,000 miles with a real quote.</p></li>
-      <li><h3>Click through to buy</h3><p>Use <strong>Check price</strong> buttons to open Amazon or Discount Tire. We don’t sell tires or show prices; you check price and fit at the retailer. <a href="/where-to-buy/">Details</a></p></li>
+      <li><h3>Click through to buy</h3><p>Use <strong>Search on Amazon</strong>. It opens a search, not a price. Discount Tire is a plain link with no commission. We don’t sell tires. <a href="/where-to-buy/">Details</a></p></li>
     </ol>
   </section>
 
@@ -43,7 +42,7 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
   <div class="answer"><strong>Quick answer:</strong> TireMileage turns the U.S. government’s tire grading data (NHTSA UTQG) into plain-English comparisons. Treadwear is a relative durability grade (higher = slower wear on NHTSA’s test), not a mileage promise. Pick a size or tire line, then click through to Amazon or Discount Tire to check the price and buy; the calculator turns your own quote into cost per 1,000 miles.</div>
 
   <div class="sec-h"><h2>Highest-treadwear lines</h2><a href="/tires/">All tire lines →</a></div>
-  <p class="meta" style="margin-top:-4px">Open “View &amp; shop” on a card for the Check price buttons.</p>
+  <p class="meta" style="margin-top:-4px">Search on Amazon opens a search for that tire. View &amp; shop opens the full line page.</p>
   <div class="grid g3">{feat.map((l) => <TireCard l={l} />)}</div>
 
   <AdSlot slot="home-mid" height={250} />
