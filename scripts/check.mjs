@@ -80,12 +80,26 @@ for (const f of htmls) {
   const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f); const url = pageRel(f);
   for (const m of h.matchAll(/href="(\/[^"#?]*)/g)) if (m[1] !== url) linked.add(m[1]);
   if (rel.startsWith('404')) continue;
-  const ld = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => { try { return JSON.parse(m[1]); } catch { return {}; } });
-  const types = ld.map((j) => j['@type']);
+  const ld = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap((m) => { try { const j = JSON.parse(m[1]); return Array.isArray(j['@graph']) ? j['@graph'] : [j]; } catch { return []; } });
+  const types = ld.flatMap((j) => Array.isArray(j['@type']) ? j['@type'] : [j['@type']]);
   const desc = (h.match(/<meta name="description" content="([^"]*)"/) || [])[1]?.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
-  if (!desc || desc.length < 50 || desc.length > 200) err.push(`${rel}: meta description missing or length ${desc ? desc.length : 0} (want 50-200)`);
+  if (!desc || desc.length < 70 || desc.length > 160) err.push(`${rel}: meta description missing or length ${desc ? desc.length : 0} (want 70-160)`);
   const dec = (s) => s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-  const title = dec((h.match(/<title>([^<]*)<\/title>/) || [])[1] || ''); if (title.length > 95) err.push(`${rel}: title too long (${title.length})`);
+  const title = dec((h.match(/<title>([^<]*)<\/title>/) || [])[1] || ''); if (title.length < 15 || title.length > 60) err.push(`${rel}: title length ${title.length} (want 15-60): ${title}`);
+  if ((h.match(/<script type="application\/ld\+json">/g) || []).length !== 1) err.push(`${rel}: expected one JSON-LD @graph`);
+  const org = ld.find((j) => j['@type'] === 'Organization' && String(j['@id'] || '').endsWith('#organization'));
+  if (!org) err.push(`${rel}: missing Organization #organization`);
+  else {
+    const logoUrl = typeof org.logo === 'string' ? org.logo : org.logo?.url;
+    if (!logoUrl || !/logo-mark\.png$/.test(logoUrl)) err.push(`${rel}: Organization logo missing`);
+    if (!Array.isArray(org.sameAs) || org.sameAs.length < 1) err.push(`${rel}: Organization sameAs missing`);
+    if (!org.email && !org.contactPoint) err.push(`${rel}: Organization contact missing`);
+  }
+  const page = ld.find((j) => j['@type'] === 'WebPage');
+  if (!page || !/^\d{4}-\d{2}-\d{2}/.test(String(page.dateModified || ''))) err.push(`${rel}: WebPage dateModified missing`);
+  else if (!String(page.publisher?.['@id'] || '').endsWith('#organization')) err.push(`${rel}: WebPage publisher is not #organization`);
+  if (!/Last updated: <time datetime="\d{4}-\d{2}-\d{2}/.test(h)) err.push(`${rel}: missing visible Last updated time`);
+  if (url !== '/' && !types.includes('BreadcrumbList')) err.push(`${rel}: missing BreadcrumbList`);
   if ((h.match(/<h1[ >]/g) || []).length !== 1) err.push(`${rel}: expected exactly one h1`);
   const canon = (h.match(/<link rel="canonical" href="([^"]*)"/) || [])[1]; if (!canon || new URL(canon).pathname !== url) err.push(`${rel}: canonical missing/mismatch (${canon})`);
   for (const k of ['og:title', 'og:description', 'og:url', 'og:image', 'og:site_name']) if (!h.includes(`property="${k}"`)) err.push(`${rel}: missing ${k}`);
@@ -117,7 +131,9 @@ if (guideCount < 8) err.push(`only ${guideCount} guides built (want 8+)`);
 const feed = fs.existsSync(path.join(DIST, 'guides/feed.xml')) ? fs.readFileSync(path.join(DIST, 'guides/feed.xml'), 'utf8') : '';
 if ((feed.match(/<entry>/g) || []).length !== guideCount) err.push(`feed entries (${(feed.match(/<entry>/g) || []).length}) != guides (${guideCount})`);
 const llms = fs.readFileSync(path.join(DIST, 'llms.txt'), 'utf8'); if (!/\/guides\//.test(llms) || !/\/treadwear\//.test(llms)) err.push('llms.txt missing guides/treadwear links');
-{ const robots = fs.readFileSync(path.join(DIST, 'robots.txt'), 'utf8'); if (!/Sitemap: /.test(robots)) err.push('robots.txt has no Sitemap line'); if (!robots.includes('/sitemap.xml')) err.push('robots.txt missing /sitemap.xml'); if (!robots.includes('/sitemap-index.xml')) err.push('robots.txt missing /sitemap-index.xml'); }
+if (!/^# .+\n\n> /.test(llms) || !llms.includes('/llms-full.txt')) err.push('llms.txt needs an H1, a > summary, and a link to llms-full.txt');
+{ const full = fs.existsSync(path.join(DIST, 'llms-full.txt')) ? fs.readFileSync(path.join(DIST, 'llms-full.txt'), 'utf8') : ''; if (!full.startsWith('# ') || full.length < 4000 || !full.includes('## Sources')) err.push('llms-full.txt missing or not a full-text markdown corpus'); }
+{ const robots = fs.readFileSync(path.join(DIST, 'robots.txt'), 'utf8'); if (!/Sitemap: /.test(robots)) err.push('robots.txt has no Sitemap line'); if (!robots.includes('/sitemap.xml')) err.push('robots.txt missing /sitemap.xml'); if (!robots.includes('/sitemap-index.xml')) err.push('robots.txt missing /sitemap-index.xml'); for (const bot of ['OAI-SearchBot', 'ChatGPT-User', 'GPTBot', 'Claude-SearchBot', 'Claude-User', 'ClaudeBot', 'PerplexityBot', 'Google-Extended', 'Applebot-Extended']) { if (!new RegExp(`User-agent: ${bot}\\nAllow: /`).test(robots)) err.push(`robots.txt does not allow ${bot}`); } }
 { const a = path.join(DIST, 'sitemap.xml'), b = path.join(DIST, 'sitemap-index.xml'); if (!fs.existsSync(a)) err.push('sitemap.xml missing (conventional URL would 404)'); else if (fs.readFileSync(a, 'utf8') !== fs.readFileSync(b, 'utf8')) err.push('sitemap.xml differs from sitemap-index.xml'); }
 if (preview && files.some((f) => /^[A-Za-z0-9-]{8,128}\.txt$/.test(path.basename(f)) && !/robots|llms/.test(f) && path.dirname(f) === DIST)) err.push('IndexNow key file present in a preview build');
 if (!preview) {
@@ -156,7 +172,7 @@ if (!preview) {
     const ab = rd('about/index.html'); if (!ab.includes('has not been set up yet')) err.push('about page lost its "contact not set up yet" wording');
   } else {
     const cp = rd('contact/index.html'); if (!cp) err.push('CONTACT_EMAIL set but /contact/ missing');
-    else { if (cp.includes(contactOn) || /href="mailto:/i.test(cp)) err.push('contact page exposes the email in plain HTML'); if (!/data-r="/.test(cp)) err.push('contact page lacks obfuscated address'); for (const k of ['Corrections', 'Data issues', 'Affiliate']) if (!cp.includes(k)) err.push(`contact page missing "${k}"`); }
+    else { const cpVisible = cp.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, ''); if (cpVisible.includes(contactOn) || /href="mailto:/i.test(cpVisible)) err.push('contact page exposes the email in plain HTML'); if (!/data-r="/.test(cp)) err.push('contact page lacks obfuscated address'); for (const k of ['Corrections', 'Data issues', 'Affiliate']) if (!cp.includes(k)) err.push(`contact page missing "${k}"`); }
     if (contactOn !== 'contact@tiremileage.com' && !process.env.ALLOW_OTHER_CONTACT) console.log(`note: CONTACT_EMAIL is ${contactOn}, not the production default`);
     if (/has not been set up yet/.test(rd('about/index.html'))) err.push('about page still says contact is not set up although CONTACT_EMAIL is set');
   }
