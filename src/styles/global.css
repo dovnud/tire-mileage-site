@@ -174,10 +174,6 @@ td input{width:7em;height:34px;border:1px solid var(--bd2);background:var(--surf
 .buy .warranty{background:var(--ac-soft);border-radius:10px;padding:10px 14px;font-size:var(--fs-1);margin:10px 0}
 .buy .warranty b{display:block}
 
-/* ads: fixed reserved height, hidden until ads are enabled (ADS_ENABLED in src/lib/site.ts) */
-.ad-slot{display:block;width:100%;min-height:var(--h,250px);background:var(--surface2);border:1px dashed var(--bd2);border-radius:var(--r-sm);margin:20px 0;color:var(--mut);font-size:var(--fs-0);text-align:center;padding-top:8px;contain:layout size}
-.ad-slot[hidden]{display:none}
-
 details{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-sm);margin:8px 0;padding:0}
 summary{cursor:pointer;font-weight:650;padding:12px 16px;list-style:none;display:flex;justify-content:space-between;gap:10px}
 summary::-webkit-details-marker{display:none}summary::after{content:"+";font-weight:800;color:var(--ac)}details[open] summary::after{content:"–"}
@@ -216,7 +212,7 @@ footer.site-f .fine{border-top:1px solid rgba(255,255,255,.14);margin-top:22px;p
   .results{position:fixed;left:12px;right:12px;top:auto;margin-top:6px;min-width:0}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
-@media print{.site-h,.search,.ad-slot,footer.site-f{display:none}}
+@media print{.site-h,.search,footer.site-f{display:none}}
 @media(max-width:999px){.cols-2{display:flex;flex-direction:column}.cols-2 aside{order:-1;margin-top:8px}}
 
 /* tags, related blocks, guides */

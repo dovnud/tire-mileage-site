@@ -1,6 +1,0 @@
----
-import { ADS_ENABLED } from '../lib/site';
-// Placeholder only: no ad code. Hidden while ADS_ENABLED=false; when enabled it reserves a fixed height (no layout shift).
-const { slot, height = 250 } = Astro.props as { slot: string; height?: number };
----
-<aside class="ad-slot" data-slot={slot} style={`--h:${height}px`} hidden={!ADS_ENABLED} aria-label="Advertisement"></aside>

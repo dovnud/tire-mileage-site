@@ -9,7 +9,6 @@ import Base from '../../../layouts/Base.astro';
 import CostCalc from '../../../components/CostCalc.astro';
 import Gauge from '../../../components/Gauge.astro';
 import Badge from '../../../components/Badge.astro';
-import AdSlot from '../../../components/AdSlot.astro';
 import WhereToBuy from '../../../components/WhereToBuy.astro';
 import ShopCta from '../../../components/ShopCta.astro';
 import ShopBar from '../../../components/ShopBar.astro';
@@ -132,7 +131,6 @@ const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !==
   </div>
   <aside aria-label="Where to buy">
     <WhereToBuy brand={l.brand} line={l.line} brandSlug={l.brand_slug} lineSlug={l.line_slug} />
-    <AdSlot slot="line-sidebar" height={250} />
   </aside>
   </div>
   <ShopBar brand={l.brand} line={l.line} brandSlug={l.brand_slug} lineSlug={l.line_slug} />

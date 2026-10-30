@@ -1,6 +1,4 @@
 export const SITE_NAME = 'TireMileage';
-// Ads are OFF. When switched on, each <AdSlot> reserves a fixed height (CSS min-height) so there is no layout shift.
-export const ADS_ENABLED = false;
 
 // Google Analytics 4 measurement ID. EMPTY BY DEFAULT = analytics is completely off: no script, no request, nothing in the HTML.
 // To enable, set GA4_ID at build time (e.g. GA4_ID=G-XXXXXXXXXX npm run build:launch). Only a well-formed "G-XXXXXXXXXX" value is accepted;

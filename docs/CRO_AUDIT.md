@@ -33,7 +33,7 @@ Live review of https://tiremileage.com on 27 Oct 2026 at 390×844 and 1280×900 
 6. **Where to buy as a button** — `where-to-buy.astro`. Source has text links for four sizes; use one `sbtn-amz` under the form. **S / med.**
 7. **Homepage field under the H1** — `index.astro`. Remove the extra “Find tires for your size” heading. **S / med.** At 1280×900 the field is at or just under the first screen.
 8. **“Traction A or AA” block** — `sizes/[size].astro`. Three rows, one Amazon button each. **M / med.** The top 225/65R17 grade is a less familiar line.
-9. **Ads after shop blocks only** — `AdSlot.astro`. Keep `ADS_ENABLED` false until privacy, affiliate disclosure, and `ads.txt` mention ads. Slots `home-mid`, `size-mid`, `line-sidebar`, labeled “Advertisement”. **M / med (AdSense).**
+9. **Ads were not built.** The site has no ad component, no ad flag, and no ad markup. **Skipped.**
 10. **Second program** — `retailers.ts`, only after that program approves this site; update the disclosure the same day. Amazon stays `tag=tiremileage-20`. **M / med.**
 
 ## 4. Primary CTA by page
@@ -58,7 +58,7 @@ Same as fixes 1, 3, 5, and 6: four header links under 860px, one-line mobile dis
 | Amazon as the only filled button; size-page sticky bar; shorter mobile header | 4 → 5 | S | Affiliate |
 | Three-row traction comparison, one Amazon button per row | 5 → 6 | M | Affiliate |
 | Second approved program in `retailers.ts`, disclosure updated the same day | 6 → 7 | M | Affiliate |
-| Privacy + disclosure + `ads.txt`; slots only below shop blocks on guides and the line sidebar | 7 → 8 | M | AdSense |
+| Ads were not added. No ad markup is in the site. | — | — | AdSense |
 | Size and category guides that end in the ranking plus one Amazon button, linked from those pages | 8 → 9 | L | Affiliate, AdSense |
 | Later: “email this size ranking” at contact@tiremileage.com, and product links only from a licensed catalog (no invented prices) | 9 → 10 | L | Leads, affiliate |
 

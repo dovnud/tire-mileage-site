@@ -6,7 +6,6 @@ import { sizeChips, rimOf, RIMS, rimUrl } from '../../lib/taxonomy';
 import Base from '../../layouts/Base.astro';
 import Gauge from '../../components/Gauge.astro';
 import Badge from '../../components/Badge.astro';
-import AdSlot from '../../components/AdSlot.astro';
 import ShopSize from '../../components/ShopSize.astro';
 import ShopMini from '../../components/ShopMini.astro';
 import ShopBar from '../../components/ShopBar.astro';
@@ -68,7 +67,6 @@ const ld = [
     <tbody>{ranked.map((r) => <tr><td class="n c-rank" data-l="Rank">{r.rank}</td><td class="c-brand">{r.brand}</td><td class="c-line">{hasLine(r) ? <a href={lineUrl(r)}>{r.line}</a> : r.line}</td><td class="c-shop"><ShopMini brand={r.brand} line={r.line} brandSlug={r.brand_slug} lineSlug={r.line_slug} /></td><td class="n c-wear" data-v={r.wear_min}><Gauge value={r.wear_min!} min={r.wear_min} max={r.wear_max} /></td><td class="n hide-sm c-pct">{r.pctile}</td><td class="c-trac" data-l="Traction" data-v={r.traction ?? ''}>{r.traction ? <Badge kind="traction" grade={r.traction} /> : 'unverified'}</td><td class="c-temp" data-l="Temperature" data-v={r.temperature ?? ''}>{r.temperature ? <Badge kind="temp" grade={r.temperature} /> : 'unverified'}</td><td class="c-price" data-l="Price/set ($)"><input class="rp" type="number" min="0" step="1" aria-label={`Price per set for ${r.brand} ${r.line}`} /></td><td class="c-miles" data-l="Miles"><input class="rm" type="number" min="1000" step="1000" aria-label={`Expected miles for ${r.brand} ${r.line}`} /></td><td class="n rc c-cost" data-l="$/1,000 mi" data-v="">—</td></tr>)}</tbody>
   </table></div>
   <p class="tbl-note">Click a column heading (on phones, a “Sort by” button) to sort. Treadwear bar shows the lowest grade filed for this size.</p>
-  <AdSlot slot="size-mid" height={250} />
   <p class="meta">Percentile in size = share of the {n} lines for {label} with a lower treadwear grade. Cost column: price per set ÷ (expected miles ÷ 1,000), calculated in your browser from your inputs only.</p>
 
   <h2>How the {n} lines spread across treadwear bands</h2>
