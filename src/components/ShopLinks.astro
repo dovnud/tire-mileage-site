@@ -1,0 +1,11 @@
+---
+// One filled Amazon search button, plus plain text links for other enabled retailers.
+import { LINK_REL } from '../lib/retailers';
+const { amazonHref, amazonLabel, plain = [] } = Astro.props as {
+  amazonHref?: string;
+  amazonLabel?: string;
+  plain?: { id: string; href: string; label: string }[];
+};
+---
+{amazonHref && <div class="shop-btns"><a class="sbtn sbtn-amz" href={amazonHref} target="_blank" rel={LINK_REL} data-shop="amazon">{amazonLabel ?? 'Search on Amazon'}<span aria-hidden="true"> ↗</span><span class="sr"> (opens in a new tab)</span></a></div>}
+{plain.length > 0 && <p class="shop-plain">{plain.map((r) => <a href={r.href} target="_blank" rel={LINK_REL} data-shop={r.id}>{r.label}<span class="sr"> (opens in a new tab)</span></a>)} <span class="meta">(plain link, no commission)</span></p>}

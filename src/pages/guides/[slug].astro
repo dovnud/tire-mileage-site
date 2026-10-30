@@ -4,6 +4,8 @@ import CostCalc from '../../components/CostCalc.astro';
 import FaqList from '../../components/FaqList.astro';
 import GuideLinks from '../../components/GuideLinks.astro';
 import ShopSize from '../../components/ShopSize.astro';
+import ShopCta from '../../components/ShopCta.astro';
+import { buildRetailerUrl, buildSizeRetailerUrl, LINK_REL, AMAZON_DISCLOSURE, enabledRetailers } from '../../lib/retailers';
 import { GUIDES, guideBySlug, guideUrl } from '../../lib/all-guides';
 import { SRC } from '../../lib/guides';
 import { lineOf } from '../../lib/guides';
@@ -32,8 +34,8 @@ const rel = g.related.map((s) => guideBySlug(s));
     <p class="eyebrow">{g.kicker} · guide</p>
     <h1>{g.h1}</h1>
     <p class="guide-meta"><span>By {SITE_NAME}</span><span>Last updated <time datetime={g.updated}>{g.updated}</time></span><span>{srcs.length} sources cited</span><a href="/methodology/">How we work</a></p>
+    {lines[0] ? <ShopCta brand={lines[0].brand} line={lines[0].line} brandSlug={lines[0].brand_slug} lineSlug={lines[0].line_slug} /> : sizes[0] && <ShopSize label={sizes[0].label} />}
     <div class="answer"><strong>Short answer:</strong> {g.answer}</div>
-    {sizes[0] && <ShopSize label={sizes[0].label} />}
     {toc.length > 2 && <nav class="toc" aria-label="On this page"><strong>On this page</strong><ol>{toc.map((x) => <li><a href={`#${x.id}`}>{x.t}</a></li>)}</ol></nav>}
     {parts.map((p, i) => <><Fragment set:html={p} />{i < parts.length - 1 && <CostCalc />}</>)}
     <FaqList faqs={g.faqs} />
@@ -41,6 +43,7 @@ const rel = g.related.map((s) => guideBySlug(s));
       {sizes.map((s) => <li><a href={sizeUrl(s.key)}>{s.label} tires ranked by treadwear</a><span>{s.lines} graded lines</span></li>)}
       {lines.map((l) => <li><a href={lineUrl(l)}>{l.brand} {l.line}</a><span>Treadwear {l.wear_median} median</span></li>)}
     </ul></section>}
+    {(lines[0] || sizes[0]) && enabledRetailers().some((r) => r.id === 'amazon') && <p class="shop-repeat">{lines[0] ? <a href={buildRetailerUrl('amazon', lines[0].brand, lines[0].line, `${lines[0].brand_slug}/${lines[0].line_slug}`)} target="_blank" rel={LINK_REL}>Search on Amazon</a> : <a href={buildSizeRetailerUrl('amazon', sizes[0].label)} target="_blank" rel={LINK_REL}>Search {sizes[0].label} tires on Amazon</a>}{lines[0] ? ` for the ${lines[0].brand} ${lines[0].line}` : ''}. {AMAZON_DISCLOSURE}</p>}
     <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
       <ol>{srcs.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a>, {s.publisher}. <span class="why">Retrieved {UPDATED}.</span></li>)}</ol>
       <p class="why">NHTSA ratings are from the <a href="/data/">dataset we publish</a>. Maker statements are the makers’ own claims. We make no price claims. Found an error? See <a href="/about/">About &amp; corrections</a>.</p>

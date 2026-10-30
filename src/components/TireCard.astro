@@ -2,12 +2,17 @@
 import Gauge from './Gauge.astro';
 import Badge from './Badge.astro';
 import { lineUrl, mostCommon, fmt, type Line } from '../lib/data';
+import { buildRetailerUrl, LINK_REL, AMAZON_DISCLOSURE, enabledRetailers } from '../lib/retailers';
 const { l } = Astro.props as { l: Line };
+const amazon = enabledRetailers().find((r) => r.id === 'amazon');
+const href = amazon ? buildRetailerUrl('amazon', l.brand, l.line, `${l.brand_slug}/${l.line_slug}`) : '';
 ---
 <div class="tcard">
   <div><div class="brand">{l.brand}</div><a class="name" href={lineUrl(l)}>{l.line}</a></div>
   <Gauge value={l.wear_median!} min={l.wear_min} max={l.wear_max} />
   <div class="row"><Badge kind="traction" grade={mostCommon(l.traction)} /><Badge kind="temp" grade={mostCommon(l.temperature)} /></div>
   <div class="foot">Rank #{l.brand_rank} of {l.brand_lines_rated} {l.brand} lines · {l.records} NHTSA record{l.records === 1 ? '' : 's'}</div>
-  <a class="sbtn sbtn-ac sbtn-view" href={lineUrl(l)}>View &amp; shop<span aria-hidden="true"> →</span><span class="sr"> {l.brand} {l.line}</span></a>
+  {href && <a class="sbtn sbtn-amz" href={href} target="_blank" rel={LINK_REL} data-shop="amazon">Search on Amazon<span aria-hidden="true"> ↗</span><span class="sr"> for {l.brand} {l.line} (opens in a new tab)</span></a>}
+  {href && <p class="shop-fine">{AMAZON_DISCLOSURE}</p>}
+  <a class="sbtn sbtn-ac sbtn-view" href={`${lineUrl(l)}#shop-this-tire`}>View &amp; shop<span aria-hidden="true"> →</span><span class="sr"> {l.brand} {l.line}</span></a>
 </div>

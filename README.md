@@ -9,7 +9,7 @@ npm run build              # ~57-page prototype (noindex preview)
 npm run build:full         # all lines + sizes with 5+ lines (~3.4k pages)
 ```
 Env: `SITE_URL` (canonical origin), `PREVIEW=0` (drop noindex), `FULL=1`.
-Data: NHTSA tire ratings API (US government work). No prices are shown. Maker warranties only where cited (`src/lib/makers.ts`). Ads are hidden (`ADS_ENABLED=false` in `src/lib/site.ts`).
+Data: NHTSA tire ratings API (US government work). No prices are shown. Maker warranties only where cited (`src/lib/makers.ts`). The site does not run ads.
 
 Retailer links: all built by `buildRetailerUrl(retailer, brand, line)` in `src/lib/retailers.ts`. Amazon links carry the Amazon Associates tag `tag=tiremileage-20` (override with env `AMAZON_TAG` at build time; empty disables). All other retailers stay plain; CJ is not approved. `rel="sponsored nofollow noopener"` and the disclosure "As an Amazon Associate I earn from qualifying purchases." (footer, disclosure strip, Where-to-buy, About, Methodology) must stay: `npm run check` asserts both.
 

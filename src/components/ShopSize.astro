@@ -1,13 +1,15 @@
 ---
-// "Shop <size> tires" block at the top of size pages: retailer search links for the size itself.
-import { enabledRetailers, buildSizeRetailerUrl, LINK_REL, AMAZON_DISCLOSURE } from '../lib/retailers';
+// "Shop <size> tires" block: retailer search links for the size itself.
+import ShopLinks from './ShopLinks.astro';
+import { enabledRetailers, buildSizeRetailerUrl, AMAZON_DISCLOSURE } from '../lib/retailers';
 const { label } = Astro.props as { label: string };
+const retailers = enabledRetailers();
+const amazon = retailers.find((r) => r.id === 'amazon');
+const plain = retailers.filter((r) => r.id !== 'amazon').map((r) => ({ id: r.id, href: buildSizeRetailerUrl(r.id, label), label: `Search at ${r.name}` }));
 ---
 <section class="shop-cta shop-size" id="shop-size" aria-labelledby="shop-size-h">
   <h2 id="shop-size-h">Shop {label} tires</h2>
-  <p class="shop-sub">TireMileage doesn’t sell tires. Pick a line from the ranking below and use its Shop button, or search every {label} tire at a retailer:</p>
-  <div class="shop-btns">
-    {enabledRetailers().map((r) => <a class={`sbtn ${r.id === 'amazon' ? 'sbtn-amz' : 'sbtn-ac'}`} href={buildSizeRetailerUrl(r.id, label)} target="_blank" rel={LINK_REL} data-shop={r.id}>Shop {label} tires {r.id === 'amazon' ? 'on' : 'at'} {r.name}<span aria-hidden="true"> ↗</span><span class="sr"> (opens in a new tab)</span></a>)}
-  </div>
-  <p class="shop-fine">{AMAZON_DISCLOSURE} The Amazon button is an affiliate link and may earn us a commission at no cost to you. Confirm the size fits your vehicle before you buy. <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
+  <p class="shop-sub">TireMileage doesn’t sell tires. Search on Amazon opens Amazon’s search for {label} tires. Pick a line from the ranking for a closer match.</p>
+  <ShopLinks amazonHref={amazon ? buildSizeRetailerUrl('amazon', label) : undefined} amazonLabel={`Search ${label} tires on Amazon`} plain={plain} />
+  <p class="shop-fine">{AMAZON_DISCLOSURE} The Amazon button may earn us a commission at no cost to you. Confirm the size fits your vehicle before you buy. <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
 </section>

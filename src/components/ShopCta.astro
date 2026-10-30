@@ -1,15 +1,17 @@
 ---
 // Above-the-fold "Shop this tire" block for tire-line pages. Only real retailer links, built by buildRetailerUrl.
-import { enabledRetailers, buildRetailerUrl, retailerQuery, checkPriceLabel, LINK_REL, AMAZON_DISCLOSURE } from '../lib/retailers';
+import ShopLinks from './ShopLinks.astro';
+import { enabledRetailers, buildRetailerUrl, retailerQuery, AMAZON_DISCLOSURE } from '../lib/retailers';
 const { brand, line, brandSlug, lineSlug } = Astro.props as { brand: string; line: string; brandSlug: string; lineSlug: string };
 const key = `${brandSlug}/${lineSlug}`;
 const q = retailerQuery(brand, line, key);
+const retailers = enabledRetailers();
+const amazon = retailers.find((r) => r.id === 'amazon');
+const plain = retailers.filter((r) => r.id !== 'amazon').map((r) => ({ id: r.id, href: buildRetailerUrl(r.id, brand, line, key), label: `Search at ${r.name}` }));
 ---
 <section class="shop-cta" id="shop-this-tire" aria-labelledby="shop-h">
   <h2 id="shop-h">Shop this tire</h2>
-  <p class="shop-sub">TireMileage doesn’t sell tires. These buttons open a search for “{q}” at the retailer, where you check the price and your size.</p>
-  <div class="shop-btns">
-    {enabledRetailers().map((r) => <a class={`sbtn ${r.id === 'amazon' ? 'sbtn-amz' : 'sbtn-ac'}`} href={buildRetailerUrl(r.id, brand, line, key)} target="_blank" rel={LINK_REL} data-shop={r.id}>{checkPriceLabel(r)}<span aria-hidden="true"> ↗</span><span class="sr"> (opens in a new tab)</span></a>)}
-  </div>
-  <p class="shop-fine">{AMAZON_DISCLOSURE} The Amazon button is an affiliate link and may earn us a commission at no cost to you; no prices are shown here because they vary by size and store. <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
+  <p class="shop-sub">Opens a search for “{q}”. Search on Amazon is an affiliate link. You confirm the price and size at the retailer. TireMileage doesn’t sell tires.</p>
+  <ShopLinks amazonHref={amazon ? buildRetailerUrl('amazon', brand, line, key) : undefined} amazonLabel="Search on Amazon" plain={plain} />
+  <p class="shop-fine">{AMAZON_DISCLOSURE} The Amazon button may earn us a commission at no cost to you. No prices are shown here because they vary by size and store. <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
 </section>

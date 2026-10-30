@@ -6,9 +6,10 @@ import { sizeChips, rimOf, RIMS, rimUrl } from '../../lib/taxonomy';
 import Base from '../../layouts/Base.astro';
 import Gauge from '../../components/Gauge.astro';
 import Badge from '../../components/Badge.astro';
-import AdSlot from '../../components/AdSlot.astro';
 import ShopSize from '../../components/ShopSize.astro';
 import ShopMini from '../../components/ShopMini.astro';
+import ShopBar from '../../components/ShopBar.astro';
+import { enabledRetailers, buildRetailerUrl, LINK_REL, AMAZON_DISCLOSURE } from '../../lib/retailers';
 import { siteSizes, allSizes, hasLine, lineUrl, sizeUrl, sizeSet, S, UPDATED, fmt, range, median, wearBand, SOURCE_URL, NHTSA_GUIDE } from '../../lib/data';
 export function getStaticPaths() { return siteSizes.map((s) => ({ params: { size: s.key }, props: { s } })); }
 const { s } = Astro.props as { s: (typeof allSizes)[number] };
@@ -36,6 +37,7 @@ const faqs = [
   { q: `What is a typical treadwear grade for ${label} tires?`, a: `The median treadwear grade across the ${n} rated lines for ${label} is ${fmt(med)}. Across all sizes in the dataset the median is ${fmt(S.treadwear_overall_median)}.` },
   { q: `What is the cost per mile of ${label} tires?`, a: `We have no licensed price or warranty-mileage feed yet, so cost per mile is not computed. Use cost per 1,000 miles = price per set ÷ (expected miles ÷ 1,000) with your own quote; the table below has inputs for each line.` },
 ];
+const tractionPicks = ranked.filter((r) => r.traction === 'AA' || r.traction === 'A').slice(0, 3);
 const hasRim = RIMS.includes(rimOf(s.key));
 const guideSlugs = guidesForSize(s.key);
 const chips = hasRim ? sizeChips(s.key) : [];
@@ -48,18 +50,23 @@ const ld = [
 ---
 <Base title={title} description={description} crumbs={crumbs} ld={ld} og={`size/${s.key}`}>
   <h1>{label} tires ranked by treadwear</h1>
+  <ShopSize label={label} />
+  {tractionPicks.length > 0 && <section class="traction-picks" aria-labelledby="aa-h">
+    <h2 id="aa-h">Highest treadwear here with traction A or AA</h2>
+    <p class="meta">Traction is straight-ahead wet braking only. These are the highest treadwear lines in this size that NHTSA lists as A or AA.</p>
+    <ul class="picks">{tractionPicks.map((r) => <li><span class="pick-name">{hasLine(r) ? <a href={lineUrl(r)}>{r.brand} {r.line}</a> : `${r.brand} ${r.line}`}</span><span class="wear">Treadwear {r.wear_min}</span>{enabledRetailers().some((x) => x.id === 'amazon') && <a class="sbtn sbtn-sm sbtn-amz" href={buildRetailerUrl('amazon', r.brand, r.line, `${r.brand_slug}/${r.line_slug}`)} target="_blank" rel={LINK_REL} data-shop="amazon">Search on Amazon<span class="sr"> for {r.brand} {r.line} (opens in a new tab)</span></a>}</li>)}</ul>
+    <p class="shop-fine">{AMAZON_DISCLOSURE}</p>
+  </section>}
   <Chips chips={chips} label="Tags for this tire size" />
   <div class="answer"><strong>Quick answer:</strong> {answer}</div>
-  <ShopSize label={label} />
 
   <h2>Ranking: {label} tire lines by NHTSA treadwear grade</h2>
-  <p>Sorted from highest to lowest treadwear. Use the Shop buttons to search that line at a retailer. Ties share a rank. If a line has several records for this size with different grades, the lowest is used for ranking and the range is shown. Enter your own price and expected miles in the last columns; nothing is pre-filled because price and warranty data are pending a feed.</p>
+  <p>Sorted from highest to lowest treadwear. Use Search on Amazon to open a search for that line. Ties share a rank. If a line has several records for this size with different grades, the lowest is used for ranking and the range is shown. Enter your own price and expected miles in the last columns; nothing is pre-filled because price and warranty data are pending a feed.</p>
   <div class="tw tw-cards"><table id="rank-table" data-sortable>
     <thead><tr><th class="n">Rank</th><th>Brand</th><th>Line</th><th data-nosort>Shop</th><th class="n">Treadwear</th><th class="n hide-sm">Percentile in size</th><th>Traction</th><th>Temp.</th><th data-nosort>Price / set ($)</th><th data-nosort>Expected miles</th><th class="n">$ per 1,000 mi</th></tr></thead>
     <tbody>{ranked.map((r) => <tr><td class="n c-rank" data-l="Rank">{r.rank}</td><td class="c-brand">{r.brand}</td><td class="c-line">{hasLine(r) ? <a href={lineUrl(r)}>{r.line}</a> : r.line}</td><td class="c-shop"><ShopMini brand={r.brand} line={r.line} brandSlug={r.brand_slug} lineSlug={r.line_slug} /></td><td class="n c-wear" data-v={r.wear_min}><Gauge value={r.wear_min!} min={r.wear_min} max={r.wear_max} /></td><td class="n hide-sm c-pct">{r.pctile}</td><td class="c-trac" data-l="Traction" data-v={r.traction ?? ''}>{r.traction ? <Badge kind="traction" grade={r.traction} /> : 'unverified'}</td><td class="c-temp" data-l="Temperature" data-v={r.temperature ?? ''}>{r.temperature ? <Badge kind="temp" grade={r.temperature} /> : 'unverified'}</td><td class="c-price" data-l="Price/set ($)"><input class="rp" type="number" min="0" step="1" aria-label={`Price per set for ${r.brand} ${r.line}`} /></td><td class="c-miles" data-l="Miles"><input class="rm" type="number" min="1000" step="1000" aria-label={`Expected miles for ${r.brand} ${r.line}`} /></td><td class="n rc c-cost" data-l="$/1,000 mi" data-v="">—</td></tr>)}</tbody>
   </table></div>
   <p class="tbl-note">Click a column heading (on phones, a “Sort by” button) to sort. Treadwear bar shows the lowest grade filed for this size.</p>
-  <AdSlot slot="size-mid" height={250} />
   <p class="meta">Percentile in size = share of the {n} lines for {label} with a lower treadwear grade. Cost column: price per set ÷ (expected miles ÷ 1,000), calculated in your browser from your inputs only.</p>
 
   <h2>How the {n} lines spread across treadwear bands</h2>
@@ -95,4 +102,5 @@ const ld = [
     });
   </script>
   <GuideLinks slugs={guideSlugs} />
+  <ShopBar sizeLabel={label} />
 </Base>

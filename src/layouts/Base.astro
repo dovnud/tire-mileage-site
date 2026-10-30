@@ -17,7 +17,7 @@ const canonical = new URL(Astro.url.pathname, origin).href;
 const path = Astro.url.pathname;
 const pageDate = modified || UPDATED;
 const graph = pageGraph({ origin, canonical, path, title, description, crumbs, ld, ogImage, published, modified: pageDate });
-const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Where to buy', '/where-to-buy/'], ['Guides', '/guides/'], ['Methodology', '/methodology/'], ['Data', '/data/'], ['About', '/about/']];
+const nav: [string, string, string?][] = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Where to buy', '/where-to-buy/', 'nav-buy'], ['Guides', '/guides/'], ['Methodology', '/methodology/', 'nav-extra'], ['Data', '/data/', 'nav-extra'], ['About', '/about/', 'nav-extra']];
 ---
 <!doctype html>
 <html lang="en">
@@ -45,7 +45,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Where to buy', '
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-h"><div class="wrap in">
   <a class="logo" href="/" aria-label={`${SITE_NAME} home`}><Logo /></a>
-  <nav class="nav" aria-label="Main">{nav.map(([n, h]) => <a class={h === '/where-to-buy/' ? 'nav-buy' : undefined} href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{n}</a>)}</nav>
+  <nav class="nav" aria-label="Main">{nav.map(([n, h, cls]) => <a class={cls} href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{n}</a>)}</nav>
   <form class="search" role="search" onsubmit="return false">
     <label class="sr" for="q">Search tire lines, brands and sizes</label>
     <input id="q" type="search" placeholder="Search tires or sizes" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="q-results" aria-autocomplete="list" />
@@ -53,7 +53,7 @@ const nav = [['Tire lines', '/tires/'], ['Sizes', '/sizes/'], ['Where to buy', '
     <ul id="q-results" class="results" role="listbox" aria-label="Search results" hidden></ul>
   </form>
 </div></header>
-<div class="disc"><div class="wrap"><strong>Disclosure:</strong> TireMileage is independent and sells nothing. {AMAZON_DISCLOSURE} Amazon links on this site carry our Associates tag; other retailer links are plain. It never changes a ranking. <a href="/affiliate-disclosure/">Affiliate disclosure</a> · <a href="/where-to-buy/">Where to buy</a></div></div>
+<div class="disc"><div class="wrap"><strong>Disclosure:</strong> <span class="disc-more">TireMileage is independent and sells nothing. </span>{AMAZON_DISCLOSURE}<span class="disc-more"> Amazon links on this site carry our Associates tag; other retailer links are plain. It never changes a ranking.</span> <a href="/affiliate-disclosure/">Affiliate disclosure</a> · <a href="/where-to-buy/">Where to buy</a></div></div>
 <main id="main"><div class="wrap">
   {crumbs.length > 1 && <Crumbs items={crumbs} />}
   <slot />

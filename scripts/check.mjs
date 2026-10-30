@@ -36,13 +36,13 @@ for (const f of htmls) {
     else {
       if (buy >= 0 && cta > buy) err.push(`${rel}: Shop CTA is not above the Where to buy section`);
       const blk = h.slice(cta, h.indexOf('</section>', cta));
-      if (!/Check price on Amazon/.test(blk) || !/Check price at Discount Tire/.test(blk)) err.push(`${rel}: Shop CTA lacks Amazon/Discount Tire buttons`);
+      if (!/Search on Amazon/.test(blk) || !/Search at Discount Tire/.test(blk)) err.push(`${rel}: Shop CTA lacks Amazon search button or Discount Tire plain link`);
       if (!/href="https:\/\/www\.amazon\.com\/s\?[^"]*tag=/.test(blk) || !/href="https:\/\/www\.discounttire\.com\/search\?q=/.test(blk)) err.push(`${rel}: Shop CTA links are not real retailer search links`);
       if (!blk.includes('As an Amazon Associate I earn from qualifying purchases.')) err.push(`${rel}: Shop CTA lacks Amazon Associates disclosure`);
       if (/<h2[^>]*>(Key facts|What these grades)/.test(h.slice(0, cta))) err.push(`${rel}: Shop CTA is below the main content (not above the fold)`);
     }
     if (!/class="shopbar"/.test(h)) err.push(`${rel}: no sticky mobile Shop bar`);
-    else { const bar = h.slice(h.indexOf('class="shopbar"'), h.indexOf('class="shopbar"') + 1800); if (!/Check price on Amazon/.test(bar) || !/Check price at Discount Tire/.test(bar)) err.push(`${rel}: sticky bar lacks CTA buttons`); }
+    else { const bar = h.slice(h.indexOf('class="shopbar"'), h.indexOf('class="shopbar"') + 1800); if (!/Search on Amazon/.test(bar) || !bar.includes('As an Amazon Associate I earn from qualifying purchases.')) err.push(`${rel}: sticky bar lacks Amazon search button or disclosure`); }
   }
   if (/^sizes\/[^/]+\/index\.html$/.test(rel)) {
     const sh = h.indexOf('class="shop-cta shop-size"');
@@ -54,11 +54,14 @@ for (const f of htmls) {
     }
     const rows = (h.match(/<tr><td class="n c-rank"[^>]*>\d+<\/td>/g) || []).length, shops = (h.match(/data-shop-row/g) || []).length;
     if (!rows || shops < rows) err.push(`${rel}: ranked rows ${rows} but only ${shops} Shop buttons`);
+    if (!/class="shopbar"/.test(h)) err.push(`${rel}: size page has no sticky Amazon bar`);
+    else { const bar = h.slice(h.indexOf('class="shopbar"'), h.indexOf('class="shopbar"') + 1800); if (!/Search [^<]*on Amazon/.test(bar) || !bar.includes('As an Amazon Associate I earn from qualifying purchases.')) err.push(`${rel}: size sticky bar lacks Amazon search or disclosure`); }
   }
   if (rel === 'index.html') {
     if (!/Find tires for your size/.test(h) || !/we link to retailers/.test(h) || !/How it works/.test(h)) err.push(`${rel}: home lacks size flow / how-it-works line`);
     if ((h.match(/<li><h3>/g) || []).length < 3) err.push(`${rel}: home lacks 3-step strip`);
     if (!/View &amp; shop/.test(h)) err.push(`${rel}: home tire cards lack View & shop`);
+    if (!/data-shop="amazon"/.test(h) || !/Search on Amazon/.test(h)) err.push(`${rel}: home cards lack Search on Amazon`);
   }
   if (rel === 'where-to-buy/index.html') {
     if (!/id="size-lookup"/.test(h)) err.push(`${rel}: no size entry form`);
@@ -66,7 +69,6 @@ for (const f of htmls) {
   }
   const text = h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '');
   if (/\$\d/.test(text.replace(/\$\{[^}]*\}/g, '')) && !/cost-per-mile|calculator/i.test(rel)) { const m = text.match(/.{20}\$\d.{20}/); if (m && !/\$1,?000|\$\d+ price/i.test(m[0])) err.push(`${rel}: possible price string: ${m[0]}`); }
-  if (/class="ad-slot[^"]*"/.test(h) && !/ad-slot[^>]*hidden/.test(h)) err.push(`${rel}: ad slot not hidden`);
 }
 // ---- SEO / structure checks ----
 const ORIGIN = (fs.readFileSync(path.join(DIST, 'sitemap-pages.xml'), 'utf8').match(/<loc>(https?:\/\/[^/<]+)/) || [])[1] || '';

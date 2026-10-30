@@ -1,12 +1,28 @@
 ---
-// Sticky bottom bar (mobile only) repeating the Shop CTA on tire-line pages. Fixed position, so no layout shift.
-import { enabledRetailers, buildRetailerUrl, checkPriceLabel, LINK_REL } from '../lib/retailers';
-const { brand, line, brandSlug, lineSlug } = Astro.props as { brand: string; line: string; brandSlug: string; lineSlug: string };
-const key = `${brandSlug}/${lineSlug}`;
+// Sticky bottom bar (mobile only). Amazon search only, so the paying action is the one thumb target.
+import { enabledRetailers, buildRetailerUrl, buildSizeRetailerUrl, LINK_REL, AMAZON_DISCLOSURE } from '../lib/retailers';
+const { brand, line, brandSlug, lineSlug, sizeLabel } = Astro.props as {
+  brand?: string; line?: string; brandSlug?: string; lineSlug?: string; sizeLabel?: string;
+};
+const amazon = enabledRetailers().find((r) => r.id === 'amazon');
+const href = amazon
+  ? (sizeLabel ? buildSizeRetailerUrl('amazon', sizeLabel) : buildRetailerUrl('amazon', brand!, line!, `${brandSlug}/${lineSlug}`))
+  : '';
+const label = sizeLabel ? `Search ${sizeLabel} tires on Amazon` : 'Search on Amazon';
 ---
-<div class="shopbar" role="region" aria-label="Shop this tire">
+{href && <div class="shopbar" hidden role="region" aria-label={sizeLabel ? `Shop ${sizeLabel} tires` : 'Shop this tire'}>
   <div class="shopbar-in">
-    {enabledRetailers().map((r) => <a class={`sbtn ${r.id === 'amazon' ? 'sbtn-amz' : 'sbtn-ac'}`} href={buildRetailerUrl(r.id, brand, line, key)} target="_blank" rel={LINK_REL} data-shop={r.id}>{checkPriceLabel(r)}<span class="sr"> (opens in a new tab)</span></a>)}
+    <a class="sbtn sbtn-amz" href={href} target="_blank" rel={LINK_REL} data-shop="amazon">{label}<span class="sr"> (opens in a new tab)</span></a>
   </div>
-  <p class="shopbar-fine">Affiliate links · we don’t sell tires · <a href="/where-to-buy/">how it works</a></p>
+  <p class="shopbar-fine">{AMAZON_DISCLOSURE} <a href="/where-to-buy/">How buying works</a></p>
 </div>
+<script is:inline>
+(function () {
+  var bar = document.querySelector('.shopbar');
+  var target = document.getElementById('shop-this-tire') || document.getElementById('shop-size');
+  if (!bar) return;
+  function show(on) { bar.hidden = !on; }
+  if (!target || !('IntersectionObserver' in window)) { show(true); return; }
+  new IntersectionObserver(function (entries) { show(!entries[0].isIntersecting); }, { threshold: 0.2 }).observe(target);
+})();
+</script>}
