@@ -18,17 +18,18 @@ Operational note (unverified for this account): Amazon's Associates Program Oper
 ```
 npm run check        # broken links, duplicate titles, JSON-LD, noindex, rel attrs (needs a build)
 npm run screenshots  # desktop/mobile PNGs into screenshots/
-npm run deploy       # build + wrangler pages deploy (needs CLOUDFLARE_API_TOKEN); project: tiremileage
+npm run deploy       # production build + check. Publishing is the Git-connected Pages project, not an upload
 ```
 
+Production is the Cloudflare Pages project `tiremileage`, GitHub `dovnud/tire-mileage-site`, production branch `main`. Build command: `PREVIEW=0 node scripts/copy-downloads.mjs && npm run build:launch`. Output directory: `dist`. Node `22.23.4`. A push to `main` publishes the site, the `functions/` directory, and the D1 binding `DB` (`tiremileage-subscribers`). Do not run `wrangler pages deploy` against this project: a direct upload replaces the Git deployment and leaves `POST /api/subscribe` with no Function.
 
 ## Launch (tranche 1)
 ```
 npm run build:launch   # PREVIEW=0 TRANCHE=1 SITE_URL=https://tiremileage.com, writes dist/_headers + IndexNow key file
 PREVIEW=0 npm run check
-npx wrangler pages deploy dist --project-name tiremileage --branch main
 PREVIEW=0 SITE_URL=https://tiremileage.com node scripts/indexnow.mjs --submit
 ```
+Push `main` to publish. IndexNow is a separate resubmit after that deploy.
 IndexNow key lives in `indexnow-key.txt` (public by design; served at `/<key>.txt`). See `gsc-bing-handoff.md`.
 
 ## Google Analytics 4 (off by default)
