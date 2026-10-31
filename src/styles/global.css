@@ -182,6 +182,17 @@ details>p{padding:0 16px 14px;margin:0;color:var(--mut)}
 .calc-form{display:flex;gap:14px;flex-wrap:wrap;align-items:end}.calc-form label{display:flex;flex-direction:column;font-size:var(--fs-0);gap:5px;font-weight:600;color:var(--mut)}
 .calc-form input{height:42px;border:1px solid var(--bd2);background:var(--surface);color:var(--fg);border-radius:8px;padding:0 10px;font:inherit;width:12em}
 #cc-out{font-weight:700;flex-basis:100%;font-size:var(--fs-3)}
+.remind{position:relative;background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:4px 20px 20px;box-shadow:var(--shadow);margin-top:16px}
+.remind-form{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+.remind-form label{display:flex;flex-direction:column;font-size:var(--fs-0);gap:5px;font-weight:600;color:var(--mut)}
+.remind-form input[type=text],.remind-form input[type=email],.remind-form input[type=number]{height:44px;border:1px solid var(--bd2);background:var(--surface);color:var(--fg);border-radius:8px;padding:0 10px;font:inherit;width:min(16em,100%)}
+.remind-form .consent{flex-direction:row;align-items:flex-start;gap:10px;flex-basis:100%;font-size:var(--fs-1);color:var(--fg);font-weight:650}
+.remind-form .consent input{width:1.25rem;height:1.25rem;margin-top:.25rem;flex:none}
+.remind-form button{height:44px;padding:0 18px;border:0;border-radius:10px;background:var(--ac);color:var(--ac-fg);font:inherit;font-weight:750;cursor:pointer}
+.remind-form button:hover{filter:brightness(1.07)}
+.remind-status{flex-basis:100%;margin:0;font-weight:700}
+.remind .hp{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media(max-width:620px){.remind-form label:not(.consent){flex:1 1 100%}.remind-form input[type=text],.remind-form input[type=email],.remind-form input[type=number],.remind-form button{width:100%}}
 ul.cols{columns:2;padding-left:18px}@media(max-width:600px){ul.cols{columns:1}}
 .pill{display:inline-block;background:var(--surface2);border:1px solid var(--bd);border-radius:999px;padding:1px 10px;font-size:var(--fs-0)}
 .brandgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}

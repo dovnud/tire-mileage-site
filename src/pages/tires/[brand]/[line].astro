@@ -111,7 +111,7 @@ const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !==
   {recs.length > shown.length && <p class="meta">Showing {shown.length} of {recs.length} records; the full set is in the <a href="/data/">dataset download</a>.</p>}
   {sizeLinks.length > 0 && <p>Compare this line with others in the same size: {sizeLinks.map((k, i) => <span><a href={sizeUrl(k)}>{k.replace('-', '/').replace('r', 'R')}</a>{i < sizeLinks.length - 1 ? ', ' : ''}</span>)}.</p>}
 
-  <CostCalc />
+  <CostCalc tire={name} />
 
   <h2>Other {l.brand} lines by treadwear</h2>
   <div class="tw"><table data-sortable>
