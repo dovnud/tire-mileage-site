@@ -126,6 +126,19 @@ for (const f of htmls) {
     if (!/class="relblock"/.test(h)) err.push(`${rel}: hub has no guide links block`);
   }
   if (/^tires\/[^/]+\/[^/]+\/index\.html$/.test(rel) && !/class="tagrow"/.test(h)) err.push(`${rel}: line page has no tag chips`);
+  if (/^tires\/[^/]+\/[^/]+\/index\.html$/.test(rel) || /^sizes\/[^/]+\/index\.html$/.test(rel) || rel === 'guides/tire-cost-per-mile/index.html') {
+    if (!h.includes('Request a rotation/replacement reminder')) err.push(`${rel}: missing reminder form`);
+    if (!h.includes('only use your email for this request')) err.push(`${rel}: missing consent sentence`);
+    if (!h.includes('action="/api/subscribe"')) err.push(`${rel}: reminder form does not post to /api/subscribe`);
+    if (!h.includes('name="hp_field"')) err.push(`${rel}: missing honeypot`);
+    const at = h.indexOf('class="remind"');
+    const end = at >= 0 ? h.indexOf('</script>', at) : -1;
+    const block = at >= 0 ? h.slice(at, end > at ? end : at) : '';
+    if (/newsletter|weekly|deal|unsubscribe/i.test(block)) err.push(`${rel}: reminder copy promises a mailing`);
+    if (/gmail\.com/i.test(block)) err.push(`${rel}: reminder form has a gmail address`);
+    if (/<script[^>]+src="https:\/\/challenges\.cloudflare\.com/.test(h)) err.push(`${rel}: Turnstile script loads before use`);
+  }
+  if ((rel === 'index.html' || rel === 'about/index.html' || rel === 'privacy/index.html') && h.includes('class="remind"')) err.push(`${rel}: reminder form is outside tire and calculator pages`);
   if (rel === 'data/index.html' && !types.includes('Dataset')) err.push(`${rel}: no Dataset JSON-LD`);
 }
 for (const f of htmls) { const url = pageRel(f); if (url !== '/' && !url.startsWith('/404') && !linked.has(url)) err.push(`orphan page (no inbound link): ${url}`); }
@@ -180,7 +193,10 @@ if (!preview) {
   }
   // Privacy: states what is true today; GA4 text only when GA4_ID is set.
   const pv = rd('privacy/index.html');
-  for (const k of ['Cloudflare Web Analytics', 'Amazon', 'tiremileage-20', 'Discount Tire', 'no accounts', 'Last revised']) if (pv && !pv.includes(k)) err.push(`privacy page missing "${k}"`);
+  for (const k of ['Cloudflare Web Analytics', 'Amazon', 'tiremileage-20', 'Discount Tire', 'no accounts', 'Last revised', 'only use your email for this request', 'do not sell', 'rotation/replacement reminder']) if (pv && !pv.includes(k)) err.push(`privacy page missing "${k}"`);
+  if (contactOn && pv && !pv.includes(contactOn)) err.push('privacy page missing the contact address for deletion');
+  if (pv && /gmail\.com/i.test(pv)) err.push('privacy page contains a gmail address');
+  if (pv && /newsletter|weekly deal/i.test(pv)) err.push('privacy page promises a mailing');
   const GA_TEXT = /Google Analytics|GA4|gtag|googletagmanager|\b_ga\b|Global Privacy Control|Do Not Track/i;
   if (!ga && GA_TEXT.test(pv)) err.push(`privacy page contains GA text although GA4_ID is empty: ${(pv.match(GA_TEXT) || [])[0]}`);
   if (ga) for (const k of ['Google Analytics 4', 'Global Privacy Control', '_ga', 'opt']) if (!pv.includes(k)) err.push(`GA4 enabled but privacy page missing "${k}"`);

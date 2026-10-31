@@ -9,6 +9,7 @@ import Badge from '../../components/Badge.astro';
 import ShopSize from '../../components/ShopSize.astro';
 import ShopMini from '../../components/ShopMini.astro';
 import ShopBar from '../../components/ShopBar.astro';
+import ReminderForm from '../../components/ReminderForm.astro';
 import { enabledRetailers, buildRetailerUrl, LINK_REL, AMAZON_DISCLOSURE } from '../../lib/retailers';
 import { siteSizes, allSizes, hasLine, lineUrl, sizeUrl, sizeSet, S, UPDATED, fmt, range, median, wearBand, SOURCE_URL, NHTSA_GUIDE } from '../../lib/data';
 export function getStaticPaths() { return siteSizes.map((s) => ({ params: { size: s.key }, props: { s } })); }
@@ -68,6 +69,7 @@ const ld = [
   </table></div>
   <p class="tbl-note">Click a column heading (on phones, a “Sort by” button) to sort. Treadwear bar shows the lowest grade filed for this size.</p>
   <p class="meta">Percentile in size = share of the {n} lines for {label} with a lower treadwear grade. Cost column: price per set ÷ (expected miles ÷ 1,000), calculated in your browser from your inputs only.</p>
+  <ReminderForm />
 
   <h2>How the {n} lines spread across treadwear bands</h2>
   <div class="tw"><table>

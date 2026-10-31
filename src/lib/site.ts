@@ -6,7 +6,9 @@ export const SITE_NAME = 'TireMileage';
 const rawGa4 = (typeof process !== 'undefined' && process.env?.GA4_ID ? process.env.GA4_ID : '').trim();
 export const GA4_ID: string = /^G-[A-Z0-9]{4,20}$/.test(rawGa4) ? rawGa4 : '';
 // Date the privacy page text was last revised (update whenever its wording changes).
-export const PRIVACY_REVISED = '2026-10-26';
+export const PRIVACY_REVISED = '2026-10-31';
+// Public Turnstile sitekey for the reminder form. The secret stays in the Pages project, not in this repo.
+export const TURNSTILE_SITEKEY = '0x4AAAAAAFtpumvl-MRl8rHs';
 
 // Public contact email (a role address on the site's own domain; no personal address belongs here).
 // Default is contact@tiremileage.com so every rebuild keeps /contact/. Override at build time with CONTACT_EMAIL=other@domain; set CONTACT_EMAIL= (empty)
@@ -19,7 +21,7 @@ export const CONTACT_ENABLED = CONTACT_EMAIL !== '';
 export const LEGAL_REVISED = '2026-10-26';
 // Footer / sitemap / llms.txt legal pages, in one place. Contact appears only when CONTACT_EMAIL is set.
 export const LEGAL_LINKS: { name: string; href: string; desc: string }[] = [
-  { name: 'Privacy', href: '/privacy/', desc: 'what the site collects, analytics, cookies, Amazon affiliate links' },
+  { name: 'Privacy', href: '/privacy/', desc: 'what the site collects, including stored reminder requests, analytics, and affiliate links' },
   { name: 'Terms', href: '/terms/', desc: 'terms of use for this informational website' },
   { name: 'Affiliate disclosure', href: '/affiliate-disclosure/', desc: 'how the site earns commissions and what they do not influence' },
   { name: 'Disclaimer', href: '/disclaimer/', desc: 'tire data is informational, not safety advice' },

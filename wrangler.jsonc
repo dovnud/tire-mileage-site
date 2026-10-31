@@ -1,0 +1,13 @@
+{
+  "name": "tiremileage",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-10-31",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tiremileage-subscribers",
+      "database_id": "5c6ab72a-eb87-4f87-a053-f7d71306a806",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

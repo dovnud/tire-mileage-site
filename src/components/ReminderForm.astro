@@ -1,0 +1,68 @@
+---
+import { CONSENT, PURPOSE, TURNSTILE_ACTION } from '../../functions/subscribe-core.js';
+import { TURNSTILE_SITEKEY } from '../lib/site';
+interface Props { tire?: string }
+const { tire = '' } = Astro.props;
+const pageUrl = Astro.url.pathname;
+const sitekey = TURNSTILE_SITEKEY;
+---
+<section class="remind" aria-labelledby="remind-h">
+  <h2 id="remind-h">Request a rotation/replacement reminder</h2>
+  <p>We store this request (the tire, your current miles, and miles per year) with your email. Nothing is sent. {CONSENT}</p>
+  <form class="remind-form" method="post" action="/api/subscribe" accept-charset="utf-8">
+    <label>Tire<input name="tire" type="text" required minlength="2" maxlength="80" autocomplete="off" value={tire} /></label>
+    <label>Current miles<input name="current_miles" type="number" required min="0" max="2000000" step="1" inputmode="numeric" autocomplete="off" /></label>
+    <label>Miles per year<input name="miles_per_year" type="number" required min="1" max="200000" step="1" inputmode="numeric" autocomplete="off" /></label>
+    <label>Email<input name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" /></label>
+    <label class="consent"><input name="consent" type="checkbox" value={CONSENT} required /> <span>{CONSENT}</span></label>
+    <div class="hp" aria-hidden="true"><label>Leave blank<input name="hp_field" type="text" tabindex="-1" autocomplete="off" /></label></div>
+    <input type="hidden" name="page_url" value={pageUrl} />
+    <input type="hidden" name="purpose" value={PURPOSE} />
+    {sitekey && <div class="ts-slot"></div>}
+    <button type="submit">Store request</button>
+    <p class="remind-status" role="status" aria-live="polite"></p>
+  </form>
+</section>
+<script is:inline define:vars={{ sitekey, action: TURNSTILE_ACTION }}>
+(function () {
+  var section = document.currentScript && document.currentScript.previousElementSibling;
+  var form = section && section.querySelector('form');
+  if (!form) return;
+  var status = form.querySelector('.remind-status');
+  var slot = form.querySelector('.ts-slot');
+  var started = false;
+  function loadTurnstile() {
+    if (!sitekey || started || !slot) return;
+    started = true;
+    var s = document.createElement('script');
+    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    s.async = true;
+    s.onload = function () {
+      if (window.turnstile) window.turnstile.render(slot, { sitekey: sitekey, action: action, theme: 'auto' });
+    };
+    document.head.appendChild(s);
+  }
+  form.addEventListener('focusin', loadTurnstile);
+  form.addEventListener('submit', function (e) {
+    var token = form.querySelector('[name="cf-turnstile-response"]');
+    if (sitekey && (!token || !token.value)) {
+      e.preventDefault();
+      loadTurnstile();
+      status.textContent = 'Complete the check, then store the request.';
+      return;
+    }
+    if (!window.fetch || !window.URLSearchParams) return;
+    e.preventDefault();
+    var button = form.querySelector('button');
+    button.disabled = true;
+    status.textContent = 'Saving the request…';
+    fetch(form.action, { method: 'POST', headers: { accept: 'application/json' }, body: new URLSearchParams(new FormData(form)) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+      .then(function (res) {
+        status.textContent = (res.body && res.body.message) || (res.ok ? 'Stored. We saved this request and did not send a message.' : 'This form is not available right now.');
+      })
+      .catch(function () { status.textContent = 'Could not store the request. Try again.'; })
+      .then(function () { button.disabled = false; });
+  });
+})();
+</script>

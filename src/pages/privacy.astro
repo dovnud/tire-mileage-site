@@ -1,18 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
-import { GA4_ID, PRIVACY_REVISED, CONTACT_ENABLED } from '../lib/site';
+import { GA4_ID, PRIVACY_REVISED, CONTACT_ENABLED, CONTACT_EMAIL, TURNSTILE_SITEKEY } from '../lib/site';
 import { AMAZON_DISCLOSURE, AMAZON_TAG } from '../lib/retailers';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy/' }];
 // Google Analytics 4 text renders ONLY when GA4_ID was set at build time (same flag as the loader in Base.astro). Empty = no GA text, no GA code.
 const ga = GA4_ID !== '';
 ---
-<Base title="Privacy Policy | TireMileage" description="What TireMileage collects: no accounts, ads or forms; cookieless Cloudflare Web Analytics page-view counts; hosting logs; and affiliate links to Amazon and Discount Tire." crumbs={crumbs}>
+<Base title="Privacy Policy | TireMileage" description="What TireMileage collects: cookieless Cloudflare analytics, hosting logs, affiliate links, and stored reminder requests (email, tire, and miles)." crumbs={crumbs}>
   <h1>Privacy</h1>
-  <div class="answer"><strong>Quick answer:</strong> TireMileage has no accounts, no ads and no forms that send us anything, and we do not ask for or store personal information. We count page views in aggregate with Cloudflare Web Analytics, which does not use cookies. If you click through to Amazon or Discount Tire, those sites have their own privacy policies.</div>
+  <div class="answer"><strong>Quick answer:</strong> TireMileage has no accounts and no ads. We count page views in aggregate with Cloudflare Web Analytics, which does not use cookies. If you submit a reminder request, we store that request. If you click through to Amazon or Discount Tire, those sites have their own privacy policies.</div>
   <p class="meta">Last revised: <time datetime={PRIVACY_REVISED}>{PRIVACY_REVISED}</time>. This is a plain-language description of our practices, not legal advice.</p>
 
   <h2>What this site is</h2>
-  <p>TireMileage is a static website: its pages are prepared in advance and delivered as files. It has no user accounts, no sign-in, no comments, no ads and no forms that send data to us. We do not knowingly collect personal information such as your name, email address or location.</p>
+  <p>TireMileage’s pages are prepared in advance and delivered as files. It has no user accounts, no sign-in, no comments, and no ads. The only information you can send us is the reminder form on tire pages and the cost calculators. We do not ask for your name.</p>
 
   <h2>Analytics: Cloudflare Web Analytics</h2>
   <ul>
@@ -26,11 +26,21 @@ const ga = GA4_ID !== '';
   <p>Like every website, the company that delivers the site (Cloudflare) necessarily receives your IP address, browser details and the page you request in order to serve it, and may keep standard server and security logs under its own policy. We do not receive or use those logs to identify you.</p>
 
   <h2>Search, size lookup and calculator</h2>
-  <p>The site search, the tire-size lookup and the cost-per-mile calculator run in your browser, using a data file downloaded from this site. What you type is processed on your device and is not sent to us.</p>
+  <p>The site search, the tire-size lookup and the cost-per-mile calculator run in your browser, using a data file downloaded from this site. What you type into those tools is processed on your device and is not sent to us. The reminder form on tire pages and the calculators is separate: it sends only the fields in that form.</p>
+
+  <h2>Reminder requests</h2>
+  <p>On a tire page or a cost calculator you can store a rotation/replacement reminder request. Submitting saves the request. It does not send a message. We'll only use your email for this request.</p>
+  <ul>
+    <li><strong>What we store:</strong> your email address, the page URL, the purpose (a rotation/replacement reminder), the tire name, current miles, and miles per year you enter, the consent sentence you checked, the time of the request, and a hash of the IP address. The hash is used to limit repeated submissions. We do not store the IP address itself.</li>
+    <li><strong>Why:</strong> to keep the request you asked us to store.</li>
+    <li><strong>No selling:</strong> we do not sell this information, and we do not share it with advertisers. Cloudflare holds it for us in this site’s database.</li>
+    <li><strong>Deletion:</strong> {CONTACT_ENABLED ? <>email {CONTACT_EMAIL}. That address is the only deletion path.</> : <>no public contact address is published, so a deletion request cannot be sent yet.</>} We do not offer another address, a form, or any other way to ask for deletion.</li>
+  </ul>
+  {TURNSTILE_SITEKEY && <p>After you use the form, the page can load Cloudflare Turnstile to reject automated submissions. That check runs in your browser and at Cloudflare. We do not send your email to it. See <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">Cloudflare’s Privacy Policy</a>.</p>}
 
   <h2>Cookies</h2>
   <ul>
-    <li>TireMileage’s own pages and scripts do not set cookies or store anything in your browser’s local storage.</li>
+    <li>TireMileage’s own pages and scripts do not set cookies or store anything in your browser’s local storage. If the reminder form loads Cloudflare Turnstile, that script follows Cloudflare’s policy.</li>
     <li>Cloudflare, as our host, may use technical cookies or similar mechanisms for security or performance as described in its own policies.</li>
     <li>When you follow a link to another site, that site (for example Amazon or Discount Tire) may set its own cookies under its own policy. We do not control those.</li>
     <li>You can block or delete cookies in your browser settings.</li>
@@ -57,13 +67,13 @@ const ga = GA4_ID !== '';
   </>}
 
   <h2>Selling and sharing</h2>
-  <p>We do not sell personal information, and we do not share any with advertisers. The only parties that handle visitor data in connection with this site are those named on this page: Cloudflare{ga ? ', Google' : ''}, and the retailers you choose to visit.</p>
+  <p>We do not sell personal information, and we do not share any with advertisers. That includes a stored reminder request. The only parties that handle visitor data in connection with this site are those named on this page: Cloudflare{ga ? ', Google' : ''}, and the retailers you choose to visit.</p>
 
   <h2>Children</h2>
-  <p>This site is a general-audience tire reference and is not directed at children. We do not knowingly collect information from anyone, including children.</p>
+  <p>This site is a general-audience tire reference and is not directed at children. Do not submit a child’s email. We do not knowingly keep a request from a child.</p>
 
   <h2>Questions about your data</h2>
-  <p>We hold no accounts or personal profiles, so there is generally nothing on our side to access, correct or delete. Aggregate analytics and hosting logs are held by Cloudflare under its policies, and information collected by Amazon or Discount Tire is held by them; to ask about that data, contact those companies directly. {CONTACT_ENABLED ? <>For anything else about this page, please use our <a href="/contact/">contact page</a>.</> : <>We have not yet published a public contact address; when we do it will be linked from the footer of every page and added here.</>}</p>
+  <p>We hold no accounts or personal profiles. A stored reminder request is the exception: to delete one, {CONTACT_ENABLED ? <>email {CONTACT_EMAIL}. That is the only deletion path.</> : <>a public contact address has to be published first. Until then we have no deletion path.</>} Aggregate analytics and hosting logs are held by Cloudflare under its policies, and information collected by Amazon or Discount Tire is held by them; to ask about that data, contact those companies directly. {CONTACT_ENABLED ? <>For anything else about this page, use the same address or the <a href="/contact/">contact page</a>.</> : null}</p>
 
   <h2>Changes</h2>
   <p>If this page changes, we update the “Last revised” date above. See also our <a href="/terms/">Terms of use</a>.</p>
