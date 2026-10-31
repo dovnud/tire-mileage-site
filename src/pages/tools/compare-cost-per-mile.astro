@@ -1,0 +1,199 @@
+---
+import Base from '../../layouts/Base.astro';
+import FaqList from '../../components/FaqList.astro';
+import { siteSizes } from '../../lib/data';
+import { AMAZON_DISCLOSURE } from '../../lib/retailers';
+import { COMPARE_PATH, PAGE_DATE, REPLACE_PATH, HOLIDAY_PATH } from '../../lib/paths';
+import { compareFaqs } from '../../lib/tool-faqs';
+const title = 'Compare Two Tires by Cost per Mile';
+const description = 'Enter the price you paid and the miles you expect for two tires. See cost per 1,000 miles and break-even. Prices are never filled in.';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Compare cost per mile', href: COMPARE_PATH }];
+const faqs = compareFaqs;
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} published={PAGE_DATE} modified={PAGE_DATE}>
+  <p class="eyebrow">Tool · buying math</p>
+  <h1>Compare two tires: cost per mile</h1>
+  <p class="guide-meta"><span>By TireMileage</span><span>Last updated <time datetime={PAGE_DATE}>{PAGE_DATE}</time></span></p>
+  <div class="answer"><strong>Quick answer:</strong> Cost per 1,000 miles is the price you paid for the set divided by the miles you expect, times 1,000. Break-even miles are how far the higher-priced set must last to match the other set’s cost per mile. Both prices stay blank until you type them. A treadwear grade is not a mileage number.</div>
+
+  <section class="calc" aria-labelledby="cmp-h">
+    <h2 id="cmp-h">Your two sets</h2>
+    <p>Pick tire lines that already have a page here, or skip the lists and type a price and miles. Nothing is pre-filled. The formula is <code>cost per 1,000 miles = set price ÷ (expected miles ÷ 1,000)</code>. Set price is the price per tire times the number of tires. A worked example with invented numbers, labeled as invented, is in the <a href="/guides/tire-cost-per-mile/">cost-per-mile guide</a>.</p>
+    <p><label>Limit the suggestion lists to a size on this site
+      <select id="cmp-size">
+        <option value="">Any size</option>
+        {siteSizes.map((s) => <option value={s.key}>{s.label}</option>)}
+      </select>
+    </label></p>
+    <div class="grid g2">
+      <div class="card" data-side="a">
+        <h3>Tire A</h3>
+        <label>Find a tire line<input type="search" data-q autocomplete="off" placeholder="Brand or line" /></label>
+        <ul class="rel" data-hits hidden></ul>
+        <p data-picked></p>
+        <div class="calc-form">
+          <label>Price you paid per tire ($)<input data-price type="number" min="0" step="0.01" inputmode="decimal" /></label>
+          <label>Tires in the set<input data-count type="number" min="1" step="1" value="4" /></label>
+          <label>Warranty miles or your estimate<input data-miles type="number" min="1" step="1" inputmode="numeric" /></label>
+        </div>
+        <p class="meta" data-warr></p>
+      </div>
+      <div class="card" data-side="b">
+        <h3>Tire B</h3>
+        <label>Find a tire line<input type="search" data-q autocomplete="off" placeholder="Brand or line" /></label>
+        <ul class="rel" data-hits hidden></ul>
+        <p data-picked></p>
+        <div class="calc-form">
+          <label>Price you paid per tire ($)<input data-price type="number" min="0" step="0.01" inputmode="decimal" /></label>
+          <label>Tires in the set<input data-count type="number" min="1" step="1" value="4" /></label>
+          <label>Warranty miles or your estimate<input data-miles type="number" min="1" step="1" inputmode="numeric" /></label>
+        </div>
+        <p class="meta" data-warr></p>
+      </div>
+    </div>
+    <h2>Result</h2>
+    <output id="cmp-out" aria-live="polite">Enter a price and expected miles for each tire.</output>
+    <p class="meta">{AMAZON_DISCLOSURE} Search on Amazon is an affiliate link. Discount Tire links are plain searches. Both open from a tire you pick; this page still does not show a price. Retailer links never change the arithmetic.</p>
+  </section>
+
+  <h2>How break-even is defined</h2>
+  <p>This is arithmetic on your inputs, not a road test.</p>
+  <ul>
+    <li><strong>Cost per 1,000 miles</strong> uses the set price and the miles you typed.</li>
+    <li><strong>Break-even miles</strong> apply when one set costs more than the other. They are the miles that higher-priced set must last so that (higher set price ÷ those miles) equals the lower-priced set’s cost per mile. In symbols: higher set price × lower set’s expected miles ÷ lower set price.</li>
+    <li>If the higher-priced set’s miles are above that break-even, its cost per 1,000 miles is lower. If they are below, it costs more per mile. If the two set prices match, compare cost per 1,000 miles directly.</li>
+    <li>A maker’s mileage warranty is a ceiling the maker will stand behind, not a forecast of your miles. See <a href="/guides/treadwear-vs-warranty-mileage/">treadwear versus warranty mileage</a>. Tires are worn out at 2/32 inch on the <a href={REPLACE_PATH}>replacement lookup</a>.</li>
+  </ul>
+  <p>After you pick a line, open its page for the NHTSA grades and the reminder form (it stores a request and does not send a message). Winter gear and the 2026 rebate dates we could verify are on the <a href={HOLIDAY_PATH}>holiday 2026 gift guide</a>.</p>
+
+  <FaqList faqs={faqs} />
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>
+      <li>The cost-per-1,000-miles formula is this site’s arithmetic, the same one documented in <a href="/guides/tire-cost-per-mile/">How to calculate tire cost per mile</a>. No outside price source is used.</li>
+      <li>Treadwear grades shown for a picked line come from <a href="https://api.nhtsa.gov/tires?dataSet=ratings" rel="noopener">NHTSA’s tire ratings API</a>, via the dataset on <a href="/data/">this site</a>. They are not miles.</li>
+      <li>Warranty sentences appear only for lines listed in our maker-facts file, each with the maker’s page linked beside the sentence.</li>
+    </ol>
+  </section>
+</Base>
+<script>
+  type Row = { name: string; url: string; wear: number | null; warranty: string | null; warrantyUrl: string | null; warrantyLabel: string | null; sizes: string[]; amazon: string; discount: string };
+  const norm = (s: string) => s.toLowerCase().replace(/[\/\-_.,()+]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const money = (n: number) => '$' + n.toFixed(2);
+  const perMile = (n: number) => '$' + n.toFixed(4);
+  const milesFmt = (n: number) => Math.round(n).toLocaleString('en-US');
+  let rows: Row[] = [];
+  const load = () => rows.length ? Promise.resolve(rows) : fetch('/tools/lines.json').then((r) => r.json()).then((j: { lines: Row[] }) => { rows = j.lines; return rows; });
+  const sizeSel = document.getElementById('cmp-size') as HTMLSelectElement;
+  const out = document.getElementById('cmp-out') as HTMLOutputElement;
+
+  function sideBox(el: HTMLElement) {
+    const price = el.querySelector<HTMLInputElement>('[data-price]')!;
+    const count = el.querySelector<HTMLInputElement>('[data-count]')!;
+    const miles = el.querySelector<HTMLInputElement>('[data-miles]')!;
+    const name = (el.querySelector('[data-picked] a')?.textContent || el.querySelector('h3')?.textContent || 'This set').trim();
+    const pr = price.value === '' ? NaN : parseFloat(price.value);
+    const n = parseFloat(count.value);
+    const mi = parseFloat(miles.value);
+    if (!(pr >= 0) || !(n >= 1) || !(mi > 0)) return null;
+    const set = pr * n;
+    return { name, set, miles: mi, per1k: set / (mi / 1000), perMile: set / mi };
+  }
+
+  function render() {
+    const boxes = [...document.querySelectorAll<HTMLElement>('[data-side]')];
+    const a = sideBox(boxes[0]);
+    const b = sideBox(boxes[1]);
+    if (!a || !b) { out.textContent = 'Enter a price and expected miles for each tire. Prices stay blank until you type them.'; return; }
+    const lines = [
+      `${a.name}: set ${money(a.set)}, ${money(a.per1k)} per 1,000 miles (${perMile(a.perMile)} per mile) over ${milesFmt(a.miles)} miles.`,
+      `${b.name}: set ${money(b.set)}, ${money(b.per1k)} per 1,000 miles (${perMile(b.perMile)} per mile) over ${milesFmt(b.miles)} miles.`,
+    ];
+    const cheaper = a.per1k < b.per1k ? a : b.per1k < a.per1k ? b : null;
+    if (cheaper) lines.push(`Lower cost per 1,000 miles: ${cheaper.name}.`);
+    else lines.push('The two sets have the same cost per 1,000 miles at the miles you entered.');
+    if (Math.abs(a.set - b.set) < 0.005) {
+      lines.push('The set prices match, so there is no higher-priced set. Break-even miles are not a separate number in that case.');
+    } else {
+      const hi = a.set > b.set ? a : b;
+      const lo = a.set > b.set ? b : a;
+      if (lo.set === 0) lines.push('The lower set price is zero, so the break-even division is not used.');
+      else {
+        const be = (hi.set * lo.miles) / lo.set;
+        const cmp = hi.miles > be + 0.5 ? 'above' : hi.miles < be - 0.5 ? 'below' : 'equal to';
+        lines.push(`Break-even: ${hi.name} must last ${milesFmt(be)} miles to match ${lo.name}’s cost per mile. The miles you entered for ${hi.name} are ${cmp} that break-even.`);
+      }
+    }
+    out.textContent = lines.join(' ');
+  }
+
+  function paintPick(el: HTMLElement, row: Row) {
+    el.dataset.label = row.name;
+    const picked = el.querySelector('[data-picked]')!;
+    picked.replaceChildren();
+    const page = document.createElement('a');
+    page.href = row.url + '#remind-h';
+    page.textContent = row.name;
+    picked.append(page, ' · NHTSA median treadwear ', String(row.wear ?? '—'), '. ');
+    const amz = document.createElement('a');
+    amz.href = row.amazon;
+    amz.target = '_blank';
+    amz.rel = 'sponsored nofollow noopener';
+    amz.textContent = 'Search on Amazon';
+    const dt = document.createElement('a');
+    dt.href = row.discount;
+    dt.target = '_blank';
+    dt.rel = 'sponsored nofollow noopener';
+    dt.textContent = 'Search at Discount Tire';
+    picked.append(amz, ' · ', dt);
+    const warr = el.querySelector('[data-warr]')!;
+    warr.replaceChildren();
+    if (row.warranty && row.warrantyUrl) {
+      warr.append('Cited warranty (not filled into the miles box): ' + row.warranty + '. ');
+      const src = document.createElement('a');
+      src.href = row.warrantyUrl;
+      src.rel = 'noopener';
+      src.target = '_blank';
+      src.textContent = row.warrantyLabel || 'Source';
+      warr.append(src);
+    } else warr.textContent = 'No maker treadwear-warranty figure is cited for this line. Type the miles from your paperwork, or your own estimate.';
+    render();
+  }
+
+  async function suggest(el: HTMLElement) {
+    const q = el.querySelector<HTMLInputElement>('[data-q]')!;
+    const list = el.querySelector<HTMLUListElement>('[data-hits]')!;
+    const all = await load();
+    const size = sizeSel.value;
+    const toks = norm(q.value).split(' ').filter(Boolean);
+    const pool = all.filter((r) => !size || r.sizes.includes(size));
+    const hits = !toks.length ? [] : pool.filter((r) => toks.every((t) => norm(r.name).includes(t))).slice(0, 8);
+    list.replaceChildren();
+    if (!toks.length) { list.hidden = true; return; }
+    if (!hits.length) {
+      const li = document.createElement('li');
+      li.textContent = size ? 'No matching line in this size on this site. Clear the size or type the price and miles without a line.' : 'No matching line on this site. You can still type a price and miles.';
+      list.append(li);
+      list.hidden = false;
+      return;
+    }
+    for (const row of hits) {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = `${row.name} · treadwear ${row.wear ?? '—'}`;
+      btn.addEventListener('click', () => { q.value = row.name; list.hidden = true; paintPick(el, row); });
+      li.append(btn);
+      list.append(li);
+    }
+    list.hidden = false;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-side]').forEach((el) => {
+    const q = el.querySelector<HTMLInputElement>('[data-q]')!;
+    q.addEventListener('focus', () => void load());
+    q.addEventListener('input', () => void suggest(el));
+    el.querySelectorAll('input').forEach((input) => input.addEventListener('input', render));
+  });
+  sizeSel.addEventListener('change', () => { document.querySelectorAll<HTMLElement>('[data-side]').forEach((el) => void suggest(el)); });
+</script>

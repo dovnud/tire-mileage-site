@@ -111,6 +111,8 @@ const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !==
   {recs.length > shown.length && <p class="meta">Showing {shown.length} of {recs.length} records; the full set is in the <a href="/data/">dataset download</a>.</p>}
   {sizeLinks.length > 0 && <p>Compare this line with others in the same size: {sizeLinks.map((k, i) => <span><a href={sizeUrl(k)}>{k.replace('-', '/').replace('r', 'R')}</a>{i < sizeLinks.length - 1 ? ', ' : ''}</span>)}.</p>}
 
+  <p>Compare this line with another on <a href="/tools/compare-cost-per-mile/">cost per mile</a> (you type both prices). Tread depth and age thresholds are in <a href="/tools/when-to-replace/">when to replace your tires</a>. Winter gear and the 2026 rebate dates we could verify are in the <a href="/guides/holiday-2026-tire-gifts/">holiday 2026 gift guide</a>.</p>
+
   <CostCalc tire={name} />
 
   <h2>Other {l.brand} lines by treadwear</h2>

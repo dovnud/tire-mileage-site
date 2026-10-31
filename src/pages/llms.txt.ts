@@ -1,4 +1,5 @@
 import { LEGAL_LINKS } from '../lib/site';
+import { COMPARE_PATH, REPLACE_PATH, HOLIDAY_PATH } from '../lib/paths';
 import { GUIDES, guideUrl } from '../lib/all-guides';
 import { BANDS, TYPES, RIMS, bandUrl, typeUrl, rimUrl } from '../lib/taxonomy';
 import { siteLines, siteSizes, siteBrands, S, UPDATED, lineUrl, sizeUrl, SOURCE_URL } from '../lib/data';
@@ -16,6 +17,9 @@ ${LEGAL_LINKS.map((l) => `- [${l.name}](${u(l.href)}): ${l.desc}`).join('\n')}
 - [Tire lines by brand](${u('/tires/')})
 - [Guides](${u('/guides/')}) ([Atom feed](${u('/guides/feed.xml')})); [HTML site map](${u('/sitemap/')})
 - [Where to buy](${u('/where-to-buy/')}): TireMileage does not sell tires; it links to Amazon and Discount Tire search results (affiliate disclosure, fitment and DOT-date checks)
+- [Compare two tires: cost per mile](${u(COMPARE_PATH)}): user-entered prices only; cost per 1,000 miles and break-even miles
+- [When to replace your tires](${u(REPLACE_PATH)}): 2/32 inch, 4/32 inch wet and snow notes, and age guidance, each with a source
+- [Holiday 2026 gift guide](${u(HOLIDAY_PATH)}): winter tires and tire gear; Amazon searches; rebate dates only where a maker page publishes them for 2026
 - [Sizes ranked by treadwear](${u('/sizes/')})
 
 ## Guides (each cites its sources and shows a last-updated date)
