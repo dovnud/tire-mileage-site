@@ -45,7 +45,7 @@ const rel = g.related.map((s) => guideBySlug(s));
     </ul></section>}
     {(lines[0] || sizes[0]) && enabledRetailers().some((r) => r.id === 'amazon') && <p class="shop-repeat">{lines[0] ? <a href={buildRetailerUrl('amazon', lines[0].brand, lines[0].line, `${lines[0].brand_slug}/${lines[0].line_slug}`)} target="_blank" rel={LINK_REL}>Search on Amazon</a> : <a href={buildSizeRetailerUrl('amazon', sizes[0].label)} target="_blank" rel={LINK_REL}>Search {sizes[0].label} tires on Amazon</a>}{lines[0] ? ` for the ${lines[0].brand} ${lines[0].line}` : ''}. {AMAZON_DISCLOSURE}</p>}
     <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
-      <ol>{srcs.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a>, {s.publisher}. <span class="why">Retrieved {UPDATED}.</span></li>)}</ol>
+      <ol>{srcs.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a>, {s.publisher}. <span class="why">Retrieved {s.retrieved ?? UPDATED}.</span></li>)}</ol>
       <p class="why">NHTSA ratings are from the <a href="/data/">dataset we publish</a>. Maker statements are the makers’ own claims. We make no price claims. Found an error? See <a href="/about/">About &amp; corrections</a>.</p>
     </section>
     <GuideLinks slugs={rel.map((r) => r.slug)} heading="Keep reading" />

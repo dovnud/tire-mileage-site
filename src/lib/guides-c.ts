@@ -22,14 +22,15 @@ ${table(['Type', 'Designed for', 'Winter marking'], [['All-season', 'Year-round 
 <li>Studded-tire rules vary by state (Michelin).</li>
 </ul>
 <h2>Why winter tires are missing from our UTQG data</h2>
-<p>The federal UTQG rule does not apply to “deep tread, winter-type snow tires” (${X('cfr104', '49 CFR 575.104(c)')}), so a UTQG treadwear grade can’t be used to compare them and we don’t create winter pages from NHTSA data. Only ${ratedLines.filter((l) => /ALL WEATHER|SNOW|WINTER/i.test(l.line)).length} of ${nf(nRatedLines)} lines have winter, snow or all-weather words in their NHTSA names. Our ${A(typeUrl(TYPES[0]), 'all-season')} hub covers lines that carry an all-season marker. Browse by category: ${TYPES.map((t) => A(typeUrl(t), t.label)).join(' · ')}.</p>`,
+<p>The federal UTQG rule does not apply to “deep tread, winter-type snow tires” (${X('cfr104', '49 CFR 575.104(c)')}), so a UTQG treadwear grade can’t be used to compare them and we don’t create winter pages from NHTSA data. Only ${ratedLines.filter((l) => /ALL WEATHER|SNOW|WINTER/i.test(l.line)).length} of ${nf(nRatedLines)} lines have winter, snow or all-weather words in their NHTSA names. Our ${A(typeUrl(TYPES[0]), 'all-season')} hub covers lines that carry an all-season marker. Browse by category: ${TYPES.map((t) => A(typeUrl(t), t.label)).join(' · ')}.</p>
+<p>Gear for measuring tread and pressure, plus manufacturer rebate dates published for 2026, is in ${A('/guides/holiday-2026-tire-gifts/', 'the holiday 2026 gift guide')}.</p>`,
     faqs: [
       { q: 'What is the difference between all-season and all-weather tires?', a: 'All-weather tires carry the three-peak mountain snowflake (3PMSF) symbol and are better in winter than all-season tires, which typically lack it. Cooper adds that all-weather tread typically wears faster.' },
       { q: 'Does M+S mean a tire is winter-rated?', a: 'No. Michelin says M+S is common on all-season tires but is not a substitute for 3PMSF certification.' },
       { q: 'Do I need winter tires if I have AWD?', a: 'Michelin says that if you often drive in snow, ice or freezing temperatures, winter tires are essential even with 4WD or AWD, and should be on all four wheels.' },
       { q: 'Are winter tires UTQG-graded?', a: 'Federal UTQG rules do not apply to deep-tread, winter-type snow tires, so they are not covered by the treadwear, traction and temperature grades.' },
     ],
-    sources: ['michelinSeasons', 'coopers', 'nhtsa', 'cfr104', 'tiaSidewall', 'tiaReplace'], sizes: ['225-65r17', '265-70r17'], lines: [], related: ['utqg-traction-and-temperature-grades', 'what-does-treadwear-rating-mean', 'how-to-find-longest-lasting-tires-for-your-size'],
+    sources: ['michelinSeasons', 'coopers', 'nhtsa', 'cfr104', 'tiaSidewall', 'tiaReplace'], sizes: ['225-65r17', '265-70r17'], lines: [], related: ['holiday-2026-tire-gifts', 'utqg-traction-and-temperature-grades', 'what-does-treadwear-rating-mean', 'how-to-find-longest-lasting-tires-for-your-size'],
   },
   {
     slug: 'how-to-make-tires-last-longer', kicker: 'Maintenance', updated: R,
