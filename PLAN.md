@@ -3,7 +3,7 @@
 Domain: **tiremileage.com** (purchased by the site owner via Cloudflare Registrar 2026-10-25; attached to Pages project `tiremileage`; www 301s to apex). **Launched 2026-10-25 as tranche 1 only** (`npm run build:launch`: PREVIEW=0 TRANCHE=1 SITE_URL=https://tiremileage.com): 300 top lines (by explicit-size NHTSA records, major brands break ties), 155 sizes with 10+ lines, 79 brand hubs, 10 guides, 25 taxonomy hubs = 580 indexable pages. FULL=1 is NOT used; tranche 2/3 follow the schedule and kill rule in section 7. `*.pages.dev` stays noindex via `_headers` host rule. No affiliate sign-ups, no live affiliate links, no ads.
 
 ## 1. Architecture
-- Static **Astro 7** site, output `dist/`, deployed to **Cloudflare Pages** (direct upload via wrangler now; Git-connected builds later). Build needs Node >= 22.23.4 (`.nvmrc`).
+- Static **Astro 7** site, output `dist/`, deployed to **Cloudflare Pages** project `tiremileage` from Git (`dovnud/tire-mileage-site`, production branch `main`, build `PREVIEW=0 node scripts/copy-downloads.mjs && npm run build:launch`). A direct wrangler upload replaces that deployment and does not publish `functions/`. Build needs Node >= 22.23.4 (`.nvmrc`).
 - Data lives in the repo as JSON (`data/normalized/`); pages are generated at build time with `getStaticPaths`. Full build (all lines + all sizes with 5+ lines) measured at **3,465 pages in ~4 s, 74 MB**, so scale is not a build problem (Pages limit is 20k files); indexing tranches are the real throttle.
 - Client JS only for the cost-per-mile calculator (inline, no framework).
 - `PREVIEW=1` (default) adds `noindex` meta + `X-Robots-Tag` header. Launch build: `PREVIEW=0 SITE_URL=https://<domain> FULL=1 npm run build`.

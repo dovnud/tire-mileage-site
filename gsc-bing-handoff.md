@@ -38,9 +38,8 @@ Site is LIVE at https://tiremileage.com (tranche 1 only: 580 URLs). www 301-redi
 Tranche 1 = 300 lines + 155 sizes + hubs + guides. Watch "Crawled - currently not indexed" daily. Kill/hold rule: if < 30% of the 580 URLs are indexed by day 21 (2026-11-15), stop expanding. If > 60% indexed by about day 8-14, consider tranche 2 (sizes with 5-9 lines, next ~600 lines).
 
 ## Redeploy / resubmit
+Production publishes when `main` is pushed. Pages project `tiremileage` builds with `PREVIEW=0 node scripts/copy-downloads.mjs && npm run build:launch` and publishes `dist/` plus `functions/`. Do not direct-upload with wrangler; that replaces the Git deployment.
 ```
-cd /workspace/tire-site
 npm run build:launch && PREVIEW=0 npm run check
-npx wrangler pages deploy dist --project-name tiremileage --branch main
 PREVIEW=0 SITE_URL=https://tiremileage.com node scripts/indexnow.mjs --submit
 ```
