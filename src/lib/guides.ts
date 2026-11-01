@@ -4,7 +4,7 @@ import { allLines, allSizes, hasLine, lineUrl, sizeSet, sizeUrl, S, UPDATED, fmt
 import records from '../../data/normalized/records.json';
 import { BANDS, TYPES, ratedLines, bandUrl, typeUrl, rimUrl, share } from './taxonomy';
 
-export interface Source { id: string; label: string; url: string; publisher: string }
+export interface Source { id: string; label: string; url: string; publisher: string; retrieved?: string }
 const R = UPDATED;
 export const SRC: Record<string, Source> = {
   cfr104: { id: 'cfr104', label: '49 CFR § 575.104 Uniform tire quality grading standards', url: 'https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-575/subpart-B/section-575.104', publisher: 'U.S. Code of Federal Regulations (eCFR)' },
@@ -20,6 +20,17 @@ export const SRC: Record<string, Source> = {
   michelinTest: { id: 'michelinTest', label: 'Michelin launches Defender 2 tire (press release, Sept. 14, 2022)', url: 'https://michelinmedia.com/defender2/', publisher: 'Michelin North America' },
   coopers: { id: 'coopers', label: 'All-Season vs. All-Weather Tires', url: 'https://www.coopertire.com/en_US/tire-education/tire-safety/all-season-vs-all-weather.html', publisher: 'Cooper Tire' },
   contiWarranty: { id: 'contiWarranty', label: 'Mileage Warranty (support article, updated June 12, 2026)', url: 'https://continentaltire.zendesk.com/hc/en-us/articles/37882201800212-Mileage-Warranty', publisher: 'Continental Tire' },
+  michelinTread: { id: 'michelinTread', label: 'Tire Tread Depth: Legal Limits and What to Know', url: 'https://www.michelinman.com/auto/auto-tips-and-advice/tires-101/tire-tread-depth', publisher: 'Michelin USA', retrieved: '2026-10-31' },
+  michelinWinter: { id: 'michelinWinter', label: 'How Long Do Winter Tires Last?', url: 'https://www.michelinman.com/auto/auto-tips-and-advice/preparation-for-winter/how-long-do-winter-tires-last', publisher: 'Michelin USA', retrieved: '2026-10-31' },
+  michelinFaq: { id: 'michelinFaq', label: 'Michelin FAQs', url: 'https://www.michelinman.com/auto/assistance/michelin-faqs', publisher: 'Michelin USA', retrieved: '2026-10-31' },
+  michelinFallNorth: { id: 'michelinFallNorth', label: '2026 Michelin Fall-North Promotion', url: 'https://www.michelinman.com/deals-promotions-and-rebates/michelin-auto-winter-2026', publisher: 'Michelin USA', retrieved: '2026-10-31' },
+  michelinFallSouth: { id: 'michelinFallSouth', label: '2026 Michelin Fall-South Promotion', url: 'https://www.michelinman.com/deals-promotions-and-rebates/michelin-auto-fall-2026', publisher: 'Michelin USA', retrieved: '2026-10-31' },
+  bridgestoneTread: { id: 'bridgestoneTread', label: 'Tire Tread Wear & Causes', url: 'https://www.bridgestonetire.com/learn/maintenance/tire-tread-wear-causes/', publisher: 'Bridgestone', retrieved: '2026-10-31' },
+  ustmaGuide: { id: 'ustmaGuide', label: 'Tire Care & Safety Guide (PDF)', url: 'https://www.ustires.org/sites/default/files/2024-08/Tire%20Care%20and%20Safety%20Guide.pdf', publisher: 'U.S. Tire Manufacturers Association', retrieved: '2026-10-31' },
+  wiTread: { id: 'wiTread', label: 'Enforcement FAQ: when a tire is illegal', url: 'https://wisconsindot.gov/pages/safety/enforcement/faqs/default.aspx', publisher: 'Wisconsin Department of Transportation', retrieved: '2026-10-31' },
+  miTread: { id: 'miTread', label: 'Michigan Compiled Laws 257.710', url: 'https://www.legislature.mi.gov/Laws/MCL?objectName=MCL-257-710', publisher: 'Michigan Legislature', retrieved: '2026-10-31' },
+  cfr139: { id: 'cfr139', label: '49 CFR § 571.139 New pneumatic radial tires for light vehicles', url: 'https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.139', publisher: 'U.S. Code of Federal Regulations (eCFR)', retrieved: '2026-10-31' },
+  contiOffers: { id: 'contiOffers', label: 'Continental Tire Offers', url: 'https://continentaltire.com/offers', publisher: 'Continental Tire', retrieved: '2026-10-31' },
 };
 export interface Faq { q: string; a: string }
 export interface Guide { slug: string; title: string; h1: string; description: string; kicker: string; updated: string; answer: string; body: string; faqs: Faq[]; sources: string[]; sizes: string[]; lines: string[]; related: string[] }

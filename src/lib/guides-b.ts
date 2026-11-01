@@ -25,7 +25,7 @@ ${table(['Made-up input', 'Tire A', 'Tire B'], [['Installed price for the set', 
 <li><strong>Upkeep changes the miles.</strong> See ${A('/guides/how-to-make-tires-last-longer/', 'making tires last longer')}.</li>
 </ul>
 <h2>Try your own numbers</h2>
-<p>The calculator below runs entirely in your browser and nothing is pre-filled. Size pages carry a per-row version: ${Z('225-65r17')}, ${Z('235-55r19')}.</p>
+<p>The calculator below runs entirely in your browser and nothing is pre-filled. Size pages carry a per-row version: ${Z('225-65r17')}, ${Z('235-55r19')}. To put two quotes side by side, including tire lines that already have a page here, use ${A('/tools/compare-cost-per-mile/', 'compare two tires: cost per mile')}. Those price boxes also stay empty until you type them.</p>
 <!--CALC-->`,
     faqs: [
       { q: 'How do I calculate cost per mile for tires?', a: 'Divide the total installed price of the set by the miles you expect to get. For example (made-up numbers), an $800 set expected to last 60,000 miles costs about $13.33 per 1,000 miles.' },
@@ -48,6 +48,7 @@ ${table(['Made-up input', 'Tire A', 'Tire B'], [['Installed price for the set', 
 <li><strong>Penny test:</strong> place a penny upside down in a major groove with the portrait facing you. If you can see the top of the portrait, replace the tire (NHTSA). TIA says to check at any point in any major groove and then see a tire professional.</li>
 </ul>
 <p>Continental’s mileage warranty counts a tire as worn out at the same point, 2/32 inch (1.6 mm) (${X('contiWarranty', 'Continental')}); the ${A('/guides/tire-cost-per-mile/', 'cost-per-mile math')} uses the same endpoint.</p>
+<p>A lookup that matches a depth and a DOT code you type to these thresholds is ${A('/tools/when-to-replace/', 'when to replace your tires')}.</p>
 <h2>2. Damage and irregular wear</h2>
 <p>Per TIA: if any steel or fabric is visible, replace the tire immediately; have a professional look at bulges, irregular wear or anything abnormal. NHTSA adds that you should stop using tires with cuts, cracks or bulges, or irregular wear from underinflation or overloading, and take note of changes in noise or vibration. Don’t use a full-size spare as a replacement for worn tires except in an emergency.</p>
 <h2>3. Age</h2>

@@ -46,6 +46,7 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
 
   <div class="sec-h"><h2>Start with a guide</h2><a href="/guides/">All guides →</a></div>
   <ul class="rel">{['what-does-treadwear-rating-mean', 'dot-tire-date-code', 'load-index-and-speed-rating', 'why-your-size-may-be-missing', 'treadwear-vs-warranty-mileage', 'tire-cost-per-mile'].map((s) => { const g = GUIDES.find((x) => x.slug === s)!; return <li><a href={guideUrl(g)}>{g.h1}</a><span>{g.kicker}</span></li>; })}</ul>
+  <p>Tools: <a href="/tools/compare-cost-per-mile/">compare two tires by cost per mile</a>, <a href="/tools/when-to-replace/">when to replace your tires</a>, and the <a href="/guides/holiday-2026-tire-gifts/">holiday 2026 gift guide</a>.</p>
 
   <div class="sec-h"><h2>Browse</h2></div>
   <div class="grid g3">

@@ -1,0 +1,103 @@
+---
+import Base from '../../layouts/Base.astro';
+import FaqList from '../../components/FaqList.astro';
+import { REPLACE_PATH, PAGE_DATE, COMPARE_PATH, HOLIDAY_PATH } from '../../lib/paths';
+import { replaceFaqs } from '../../lib/tool-faqs';
+import { SRC } from '../../lib/guides';
+import { UPDATED } from '../../lib/data';
+const title = 'Tire Replacement Lookup: Tread Depth and Age';
+const description = 'Look up 2/32-inch replacement, the 4/32-inch wet and snow notes, and tire age. Each line cites NHTSA, a state page, Bridgestone, or Michelin.';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'When to replace', href: REPLACE_PATH }];
+const faqs = replaceFaqs;
+const sources = ['nhtsa', 'cfr139', 'bridgestoneTread', 'wiTread', 'miTread', 'michelinTread', 'michelinWinter', 'cfr574'].map((id) => SRC[id]);
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} published={PAGE_DATE} modified={PAGE_DATE}>
+  <p class="eyebrow">Tool · safety</p>
+  <h1>When to replace your tires</h1>
+  <p class="guide-meta"><span>By TireMileage</span><span>Last updated <time datetime={PAGE_DATE}>{PAGE_DATE}</time></span><span>{sources.length} sources cited</span></p>
+  <div class="answer"><strong>Quick answer:</strong> NHTSA says to replace a tire at 2/32 inch of tread. Bridgestone says most states use that depth as a minimum. Michelin says wet braking starts to drop at 4/32 inch, and its winter-tire page quotes a 4/32-inch snow note from Consumer Reports’ tire-testing program. NHTSA says some manufacturers recommend replacement at six to 10 years even when tread remains. This page does not add a threshold the sources do not state.</div>
+
+  <h2>Published thresholds</h2>
+  <p>The longer <a href="/guides/when-to-replace-tires/">replacement guide</a> walks through wear bars, damage and where to mount two new tires. This page is the lookup. One sixteenth of an inch is the same depth as 2/32 inch.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Threshold</th><th>What the source says</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>2/32 inch</td><td>Tires are not safe and should be replaced when the tread is worn to 2/32 of an inch. Check tread at least monthly. Wear bars sit in the grooves; when the tread is level with them, replace the tire. The penny test: penny upside down in the tread; if you can see the top of the portrait, replace the tire.</td><td><a href={SRC.nhtsa.url} rel="noopener">NHTSA TireWise</a></td></tr>
+      <tr><td>1/16 inch indicators</td><td>New pneumatic radial tires for light vehicles (GVWR of 10,000 pounds or less, with the exclusions in the standard) must have treadwear indicators that show when the tire has worn to one sixteenth of an inch. This is an equipment rule for new tires, not a state citation for a driver.</td><td><a href={SRC.cfr139.url} rel="noopener">49 CFR 571.139</a></td></tr>
+      <tr><td>2/32 inch, most states</td><td>Bridgestone says most states have a 2/32-inch minimum tread depth, and Bridgestone recommends replacement when any portion of the tread is at 2/32 inch. That is the maker’s statement about state rules, not a 50-state survey by this site.</td><td><a href={SRC.bridgestoneTread.url} rel="noopener">Bridgestone</a></td></tr>
+      <tr><td>Less than 2/32 inch</td><td>Wisconsin says a tire is illegal if ply or cord is exposed, or if there is less than 2/32 inch of tread at two points at least 15 inches apart in any major groove, at or near the center of the tire.</td><td><a href={SRC.wiTread.url} rel="noopener">Wisconsin DOT</a></td></tr>
+      <tr><td>2/32 inch, and 4/32 inch on some fronts</td><td>Michigan sets 2/32 inch front and rear for passenger cars and vehicles under 10,000 pounds. For vehicles weighing 10,000 pounds or more, the minimum is 4/32 inch on the front and 2/32 inch on the rear. Measurements are not taken on the wear indicators. The 4/32-inch figure here is a heavy-vehicle front-tire rule, not the wet-road note below.</td><td><a href={SRC.miTread.url} rel="noopener">Michigan MCL 257.710</a></td></tr>
+      <tr><td>4/32 inch, wet roads</td><td>Michelin says wet-road braking begins declining noticeably at 4/32 inch, and that drivers who are often in heavy rain can treat 4/32 inch as a safety buffer. The same page says Michelin designs tires to perform to the 2/32-inch limit, and that replacing earlier is not required for normal use.</td><td><a href={SRC.michelinTread.url} rel="noopener">Michelin tread depth</a></td></tr>
+      <tr><td>4/32 inch, snow</td><td>Michelin’s winter-tire page quotes the Consumer Reports tire-testing program: start looking for replacements at 4/32 of an inch, and if you drive in snow, have at least that depth in the middle of winter. The quote is reported by Michelin; this site did not re-run that test.</td><td><a href={SRC.michelinWinter.url} rel="noopener">Michelin, quoting Consumer Reports</a></td></tr>
+      <tr><td>6 to 10 years</td><td>As tires age they are more prone to failure. Some vehicle and tire manufacturers recommend replacing tires that are six to 10 years old regardless of treadwear. Aging cannot be seen. The concern is greater for low-mileage vehicles, recreational vehicles, spares, and the southern Sun Belt. The last four digits of the DOT number are the week and year; NHTSA’s example 0308 is the third week of 2008. The number may be on only one sidewall.</td><td><a href={SRC.nhtsa.url} rel="noopener">NHTSA TireWise</a></td></tr>
+      <tr><td>5 years and 10 years</td><td>Michelin recommends a professional inspection after five years of use and replacement by ten years from the manufacture date, regardless of tread depth. Michelin’s article also describes 10 years as an NHTSA standard. NHTSA’s TireWise page, cited above, states a six-to-10-year range from some manufacturers, not a single NHTSA maximum of 10 years.</td><td><a href={SRC.michelinWinter.url} rel="noopener">Michelin winter tires</a></td></tr>
+      <tr><td>Damage, any depth</td><td>Stop using a tire with cuts, cracks or bulges, or irregular wear from underinflation or overloading. Do not use the spare as a replacement for worn tires. NHTSA also says to notice changes in noise or vibration and to ask a tire service professional.</td><td><a href={SRC.nhtsa.url} rel="noopener">NHTSA TireWise</a></td></tr>
+    </tbody>
+  </table></div>
+  <p class="tbl-note">Week-and-year coding is also in <a href={SRC.cfr574.url} rel="noopener">49 CFR 574.5</a> (example 0109 is the first full week of 2009). The full sidewall walk-through is <a href="/guides/dot-tire-date-code/">how to read the DOT date code</a>.</p>
+
+  <section class="calc" aria-labelledby="look-h">
+    <h2 id="look-h">Look up a depth and a date code</h2>
+    <p>The boxes start empty. The note below repeats the published lines that match the numbers you type. It does not add a rule.</p>
+    <form class="calc-form" onsubmit="return false">
+      <label>Tread depth (32nds of an inch)<input id="td-depth" type="number" min="0" step="1" inputmode="numeric" /></label>
+      <label>DOT date code, last four digits<input id="td-dot" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="for example 0308" /></label>
+    </form>
+    <output id="td-out" aria-live="polite">Enter a tread depth, a four-digit date code, or both.</output>
+  </section>
+
+  <h2>Reminder form already on tire pages</h2>
+  <p>The rotation/replacement reminder is on every tire line page and every size page, under the heading “Request a rotation/replacement reminder.” Submitting stores the request. It does not send a message. Open it on <a href="/tires/michelin/defender-2/#remind-h">Michelin Defender 2</a>, on <a href="/sizes/225-65r17/#remind-h">225/65R17</a>, or on the <a href="/guides/tire-cost-per-mile/#remind-h">cost-per-mile guide</a>. To compare two quotes you type yourself, use <a href={COMPARE_PATH}>compare two tires: cost per mile</a>. Winter gear is in the <a href={HOLIDAY_PATH}>holiday 2026 gift guide</a>.</p>
+
+  <FaqList faqs={faqs} />
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>{sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a>, {s.publisher}. <span class="why">Retrieved {s.retrieved ?? UPDATED}.</span></li>)}</ol>
+    <p class="why">Found an error? See <a href="/about/">About &amp; corrections</a>.</p>
+  </section>
+</Base>
+<script is:inline>
+(function () {
+  var depth = document.getElementById('td-depth');
+  var dot = document.getElementById('td-dot');
+  var out = document.getElementById('td-out');
+  function onDepth(v) {
+    if (v === '') return '';
+    var n = Number(v);
+    if (!isFinite(n) || n < 0) return 'Enter tread depth as a number of 32nds of an inch, such as 5 for 5/32.';
+    var bits = ['You entered ' + n + '/32 inch.'];
+    if (n < 2) bits.push('That is below 2/32 inch. NHTSA says a tire at 2/32 inch is not safe and should be replaced, so a shallower tread is past that point. Bridgestone recommends replacement at 2/32 inch. Wisconsin says less than 2/32 inch, measured at two points at least 15 inches apart in a major groove, is illegal.');
+    else if (n === 2) bits.push('That is 2/32 inch. NHTSA says the tire is not safe and should be replaced. Bridgestone recommends replacement when any portion of the tread is at 2/32 inch. Wisconsin’s rule, as published, is less than 2/32 inch rather than exactly 2/32, measured as that page describes.');
+    else if (n <= 4) bits.push('That is still above the 2/32-inch replacement point NHTSA and Bridgestone state. Michelin says wet-road braking has begun declining by 4/32 inch, and that 4/32 inch is a buffer for frequent rain, while its tires are designed to the 2/32-inch limit in normal use. Michelin’s winter page quotes Consumer Reports’ tire-testing program advising shoppers to start at 4/32 inch and to keep that depth mid-winter in snow.');
+    else bits.push('That is deeper than both the 2/32-inch replacement point and the 4/32-inch wet and snow notes on this page. Those sources still say to replace a tire for cuts, cracks, bulges, irregular wear, or the age ranges below. This is not a statement that the tire is safe.');
+    return bits.join(' ');
+  }
+  function onDot(v) {
+    var s = (v || '').trim();
+    if (!s) return '';
+    if (!/^\d{4}$/.test(s)) return 'Enter the last four digits of the DOT code, such as 0308.';
+    var week = parseInt(s.slice(0, 2), 10);
+    var year = 2000 + parseInt(s.slice(2), 10);
+    if (week < 1 || week > 53) return 'The first two digits are the week. NHTSA’s example 0308 is week 3 of 2008. A week outside 1–53 does not match that pattern.';
+    var now = new Date();
+    var y = now.getFullYear();
+    var age = y - year;
+    var when = now.toISOString().slice(0, 10);
+    var bits = ['Code ' + s + ' reads as week ' + week + ' of ' + year + ', using NHTSA’s reading of 0308 as the third week of 2008. This box does not convert the week into a calendar day. The date on this device is ' + when + '.'];
+    if (age < 0) bits.push('That manufacture year is after the calendar year on this device.');
+    else if (age === 0) bits.push('The manufacture year is the same calendar year as this device.');
+    else bits.push('That manufacture year is ' + age + ' calendar year' + (age === 1 ? '' : 's') + ' before ' + y + '.');
+    if (age >= 10) bits.push('Michelin’s ten-year replacement recommendation (from the manufacture date, regardless of tread) covers a tire from that year. NHTSA’s six-to-10-year range also includes it.');
+    else if (age >= 6) bits.push('That age is inside the six-to-10-year span NHTSA says some manufacturers recommend for replacement regardless of tread. Michelin’s five-year inspection point is also past.');
+    else if (age >= 5) bits.push('Michelin recommends a professional inspection after five years of use. NHTSA’s six-to-10-year replacement range has not started for this manufacture year.');
+    else if (age >= 0) bits.push('That manufacture year is newer than the five-year inspection point Michelin states and newer than NHTSA’s six-to-10-year range. Tread depth and damage are separate checks.');
+    return bits.join(' ');
+  }
+  function go() {
+    var parts = [onDepth(depth.value), onDot(dot.value)].filter(Boolean);
+    out.textContent = parts.length ? parts.join(' ') : 'Enter a tread depth, a four-digit date code, or both.';
+  }
+  depth.addEventListener('input', go);
+  dot.addEventListener('input', go);
+})();
+</script>
