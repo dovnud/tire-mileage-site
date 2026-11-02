@@ -9,8 +9,8 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
 ---
 <Base title="Tire Treadwear Ratings & Cost-per-Mile Calculator (NHTSA UTQG Data)" description={`Compare tire treadwear, traction and temperature grades from ${S.raw_records.toLocaleString()} NHTSA UTQG records, by tire line and by size, with a cost-per-mile calculator.`} ld={ld}>
   <section class="hero" aria-labelledby="h1">
-    <p class="eyebrow" style="color:#9fb8d6;position:relative">Independent · built on U.S. government data</p>
-    <h1 id="h1">Find tires that actually last.</h1>
+    <p class="eyebrow" style="color:#9fb8d6;position:relative">NHTSA UTQG ratings</p>
+    <h1 id="h1">Tire treadwear ratings by size</h1>
     <p class="lead">Compare treadwear, wet traction and heat grades for {S.normalized_lines.toLocaleString()} tire lines from {S.normalized_brands} brands, ranked by size, then click through to a retailer to buy.</p>
     <form id="size-lookup" class="lookup" action="/sizes/" role="search">
       <label class="sr" for="size-in">Find tires for your size, for example 225/65R17</label>
@@ -31,14 +31,9 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
     </ol>
   </section>
 
-  <div class="stats" role="list">
-    <div class="stat" role="listitem"><b>{S.raw_records.toLocaleString()}</b><span>NHTSA UTQG records</span></div>
-    <div class="stat" role="listitem"><b>{S.normalized_lines.toLocaleString()}</b><span>tire lines</span></div>
-    <div class="stat" role="listitem"><b>{S.normalized_brands}</b><span>brands</span></div>
-    <div class="stat" role="listitem"><b>{S.distinct_explicit_sizes}</b><span>sizes named in the data</span></div>
-  </div>
+  <p>The file behind these pages has {S.raw_records.toLocaleString()} NHTSA UTQG records, {S.normalized_lines.toLocaleString()} tire lines, {S.normalized_brands} brands, and {S.distinct_explicit_sizes} sizes named in the data.</p>
 
-  <div class="answer"><strong>Quick answer:</strong> TireMileage turns the U.S. government’s tire grading data (NHTSA UTQG) into plain-English comparisons. Treadwear is a relative durability grade (higher = slower wear on NHTSA’s test), not a mileage promise. Pick a size or tire line, then click through to Amazon or Discount Tire to check the price and buy; the calculator turns your own quote into cost per 1,000 miles.</div>
+  <div class="answer"><strong>Quick answer:</strong> TireMileage turns the U.S. government’s tire grading data (NHTSA UTQG) into comparisons by size and by tire line. Treadwear is a relative durability grade (higher = slower wear on NHTSA’s test), not a mileage promise. Pick a size or tire line, then click through to Amazon or Discount Tire to check the price and buy; the calculator turns your own quote into cost per 1,000 miles.</div>
 
   <div class="sec-h"><h2>Highest-treadwear lines</h2><a href="/tires/">All tire lines →</a></div>
   <p class="meta" style="margin-top:-4px">Search on Amazon opens a search for that tire. View &amp; shop opens the full line page.</p>
@@ -58,5 +53,5 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
     <a class="card" href="/rim/"><h3>By rim diameter</h3><p class="meta">Every size NHTSA lists for each wheel diameter.</p></a>
     <a class="card" href="/methodology/"><h3>Methodology &amp; data</h3><p class="meta">Where every number comes from, plus CSV/JSON downloads.</p></a>
   </div>
-  <p class="note"><strong>Honest limits.</strong> NHTSA publishes grades, not prices or warranties. We do not scrape retailers or guess numbers: prices are not shown, and a maker’s warranty mileage appears only where we cite the maker’s own page.</p>
+  <p class="note"><strong>What the file leaves out.</strong> NHTSA publishes grades, not prices or warranties. Prices are not shown. A maker’s warranty mileage appears only where the maker’s own page states it.</p>
 </Base>

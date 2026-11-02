@@ -9,13 +9,13 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 export const ogSlugForLine = (l: { brand_slug: string; line_slug: string }) => (FULL ? `brand/${l.brand_slug}` : `line/${l.brand_slug}/${l.line_slug}`);
 export function ogEntries(): OgEntry[] {
   const e: OgEntry[] = [
-    { slug: 'default', kicker: 'TireMileage', title: 'Which tires last longest? Government data, plain English.', sub: `${S.normalized_lines.toLocaleString()} tire lines from NHTSA’s UTQG ratings` },
-    { slug: 'guides/index', kicker: 'Guides', title: 'Tire guides backed by sources', sub: `${GUIDES.length} guides · every claim cited` },
+    { slug: 'default', kicker: 'TireMileage', title: 'Tire treadwear ratings by size', sub: `${S.normalized_lines.toLocaleString()} tire lines from NHTSA’s UTQG ratings` },
+    { slug: 'guides/index', kicker: 'Guides', title: 'Tire guides', sub: `${GUIDES.length} guides on treadwear, warranties, and sidewalls` },
     { slug: 'treadwear/index', kicker: 'Browse by treadwear', title: 'Tires by treadwear band', sub: 'Under 200 to 800 and up' },
     { slug: 'type/index', kicker: 'Browse by type', title: 'Tires by category', sub: 'All-season, touring, performance, all-terrain, highway' },
     { slug: 'rim/index', kicker: 'Browse by rim size', title: 'Tires by rim diameter', sub: `${RIMS[0]}- to ${RIMS[RIMS.length - 1]}-inch` },
   ];
-  for (const g of GUIDES) e.push({ slug: `guides/${g.slug}`, kicker: `Guide · ${g.kicker}`, title: g.h1, sub: `Updated ${g.updated} · sources cited` });
+  for (const g of GUIDES) e.push({ slug: `guides/${g.slug}`, kicker: `Guide · ${g.kicker}`, title: g.h1, sub: `Updated ${g.updated}` });
   for (const b of BANDS) e.push({ slug: `treadwear/${b.slug}`, kicker: 'Treadwear band', title: `Tires with treadwear ${b.label}`, sub: `${inBand(b).length} NHTSA-rated lines` });
   for (const t of TYPES) e.push({ slug: `type/${t.slug}`, kicker: 'Tire category', title: `${t.label} tires: treadwear and grades`, sub: `${inType(t).length} NHTSA-rated lines carry this marker` });
   for (const r of RIMS) e.push({ slug: `rim/${rimSlug(r)}`, kicker: 'Rim diameter', title: `${r}-inch tires: sizes and treadwear`, sub: `${sizesForRim(r).length} sizes in NHTSA’s data` });
@@ -35,13 +35,12 @@ export async function renderOg(e: OgEntry): Promise<Buffer> {
   const lines = wrap(e.title, 26, 4);
   const fs = lines.length > 3 ? 56 : 64;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b2545"/><stop offset="1" stop-color="#123a6b"/></linearGradient></defs>
-<rect width="1200" height="630" fill="url(#g)"/>
+<rect width="1200" height="630" fill="#0b2545"/>
 <circle cx="1080" cy="120" r="210" fill="none" stroke="#ffffff" stroke-opacity=".07" stroke-width="46"/>
 <circle cx="1080" cy="120" r="110" fill="none" stroke="#ffffff" stroke-opacity=".05" stroke-width="24"/>
 <rect x="64" y="64" width="12" height="44" rx="3" fill="#ffb938"/>
 <text x="92" y="98" font-family="DejaVu Sans, sans-serif" font-weight="700" font-size="34" fill="#ffffff">TireMileage</text>
-<text x="64" y="190" font-family="DejaVu Sans, sans-serif" font-weight="700" font-size="26" letter-spacing="3" fill="#ffb938">${esc(e.kicker.toUpperCase().slice(0, 44))}</text>
+<text x="64" y="190" font-family="DejaVu Sans, sans-serif" font-weight="700" font-size="26" fill="#ffb938">${esc(e.kicker.slice(0, 44))}</text>
 ${lines.map((ln, i) => `<text x="64" y="${262 + i * (fs + 14)}" font-family="DejaVu Sans, sans-serif" font-weight="700" font-size="${fs}" fill="#ffffff">${esc(ln)}</text>`).join('\n')}
 <text x="64" y="560" font-family="DejaVu Sans, sans-serif" font-size="30" fill="#c9d8ee">${esc(e.sub.slice(0, 70))}</text>
 <text x="64" y="598" font-family="DejaVu Sans, sans-serif" font-size="22" fill="#8fa8c9">Source: NHTSA UTQG ratings · independent · sells nothing</text>

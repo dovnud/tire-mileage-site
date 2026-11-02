@@ -66,9 +66,9 @@ ${table(['Drivetrain', 'Pattern'], [['Front-wheel drive', 'Fronts go straight ba
   },
   {
     slug: 'how-much-do-tires-cost', kicker: 'Buying', updated: R,
-    title: 'How Much Do Tires Cost? What Drives the Price (No Made-Up Numbers)', h1: 'How much do tires cost?',
-    description: 'We don’t quote tire prices we can’t source. What actually drives tire cost, what an installed quote includes, how to compare quotes fairly, and why cost per mile beats sticker price.',
-    answer: 'It depends mainly on your size, the tire’s speed and load ratings, its type and maker, and your installer’s fees, so there is no single honest number. We don’t have a licensed price feed yet, so rather than guess we show how to get comparable quotes and convert them into cost per mile.',
+    title: 'How Much Do Tires Cost? What Drives the Price', h1: 'How much do tires cost?',
+    description: 'We don’t quote tire prices we can’t source. What drives tire cost, what an installed quote includes, how to compare quotes fairly, and why cost per mile beats sticker price.',
+    answer: 'It depends mainly on your size, the tire’s speed and load ratings, its type and maker, and your installer’s fees, so there is no single price that fits every tire. We don’t have a licensed price feed yet, so rather than guess we show how to get comparable quotes and convert them into cost per mile.',
     body: `
 <h2>Why we don’t print a price range</h2>
 <p>Prices change by retailer, region and week, and we haven’t licensed a price source. The only market-size figure we can cite is NHTSA’s: owners buy approximately 340 million replacement tires a year (${X('nhtsa', 'NHTSA')}). Anything more specific would be a guess, so this guide covers what moves the price.</p>

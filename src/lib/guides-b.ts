@@ -4,7 +4,7 @@ export const GUIDES_B: Guide[] = [
   {
     slug: 'tire-cost-per-mile', kicker: 'Buying math', updated: R,
     title: 'How to Calculate Tire Cost Per Mile (With a Worked Example)', h1: 'How to calculate tire cost per mile',
-    description: 'Cost per mile = what you pay for the set ÷ miles you actually get. A worked example with clearly made-up inputs, what to include, why warranty miles are an upper bound, and a calculator.',
+    description: 'Cost per mile = what you pay for the set ÷ the miles you get from it. A worked example with invented inputs, what to include, why warranty miles are an upper bound, and a calculator.',
     answer: 'Divide the total you pay for a set by the miles you expect to get from it. Use the out-the-door price, and be careful with the miles: a maker’s warranty is a ceiling the maker will stand behind, not a forecast. The example below uses made-up numbers to show the method.',
     body: `
 <h2>The formula</h2>

@@ -33,7 +33,7 @@ const rel = g.related.map((s) => guideBySlug(s));
   <article class="guide-body">
     <p class="eyebrow">{g.kicker} · guide</p>
     <h1>{g.h1}</h1>
-    <p class="guide-meta"><span>By {SITE_NAME}</span><span>Last updated <time datetime={g.updated}>{g.updated}</time></span><span>{srcs.length} sources cited</span><a href="/methodology/">How we work</a></p>
+    <p class="guide-meta"><span>Last updated <time datetime={g.updated}>{g.updated}</time></span></p>
     {lines[0] ? <ShopCta brand={lines[0].brand} line={lines[0].line} brandSlug={lines[0].brand_slug} lineSlug={lines[0].line_slug} /> : sizes[0] && <ShopSize label={sizes[0].label} />}
     <div class="answer"><strong>Short answer:</strong> {g.answer}</div>
     {toc.length > 2 && <nav class="toc" aria-label="On this page"><strong>On this page</strong><ol>{toc.map((x) => <li><a href={`#${x.id}`}>{x.t}</a></li>)}</ol></nav>}
