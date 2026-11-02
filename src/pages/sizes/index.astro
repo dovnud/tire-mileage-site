@@ -10,5 +10,5 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Sizes', href: '/sizes/' }]
     <thead><tr><th>Size</th><th class="n">Rated lines</th></tr></thead>
     <tbody>{siteSizes.map((s) => <tr><td><a href={sizeUrl(s.key)}>{s.label}</a></td><td class="n">{s.lines}</td></tr>)}</tbody>
   </table></div>
-  <p class="note"><strong>Honest limit:</strong> the remaining {S.records_all_sizes_or_range.toLocaleString()} NHTSA records ({Math.round(100 * S.records_all_sizes_or_range / S.raw_records)}%) are filed as “All sizes” or size ranges, so common sizes like 225/65R17 show only the lines NHTSA names explicitly. A tire-size catalog feed is needed to build complete size pages.</p>
+  <p class="note"><strong>Coverage limit:</strong> the remaining {S.records_all_sizes_or_range.toLocaleString()} NHTSA records ({Math.round(100 * S.records_all_sizes_or_range / S.raw_records)}%) are filed as “All sizes” or size ranges, so common sizes like 225/65R17 show only the lines NHTSA names explicitly. A tire-size catalog feed is needed to build complete size pages.</p>
 </Base>

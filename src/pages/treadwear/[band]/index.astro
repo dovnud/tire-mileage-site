@@ -24,7 +24,7 @@ const topSizes = [...sizeCount.entries()].sort((a, c) => c[1] - a[1] || a[0].loc
 const prev = BANDS[i - 1], next = BANDS[i + 1];
 const title = `Tires With Treadwear ${b.label}: ${n} UTQG-Rated Lines (NHTSA Data)`;
 const description = `${n} tire lines fall in the ${b.label} NHTSA treadwear band (by median grade), from ${brands.length} brands. See the brands, categories, traction/temperature grades and sizes.`;
-const answer = `${n} of ${ratedLines.length.toLocaleString()} NHTSA-rated tire lines (${share(n, ratedLines.length)}%) fall in the ${b.label} treadwear band (by median grade), from ${brands.length} brands; individual records in these lines range from ${lo} to ${hi}. ${brands[0].brand} has the most lines here (${brands[0].n}). ${aa}% of these lines’ records carry traction AA.`;
+const answer = `${n} of ${ratedLines.length.toLocaleString()} NHTSA-rated tire lines (${share(n, ratedLines.length)}%) fall in the ${b.label} treadwear band (by median grade), from ${brands.length} brands. The median grade in the band is ${fmt(medianOf(ls))}; individual records in these lines range from ${lo} to ${hi}. ${brands[0].brand} has the most lines here (${brands[0].n}). ${aa}% of these lines’ records carry traction AA.`;
 const faqs = [
   { q: `What does a treadwear rating of ${b.label} mean?`, a: `Treadwear is the maker's rating of wear against the government's control tire, which is graded 100; a grade of 200 means the tire is rated to wear twice as slowly on the test course. For ${b.label} that works out to ${b.lo === 0 ? 'less than twice' : b.hi >= 9999 ? `${b.lo / 100} times or more` : `${b.lo / 100} to just under ${(b.hi + 1) / 100} times`} as slowly (our arithmetic). It is not a mileage figure and varies with driving, vehicle and maintenance.` },
   { q: `How many tire lines have treadwear ${b.label}?`, a: `${n} lines in the NHTSA file we downloaded on ${UPDATED}, by median grade. That is ${share(n, ratedLines.length)}% of ${ratedLines.length.toLocaleString()} rated lines.` },
@@ -42,7 +42,6 @@ const ld = [
   <h1>Tires with treadwear {b.label}</h1>
   <div class="answer"><strong>Quick answer:</strong> {answer}</div>
   <p>{b.blurb}</p>
-  <div class="stats"><div class="stat"><b>{n}</b><span>lines</span></div><div class="stat"><b>{brands.length}</b><span>brands</span></div><div class="stat"><b>{share(n, ratedLines.length)}%</b><span>of rated lines</span></div><div class="stat"><b>{fmt(medianOf(ls))}</b><span>median grade</span></div></div>
   <h2>Brands with the most lines here</h2>
   <BrandTable lines={ls} />
   <h2>What kinds of tires are in this band</h2>

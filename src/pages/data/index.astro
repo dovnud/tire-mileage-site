@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { S, UPDATED, SOURCE_URL } from '../../lib/data';
+import { S, UPDATED, SOURCE_URL, CFR_URL, NHTSA_GUIDE } from '../../lib/data';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Data', href: '/data/' }];
 const origin = Astro.site!.origin;
 const files = [
@@ -23,5 +23,10 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'Dataset', name: 'NHTSA
     <tr><td>size_key, size_label, size_type, size_suffix</td><td>Parsed size (e.g. 225-65r17, 225/65R17, P/LT, load/speed text); blank if NHTSA gave no specific size</td></tr>
     <tr><td>treadwear, traction, temperature</td><td>UTQG grades; blank when missing or invalid</td></tr><tr><td>quality_flags</td><td>Notes on invalid or missing source values</td></tr>
   </tbody></table></div>
+  <h2>What each file is</h2>
+  <p>The record file is the normalized copy of the NHTSA pull: {S.raw_records.toLocaleString()} rows, one per NHTSA record id. The API reported {S.reported_total.toLocaleString()} records and the pull matched that total. Brand spelling in the source is inconsistent. {S.raw_brand_strings} raw brand strings become {S.normalized_brands} brands, and {S.raw_product_names.toLocaleString()} product names become {S.normalized_lines.toLocaleString()} lines. Distinct brands with similar names are not merged. The line file rolls those rows up to one object per line, with the median treadwear, a percentile against other lines, and a rank inside the brand. The size file keeps only records that name a specific size: {S.records_with_explicit_size.toLocaleString()} of {S.raw_records.toLocaleString()} records, covering {S.distinct_explicit_sizes} sizes. The other {S.records_all_sizes_or_range.toLocaleString()} records say “All sizes” or give a range, so they stay on the line and do not appear under one size.</p>
+  <h2>What is not in these files</h2>
+  <p>{S.records_missing_or_invalid_treadwear} records have a missing or zero treadwear grade and are left out of treadwear statistics. {S.records_with_quality_flags} records carry a quality flag; the raw value is still in the record file. NHTSA’s active flag is false on every row in this pull, and the complaint and recall counts are zero everywhere, so those fields are not used as a status. Prices, vehicle fitment, and mileage warranties are not in the NHTSA ratings file. A warranty figure on a tire-line page, when one is shown, comes from the maker’s own page and is not a column here.</p>
+  <p>The median treadwear across lines in this pull is {S.treadwear_overall_median}. Of the {S.distinct_explicit_sizes} named sizes, {S.sizes_with_ge5_lines} have at least five rated lines and {S.sizes_with_ge10_lines} have at least ten. Definitions of treadwear, traction, and temperature, and the cleaning rules, are on the <a href="/methodology/">methodology</a> page. Grade rules are in <a href={CFR_URL}>49 CFR 575.104</a> and on <a href={NHTSA_GUIDE}>NHTSA TireWise</a>.</p>
   <p>License note: U.S. federal government works are generally not subject to U.S. copyright (17 U.S.C. §105); see <a href="https://www.usa.gov/government-works">usa.gov/government-works</a>. Our added fields (slugs, parsed sizes, ranks) are provided as-is, with no warranty.</p>
 </Base>

@@ -69,7 +69,7 @@ export function serpDescription(raw: string): string {
     }
   }
   if (d.length < 120) {
-    const extra = ' NHTSA UTQG treadwear grades compared in plain language.';
+    const extra = ' NHTSA UTQG treadwear, traction, and temperature grades.';
     if (d.length + extra.length <= 155) d = `${d}${extra}`.trim();
   }
   if (d.length < 70) {

@@ -19,7 +19,7 @@ const med = medianOf(ls);
 const overall = medianOf(ratedLines);
 const title = `${t.label} Tires: Treadwear Ratings of ${n} NHTSA-Graded Lines`;
 const description = `${n} tire lines are named as ${t.label.toLowerCase()} tires in NHTSA's UTQG data: median treadwear ${fmt(med)}, brands, grade mixes and the lines themselves.`;
-const answer = `${n} of ${ratedLines.length.toLocaleString()} NHTSA-rated tire lines (${share(n, ratedLines.length)}%) carry ${/^[aeiou]/i.test(t.label) ? 'an' : 'a'} ${t.label.toLowerCase()} marker in their name (${t.markers}). Their median treadwear grade is ${fmt(med)}, against ${fmt(overall)} for all rated lines. The highest median grade among them is ${fmt(top.wear_median)} (${top.brand} ${top.line}).`;
+const answer = `${n} of ${ratedLines.length.toLocaleString()} NHTSA-rated tire lines (${share(n, ratedLines.length)}%) from ${brands.length} brands carry ${/^[aeiou]/i.test(t.label) ? 'an' : 'a'} ${t.label.toLowerCase()} marker in their name (${t.markers}). Their median treadwear grade is ${fmt(med)}, against ${fmt(overall)} for all rated lines. The highest median grade among them is ${fmt(top.wear_median)} (${top.brand} ${top.line}).`;
 const faqs = [
   { q: `How do you decide which tires are ${t.label.toLowerCase()}?`, a: `Only from the product name NHTSA lists. Lines whose name contains ${t.markers} are included. NHTSA has no tire-type field, so lines without a marker are not classified, and a name marker is the maker's naming choice, not a test result.` },
   { q: `What is the typical treadwear grade for ${t.label.toLowerCase()} tires?`, a: `The median line grade among the ${n} marked lines is ${fmt(med)}; all ${ratedLines.length.toLocaleString()} rated lines have a median of ${fmt(overall)}. Treadwear is not mileage.` },
@@ -38,7 +38,6 @@ const ld = [
   <div class="answer"><strong>Quick answer:</strong> {answer}</div>
   <p>{t.blurb}</p>
   <p class="note"><strong>Method note:</strong> this category is inferred only from name markers ({t.markers}) in NHTSA’s product names. It misses lines that don’t say so in the name, and we can’t verify a maker’s category from this data.</p>
-  <div class="stats"><div class="stat"><b>{n}</b><span>lines</span></div><div class="stat"><b>{brands.length}</b><span>brands</span></div><div class="stat"><b>{fmt(med)}</b><span>median grade</span></div><div class="stat"><b>{fmt(overall)}</b><span>all-lines median</span></div></div>
   <h2>Where these lines fall on the treadwear scale</h2>
   <div class="tw"><table><thead><tr><th>Treadwear band</th><th class="n">Lines</th><th class="n">Share of category</th></tr></thead><tbody>{bandRows.map(({ b, c }) => <tr><td><a href={bandUrl(b)}>{b.label}</a></td><td class="n">{c}</td><td class="n">{share(c, n)}%</td></tr>)}</tbody></table></div>
   <h2>Brands with the most {t.label.toLowerCase()}-marked lines</h2>
