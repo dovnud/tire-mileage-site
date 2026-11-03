@@ -168,7 +168,7 @@ if (!preview) {
 { const rd = (f) => fs.existsSync(path.join(DIST, f)) ? fs.readFileSync(path.join(DIST, f), 'utf8') : '';
   const contactRaw = (process.env.CONTACT_EMAIL !== undefined ? process.env.CONTACT_EMAIL : 'contact@tiremileage.com').trim(); // must mirror src/lib/site.ts
   const contactOn = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(contactRaw) ? contactRaw : '';
-  const ga = /^G-[A-Z0-9]{4,20}$/.test((process.env.GA4_ID || '').trim()) ? process.env.GA4_ID.trim() : '';
+  const ga = ((r) => /^G-[A-Z0-9]{4,20}$/.test(r) ? r : '')((process.env.GA4_ID !== undefined ? process.env.GA4_ID : 'G-B5K5T7CP0E').trim()) /* must mirror src/lib/site.ts */;
   const legal = ['/privacy/', '/terms/', '/affiliate-disclosure/', '/disclaimer/', ...(contactOn ? ['/contact/'] : [])];
   const spages = rd('sitemap-pages.xml'), sitemapHtml = rd('sitemap/index.html');
   for (const u of legal) {
@@ -211,7 +211,7 @@ if (!preview) {
     if (!/class="disc"[\s\S]*?href="\/affiliate-disclosure\/"/.test(h)) err.push(`${rel}: disclosure strip lacks affiliate-disclosure link`); }
   console.log(`Legal pages: ${legal.join(' ')}; contact ${contactOn ? 'ENABLED' : 'off (not generated)'}`); }
 // ---- GA4 (see src/layouts/Base.astro): inert when GA4_ID is empty; when set, an inline loader on every page, never a render-blocking <script src> ----
-{ const ga = /^G-[A-Z0-9]{4,20}$/.test((process.env.GA4_ID || '').trim()) ? process.env.GA4_ID.trim() : '';
+{ const ga = ((r) => /^G-[A-Z0-9]{4,20}$/.test(r) ? r : '')((process.env.GA4_ID !== undefined ? process.env.GA4_ID : 'G-B5K5T7CP0E').trim()) /* must mirror src/lib/site.ts */;
   for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f);
     if (/<script[^>]+src="[^"]*(googletagmanager|google-analytics)/.test(h)) err.push(`${rel}: render-blocking/static Google script tag`);
     if (!ga) { if (/googletagmanager|google-analytics|gtag\(/.test(h)) err.push(`${rel}: GA4 code present but GA4_ID is empty`); }

@@ -6,9 +6,9 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy/
 // Google Analytics 4 text renders ONLY when GA4_ID was set at build time (same flag as the loader in Base.astro). Empty = no GA text, no GA code.
 const ga = GA4_ID !== '';
 ---
-<Base title="Privacy Policy | TireMileage" description="What TireMileage collects: cookieless Cloudflare analytics, hosting logs, affiliate links, and stored reminder requests (email, tire, and miles)." crumbs={crumbs}>
+<Base title="Privacy Policy | TireMileage" description={`What TireMileage collects: cookieless Cloudflare analytics${ga ? ', Google Analytics 4' : ''},`} hosting logs, affiliate links, and stored reminder requests (email, tire, and miles)." crumbs={crumbs}>
   <h1>Privacy</h1>
-  <div class="answer"><strong>Quick answer:</strong> TireMileage has no accounts and no ads. We count page views in aggregate with Cloudflare Web Analytics, which does not use cookies. If you submit a reminder request, we store that request. If you click through to Amazon or Discount Tire, those sites have their own privacy policies.</div>
+  <div class="answer"><strong>Quick answer:</strong> TireMileage has no accounts and no ads. We count page views in aggregate with Cloudflare Web Analytics, which does not use cookies.{ga ? ' We also use Google Analytics 4, which sets cookies; it does not load if your browser sends Do Not Track or Global Privacy Control.' : ''} If you submit a reminder request, we store that request. If you click through to Amazon or Discount Tire, those sites have their own privacy policies.</div>
   <p class="meta">Last revised: <time datetime={PRIVACY_REVISED}>{PRIVACY_REVISED}</time>. This is a plain-language description of our practices, not legal advice.</p>
 
   <h2>What this site is</h2>
@@ -55,9 +55,9 @@ const ga = GA4_ID !== '';
   </ul>
   {ga && <>
   <h2>Google Analytics 4</h2>
-  <p><strong>This version of the site was built with a Google Analytics 4 measurement ID, so Google Analytics 4 is enabled in addition to the analytics described above.</strong></p>
+  <p>In addition to the Cloudflare analytics described above, we use Google Analytics 4 to understand how the site is used.</p>
   <ul>
-    <li>A Google script (<code>gtag.js</code>) loads after the page has finished loading and the browser is idle. It is not loaded at all if your browser sends a Do Not Track signal or a Global Privacy Control signal.</li>
+    <li>A Google script (<code>gtag.js</code>) loads from <code>googletagmanager.com</code> after the page has finished loading and the browser is idle. It is not loaded at all if your browser sends a Do Not Track signal or a Global Privacy Control signal.</li>
     <li>In general terms, Google Analytics 4 records pages viewed, approximate location derived from your IP address, device, browser and operating system details, the referring site, and on-site interactions such as clicks. Google processes this data on our behalf under <a href="https://policies.google.com/privacy" rel="noopener">Google’s Privacy Policy</a>; see also Google’s <a href="https://support.google.com/analytics/answer/6004245" rel="noopener">safeguarding-data page</a>.</li>
     <li>We configure it to turn off Google signals and ad-personalization signals. We do not run advertising on this site and we send Google no information that identifies you, such as a name or email address.</li>
     <li><strong>Cookies:</strong> Google Analytics sets first-party cookies (typically named <code>_ga</code> and <code>_ga_</code> followed by part of the measurement ID) to tell visits apart. Google documents these as lasting up to about two years unless cleared.</li>
