@@ -6,13 +6,13 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy/
 // Google Analytics 4 text renders ONLY when GA4_ID was set at build time (same flag as the loader in Base.astro). Empty = no GA text, no GA code.
 const ga = GA4_ID !== '';
 ---
-<Base title="Privacy Policy | TireMileage" description={`What TireMileage collects: cookieless Cloudflare analytics${ga ? ', Google Analytics 4' : ''},`} hosting logs, affiliate links, and stored reminder requests (email, tire, and miles)." crumbs={crumbs}>
+<Base title="Privacy Policy | TireMileage" description={`What TireMileage collects: cookieless Cloudflare analytics${ga ? ', Google Analytics 4' : ''}, AdSense cookies, hosting logs, affiliate links, and reminder requests.`} crumbs={crumbs}>
   <h1>Privacy</h1>
-  <div class="answer"><strong>Quick answer:</strong> TireMileage has no accounts and no ads. We count page views in aggregate with Cloudflare Web Analytics, which does not use cookies.{ga ? ' We also use Google Analytics 4, which sets cookies; it does not load if your browser sends Do Not Track or Global Privacy Control.' : ''} If you submit a reminder request, we store that request. If you click through to Amazon or Discount Tire, those sites have their own privacy policies.</div>
+  <div class="answer"><strong>Quick answer:</strong> TireMileage has no accounts. We count page views in aggregate with Cloudflare Web Analytics, which does not use cookies.{ga ? ' We also use Google Analytics 4, which sets cookies; it does not load if your browser sends Do Not Track or Global Privacy Control.' : ''} Google AdSense may set cookies to serve ads. If you submit a reminder request, we store that request. If you click through to Amazon or Discount Tire, those sites have their own privacy policies.</div>
   <p class="meta">Last revised: <time datetime={PRIVACY_REVISED}>{PRIVACY_REVISED}</time>. This is a plain-language description of our practices, not legal advice.</p>
 
   <h2>What this site is</h2>
-  <p>TireMileage’s pages are prepared in advance and delivered as files. It has no user accounts, no sign-in, no comments, and no ads. The only information you can send us is the reminder form on tire pages and the cost calculators. We do not ask for your name.</p>
+  <p>TireMileage’s pages are prepared in advance and delivered as files. It has no user accounts, no sign-in, and no comments. Google may show ads through AdSense, described below. The only information you can send us is the reminder form on tire pages and the cost calculators. We do not ask for your name.</p>
 
   <h2>Analytics: Cloudflare Web Analytics</h2>
   <ul>
@@ -40,10 +40,18 @@ const ga = GA4_ID !== '';
 
   <h2>Cookies</h2>
   <ul>
-    <li>TireMileage’s own pages and scripts do not set cookies or store anything in your browser’s local storage. If the reminder form loads Cloudflare Turnstile, that script follows Cloudflare’s policy.</li>
+    <li>TireMileage’s own pages do not set cookies or store anything in your browser’s local storage. Google AdSense, described below, can set advertising cookies. If the reminder form loads Cloudflare Turnstile, that script follows Cloudflare’s policy.</li>
     <li>Cloudflare, as our host, may use technical cookies or similar mechanisms for security or performance as described in its own policies.</li>
     <li>When you follow a link to another site, that site (for example Amazon or Discount Tire) may set its own cookies under its own policy. We do not control those.</li>
     <li>You can block or delete cookies in your browser settings.</li>
+  </ul>
+
+  <h2>Advertising: Google AdSense</h2>
+  <p>We use Google AdSense to show ads. Google and its partners may set cookies, and use similar technologies, to serve ads, measure them, and remember that you visited this site.</p>
+  <ul>
+    <li>How Google uses advertising cookies is described in <a href="https://policies.google.com/technologies/ads" rel="noopener">Google’s technologies policy for advertising</a>.</li>
+    <li>You can review or turn off personalized ads at <a href="https://adssettings.google.com" rel="noopener">Google Ads Settings</a>.</li>
+    <li>The AdSense script loads from Google. We do not send it your name or email address. A stored reminder request is not used for ads.</li>
   </ul>
 
   <h2>Affiliate links: Amazon and Discount Tire</h2>
@@ -59,7 +67,7 @@ const ga = GA4_ID !== '';
   <ul>
     <li>A Google script (<code>gtag.js</code>) loads from <code>googletagmanager.com</code> after the page has finished loading and the browser is idle. It is not loaded at all if your browser sends a Do Not Track signal or a Global Privacy Control signal.</li>
     <li>In general terms, Google Analytics 4 records pages viewed, approximate location derived from your IP address, device, browser and operating system details, the referring site, and on-site interactions such as clicks. Google processes this data on our behalf under <a href="https://policies.google.com/privacy" rel="noopener">Google’s Privacy Policy</a>; see also Google’s <a href="https://support.google.com/analytics/answer/6004245" rel="noopener">safeguarding-data page</a>.</li>
-    <li>We configure it to turn off Google signals and ad-personalization signals. We do not run advertising on this site and we send Google no information that identifies you, such as a name or email address.</li>
+    <li>We configure it to turn off Google signals and ad-personalization signals. We send Google no information that identifies you, such as a name or email address. Advertising cookies are described in the Google AdSense section above, not by this analytics tag.</li>
     <li><strong>Cookies:</strong> Google Analytics sets first-party cookies (typically named <code>_ga</code> and <code>_ga_</code> followed by part of the measurement ID) to tell visits apart. Google documents these as lasting up to about two years unless cleared.</li>
     <li><strong>How to opt out:</strong> turn on Do Not Track or Global Privacy Control in your browser (the script then does not load), block the script with a content blocker, delete the cookies in your browser settings, or install Google’s <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">Analytics opt-out browser add-on</a>.</li>
     <li>Data retention is a setting in the site owner’s Google Analytics account; we do not state a specific period here.</li>
@@ -67,7 +75,7 @@ const ga = GA4_ID !== '';
   </>}
 
   <h2>Selling and sharing</h2>
-  <p>We do not sell personal information, and we do not share any with advertisers. That includes a stored reminder request. The only parties that handle visitor data in connection with this site are those named on this page: Cloudflare{ga ? ', Google' : ''}, and the retailers you choose to visit.</p>
+  <p>We do not sell personal information. A stored reminder request is not shared with advertisers. Google may receive cookie and technical data through AdSense to show and measure ads, as described above. The only parties that handle visitor data in connection with this site are those named on this page: Cloudflare, Google, and the retailers you choose to visit.</p>
 
   <h2>Children</h2>
   <p>This site is a general-audience tire reference and is not directed at children. Do not submit a child’s email. We do not knowingly keep a request from a child.</p>
