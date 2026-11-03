@@ -7,7 +7,7 @@ export const DEFAULT_GA4_ID = 'G-B5K5T7CP0E';
 const rawGa4 = (typeof process !== 'undefined' && process.env?.GA4_ID !== undefined ? process.env.GA4_ID : DEFAULT_GA4_ID).trim();
 export const GA4_ID: string = /^G-[A-Z0-9]{4,20}$/.test(rawGa4) ? rawGa4 : '';
 // Date the privacy page text was last revised (update whenever its wording changes).
-export const PRIVACY_REVISED = '2026-11-02';
+export const PRIVACY_REVISED = '2026-11-03';
 // Public Turnstile sitekey for the reminder form. The secret stays in the Pages project, not in this repo.
 export const TURNSTILE_SITEKEY = '0x4AAAAAAFtpumvl-MRl8rHs';
 
