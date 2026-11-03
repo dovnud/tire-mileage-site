@@ -1,12 +1,13 @@
 export const SITE_NAME = 'TireMileage';
 
-// Google Analytics 4 measurement ID. EMPTY BY DEFAULT = analytics is completely off: no script, no request, nothing in the HTML.
-// To enable, set GA4_ID at build time (e.g. GA4_ID=G-XXXXXXXXXX npm run build:launch). Only a well-formed "G-XXXXXXXXXX" value is accepted;
-// anything else is treated as empty so a typo can never inject markup.
-const rawGa4 = (typeof process !== 'undefined' && process.env?.GA4_ID ? process.env.GA4_ID : '').trim();
+// Google Analytics 4 measurement ID. Default is G-B5K5T7CP0E so every normal build (including Cloudflare Pages) ships the loader.
+// Override at build time with GA4_ID=G-OTHER; set GA4_ID= (empty) to build with analytics completely off (no script, no GA text).
+// Only a well-formed "G-XXXXXXXXXX" value is accepted; anything else is treated as empty so a typo can never inject markup.
+export const DEFAULT_GA4_ID = 'G-B5K5T7CP0E';
+const rawGa4 = (typeof process !== 'undefined' && process.env?.GA4_ID !== undefined ? process.env.GA4_ID : DEFAULT_GA4_ID).trim();
 export const GA4_ID: string = /^G-[A-Z0-9]{4,20}$/.test(rawGa4) ? rawGa4 : '';
 // Date the privacy page text was last revised (update whenever its wording changes).
-export const PRIVACY_REVISED = '2026-10-31';
+export const PRIVACY_REVISED = '2026-11-02';
 // Public Turnstile sitekey for the reminder form. The secret stays in the Pages project, not in this repo.
 export const TURNSTILE_SITEKEY = '0x4AAAAAAFtpumvl-MRl8rHs';
 
