@@ -2,8 +2,9 @@ import { GUIDES, guideUrl } from '../lib/all-guides';
 import { SRC } from '../lib/guides';
 import { S, UPDATED, SOURCE_URL } from '../lib/data';
 import { CONTACT_EMAIL, SITE_NAME } from '../lib/site';
-import { COMPARE_PATH, REPLACE_PATH, PAGE_DATE } from '../lib/paths';
-import { compareFaqs, replaceFaqs } from '../lib/tool-faqs';
+import { COMPARE_PATH, REPLACE_PATH, PAGE_DATE, REBATE_PATH, AFTER_REBATE_PATH, REBATE_DATE } from '../lib/paths';
+import { compareFaqs, replaceFaqs, rebateFaqs, afterRebateFaqs } from '../lib/tool-faqs';
+import { REBATE_OFFERS, OUTSIDE_OFFERS, UNVERIFIED_NOTES } from '../lib/rebates-2026';
 
 function decode(s: string): string {
   return s
@@ -64,6 +65,8 @@ ${sources}
 - [Sizes](${u('/sizes/')})
 - [Guides index](${u('/guides/')})
 - [Compare two tires: cost per mile](${u(COMPARE_PATH)})
+- [Cost per mile after a rebate](${u(AFTER_REBATE_PATH)})
+- [Tire rebate lookup, November and December 2026](${u(REBATE_PATH)})
 - [When to replace your tires](${u(REPLACE_PATH)})
 - [Link map](${u('/llms.txt')})
 
@@ -98,6 +101,56 @@ ${replaceFaqs.map((f) => `### ${f.q}\n\n${f.a}`).join('\n\n')}
 
 ## Sources
 ${['nhtsa', 'cfr139', 'bridgestoneTread', 'wiTread', 'miTread', 'michelinTread', 'michelinWinter', 'cfr574'].map((id) => `- [${SRC[id].label}](${SRC[id].url}) (${SRC[id].publisher})`).join('\n')}
+
+---
+
+# Tire rebate lookup: November and December 2026
+
+URL: ${u(REBATE_PATH)}
+Last updated: ${REBATE_DATE}
+By: ${SITE_NAME}
+
+Purchase windows below include a date in November 2026. None states a December 2026 purchase window. The pages do not use the words Black Friday or Cyber Monday. November 27 and November 30, 2026 fall inside the published windows. No tire shipping cutoff was stated. Amounts are the makers' words.
+
+${REBATE_OFFERS.map((o) => {
+  const src = SRC[o.sourceId];
+  const extra = (o.alsoSourceIds ?? []).map((id) => SRC[id]).filter(Boolean);
+  return `## ${o.maker}: ${o.name}
+
+Purchase: ${o.purchase}
+Submission: ${o.submission}
+Reward: ${o.reward}
+Tires: ${o.tires}
+${o.notes.map((n) => `- ${n}`).join('\n')}
+Source: [${src.label}](${src.url}) (${src.publisher}, retrieved ${src.retrieved})${extra.map((s) => `; [${s.label}](${s.url})`).join('')}
+`;
+}).join('\n')}
+
+## Not a November or December purchase window
+
+${OUTSIDE_OFFERS.map((o) => `- **${o.maker}.** ${o.summary} ${o.sourceIds.map((id) => `[${SRC[id].label}](${SRC[id].url})`).join('; ')}`).join('\n')}
+
+## No dated November or December 2026 offer in the fetched page
+
+${UNVERIFIED_NOTES.map((o) => `- **${o.maker}.** ${o.summary} [${SRC[o.sourceId].label}](${SRC[o.sourceId].url})`).join('\n')}
+
+${rebateFaqs.map((f) => `### ${f.q}\n\n${f.a}`).join('\n\n')}
+
+---
+
+# Cost per mile after a rebate
+
+URL: ${u(AFTER_REBATE_PATH)}
+Last updated: ${REBATE_DATE}
+By: ${SITE_NAME}
+
+Net set price is the set price you type minus the rebate you type. Cost per 1,000 miles uses that net price and the miles you type. Prices and rebates are never filled in. A picked line shows its NHTSA median treadwear. That grade is not miles. Warranty text is shown only when this site cites a maker page, and it is not copied into the miles box.
+
+${afterRebateFaqs.map((f) => `### ${f.q}\n\n${f.a}`).join('\n\n')}
+
+## Sources
+- This site’s cost-per-mile guide and NHTSA ratings file. No price source.
+- Rebate dates: the tire rebate lookup, read ${REBATE_DATE}.
 `;
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 };

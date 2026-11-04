@@ -1,0 +1,137 @@
+---
+import Base from '../../layouts/Base.astro';
+import FaqList from '../../components/FaqList.astro';
+import { REBATE_PATH, REBATE_DATE, AFTER_REBATE_PATH, COMPARE_PATH, HOLIDAY_PATH } from '../../lib/paths';
+import { rebateFaqs } from '../../lib/tool-faqs';
+import { REBATE_OFFERS, OUTSIDE_OFFERS, UNVERIFIED_NOTES } from '../../lib/rebates-2026';
+import { SRC, lineOf } from '../../lib/guides';
+import { hasLine, lineUrl, siteBrands } from '../../lib/data';
+import { CONTACT_ENABLED, SITE_NAME } from '../../lib/site';
+const title = 'November and December 2026 Tire Rebates';
+const description = 'Manufacturer rebate windows for November and December 2026, each dated from the maker’s own page. No invented prices or shipping cutoffs.';
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Tire rebates', href: REBATE_PATH }];
+const faqs = rebateFaqs;
+const sourceIds = [...new Set([
+  ...REBATE_OFFERS.flatMap((o) => [o.sourceId, ...(o.alsoSourceIds ?? [])]),
+  ...OUTSIDE_OFFERS.flatMap((o) => o.sourceIds),
+  ...UNVERIFIED_NOTES.map((o) => o.sourceId),
+])];
+const sources = sourceIds.map((id) => SRC[id]);
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+const brandHref = (slug: string) => siteBrands.some((b) => b.slug === slug) ? `/tires/${slug}/` : '';
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} published={REBATE_DATE} modified={REBATE_DATE}>
+  <p class="eyebrow">Tool · buying dates</p>
+  <h1>Tire rebate lookup: November and December 2026</h1>
+  <p class="guide-meta"><span>By {SITE_NAME}</span><span>Last updated <time datetime={REBATE_DATE}>{REBATE_DATE}</time></span></p>
+  <div class="answer"><strong>Quick answer:</strong> The maker pages below state a purchase window that includes November 2026. They were read on {REBATE_DATE}. They do not use the words Black Friday or Cyber Monday. November 27 and November 30, 2026 fall inside those windows. None of them states a December 2026 purchase window. December dates below are submission deadlines, and Pirelli’s terms PDF prints two different deadlines. No page we read states a cutoff for shipping the tires. Amounts are the makers’ words. This site does not fill in a tire price.</div>
+
+  <section class="calc" aria-labelledby="reb-h">
+    <h2 id="reb-h">Look up a November or December purchase window</h2>
+    <p>The table is only the offers whose purchase dates include a day in November or December 2026. A missing brand means we did not verify a window from that maker’s page. It does not mean a store is barred from its own sale.</p>
+    <form class="calc-form" onsubmit="return false">
+      <label>Purchase or submission month
+        <select id="rb-when">
+          <option value="2026-11">Purchase window includes November 2026</option>
+          <option value="2026-12">Purchase window includes December 2026</option>
+          <option value="submit-12">Maker prints a December 2026 submission date</option>
+          <option value="all">All verified November–December purchase windows</option>
+        </select>
+      </label>
+      <label>Maker or tire name<input id="rb-q" type="search" autocomplete="off" placeholder="for example Michelin" /></label>
+    </form>
+    <p id="rb-empty" class="meta" hidden>No verified offer matches that filter. A December purchase window was not on any manufacturer page we read.</p>
+    <div class="tw"><table id="rb-table">
+      <thead><tr><th>Offer</th><th>Purchase dates on the page</th><th>Submission date on the page</th><th>Source</th></tr></thead>
+      <tbody>
+        {REBATE_OFFERS.map((o) => {
+          const src = SRC[o.sourceId];
+          return <tr data-months={o.purchaseMonths.join(' ')} data-submit={o.decemberSubmission ? 'submit-12' : ''} data-q={`${o.maker} ${o.name} ${o.tires}`.toLowerCase()}>
+            <td><a href={`#${o.id}`}>{o.maker}: {o.name}</a></td>
+            <td>{o.purchase}</td>
+            <td>{o.submission}</td>
+            <td><a href={src.url} rel="noopener">{src.label}</a></td>
+          </tr>;
+        })}
+      </tbody>
+    </table></div>
+  </section>
+
+  <h2>What each page says</h2>
+  {REBATE_OFFERS.map((o) => {
+    const srcs = [o.sourceId, ...(o.alsoSourceIds ?? [])].map((id) => SRC[id]);
+    const brand = brandHref(o.brandSlug);
+    const lineLinks = o.lines.map((k) => lineOf(k)).filter((l) => l && hasLine(l));
+    return <section id={o.id}>
+      <h3>{o.maker}: {o.name}</h3>
+      <ul>
+        <li><strong>Purchase:</strong> {o.purchase}</li>
+        <li><strong>Submission:</strong> {o.submission}</li>
+        <li><strong>What the page says you get:</strong> {o.reward}</li>
+        <li><strong>Tires named:</strong> {o.tires}</li>
+        {o.notes.map((n) => <li>{n}</li>)}
+      </ul>
+      <p>Source: {srcs.map((s, i) => <span>{i > 0 ? '; ' : ''}<a href={s.url} rel="noopener">{s.label}</a> ({s.publisher}, retrieved {s.retrieved})</span>)}.{brand ? <span> Brand grades on this site: <a href={brand}>{o.maker}</a>.</span> : null}</p>
+      {lineLinks.length > 0 && <p>NHTSA lines that match a model named above and have a page here: {lineLinks.map((l, i) => <span><a href={lineUrl(l!)}>{l!.brand} {l!.line}</a>{i < lineLinks.length - 1 ? ', ' : ''}</span>)}. The treadwear grade on those pages is not a mileage number and is not a rebate.</p>}
+    </section>;
+  })}
+
+  <h2>Read, and not a November or December purchase</h2>
+  <p>These maker pages state a purchase window that ends before November 2026. They are not in the lookup table. The claim dates are printed so an October purchase is not confused with a November one.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Maker</th><th>What the page says</th><th>Source</th></tr></thead>
+    <tbody>
+      {OUTSIDE_OFFERS.map((o) => <tr>
+        <td>{o.maker}</td>
+        <td>{o.summary}</td>
+        <td>{o.sourceIds.map((id, i) => { const s = SRC[id]; return <span>{i > 0 ? '; ' : ''}<a href={s.url} rel="noopener">{s.label}</a></span>; })}</td>
+      </tr>)}
+    </tbody>
+  </table></div>
+
+  <h2>Pages that did not state a November or December 2026 offer</h2>
+  <ul>
+    {UNVERIFIED_NOTES.map((o) => {
+      const s = SRC[o.sourceId];
+      return <li><strong>{o.maker}.</strong> {o.summary} <a href={s.url} rel="noopener">{s.label}</a>.</li>;
+    })}
+  </ul>
+  <p>A brand that is not named here was not added. If the maker’s page could not be read, this site skips that row rather than guessing a date or an amount.</p>
+
+  <h2>Use the amount with your own quote</h2>
+  <p>Type the rebate from the maker’s page, or from your receipt, on the <a href={AFTER_REBATE_PATH}>cost per mile after rebate</a> calculator. The box stays empty until you type it. The same formula without a rebate is on <a href={COMPARE_PATH}>compare two tires by cost per mile</a>. Winter gear, still without a shipping cutoff, is in the <a href={HOLIDAY_PATH}>holiday 2026 gift guide</a>.</p>
+  <p>{CONTACT_ENABLED ? <span>A correction to a date on this page goes through the <a href="/contact/">contact page</a>.</span> : <span>How to send a correction is described on <a href="/about/">About</a>.</span>} The byline is {SITE_NAME}.</p>
+
+  <FaqList faqs={faqs} />
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>{sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a>, {s.publisher}. <span class="why">Retrieved {s.retrieved}.</span></li>)}</ol>
+    <p class="why">Found an error? See <a href="/about/">About &amp; corrections</a>.</p>
+  </section>
+</Base>
+<script is:inline>
+(function () {
+  var when = document.getElementById('rb-when');
+  var q = document.getElementById('rb-q');
+  var empty = document.getElementById('rb-empty');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#rb-table tbody tr'));
+  function apply() {
+    var mode = when.value;
+    var needle = (q.value || '').toLowerCase().trim();
+    var shown = 0;
+    rows.forEach(function (row) {
+      var months = row.getAttribute('data-months') || '';
+      var submit = row.getAttribute('data-submit') || '';
+      var hay = row.getAttribute('data-q') || '';
+      var monthOk = mode === 'all' || mode === '2026-11' || mode === '2026-12' ? (mode === 'all' ? true : months.indexOf(mode) !== -1) : submit === mode;
+      if (mode === 'all') monthOk = true;
+      var textOk = !needle || hay.indexOf(needle) !== -1;
+      var on = monthOk && textOk;
+      row.hidden = !on;
+      if (on) shown++;
+    });
+    empty.hidden = shown !== 0;
+  }
+  when.addEventListener('change', apply);
+  q.addEventListener('input', apply);
+})();
+</script>
