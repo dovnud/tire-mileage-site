@@ -3,12 +3,14 @@ import Base from '../../layouts/Base.astro';
 import FaqList from '../../components/FaqList.astro';
 import { siteSizes } from '../../lib/data';
 import { AMAZON_DISCLOSURE } from '../../lib/retailers';
-import { COMPARE_PATH, PAGE_DATE, REPLACE_PATH, HOLIDAY_PATH } from '../../lib/paths';
+import { COMPARE_PATH, PAGE_DATE, REPLACE_PATH, HOLIDAY_PATH, sizeCostPath } from '../../lib/paths';
+import { popularSizes } from '../../lib/size-facts';
 import { compareFaqs } from '../../lib/tool-faqs';
 const title = 'Compare Two Tires by Cost per Mile';
 const description = 'Enter the price you paid and the miles you expect for two tires. See cost per 1,000 miles and break-even. Prices are never filled in.';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Compare cost per mile', href: COMPARE_PATH }];
 const faqs = compareFaqs;
+const popular = popularSizes();
 const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
 ---
 <Base title={title} description={description} crumbs={crumbs} ld={ld} published={PAGE_DATE} modified={PAGE_DATE}>
@@ -20,6 +22,7 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: 
   <section class="calc" aria-labelledby="cmp-h">
     <h2 id="cmp-h">Your two sets</h2>
     <p>Pick tire lines that already have a page here, or skip the lists and type a price and miles. Nothing is pre-filled. The formula is <code>cost per 1,000 miles = set price ÷ (expected miles ÷ 1,000)</code>. Set price is the price per tire times the number of tires. A worked example with invented numbers, labeled as invented, is in the <a href="/guides/tire-cost-per-mile/">cost-per-mile guide</a>.</p>
+    <p>A size page can open this tool with that size already selected. One quote, instead of two, has its own page: {popular.map((s, i) => <span><a href={sizeCostPath(s.key)}>{s.label} cost per mile</a>{i < popular.length - 1 ? ', ' : ''}</span>)}.</p>
     <p><label>Limit the suggestion lists to a size on this site
       <select id="cmp-size">
         <option value="">Any size</option>
@@ -86,6 +89,8 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: 
   const load = () => rows.length ? Promise.resolve(rows) : fetch('/tools/lines.json').then((r) => r.json()).then((j: { lines: Row[] }) => { rows = j.lines; return rows; });
   const sizeSel = document.getElementById('cmp-size') as HTMLSelectElement;
   const out = document.getElementById('cmp-out') as HTMLOutputElement;
+  const preset = new URLSearchParams(location.search).get('size') || '';
+  if (preset && [...sizeSel.options].some((o) => o.value === preset)) sizeSel.value = preset;
 
   function sideBox(el: HTMLElement) {
     const price = el.querySelector<HTMLInputElement>('[data-price]')!;

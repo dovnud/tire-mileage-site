@@ -5,6 +5,8 @@ import { guidesForRim } from '../../../lib/guide-picks';
 import FaqList from '../../../components/FaqList.astro';
 import { BANDS, RIMS, rimUrl, rimSlug, sizesForRim, bandOf, share } from '../../../lib/taxonomy';
 import { sizeSet, sizeUrl, siteBrands, median, UPDATED, fmt } from '../../../lib/data';
+import { sizeCostPath, sizeMeaningPath } from '../../../lib/paths';
+import { querySizes } from '../../../lib/size-facts';
 export function getStaticPaths() { return RIMS.map((r, i) => ({ params: { rim: rimSlug(r) }, props: { r, i } })); }
 const { r, i } = Astro.props as { r: number; i: number };
 const guideSlugs = guidesForRim(r);
@@ -18,6 +20,7 @@ const brandLines = new Map<string, { brand: string; slug: string; set: Set<strin
 for (const x of all) { const e = brandLines.get(x.brand_slug) ?? { brand: x.brand, slug: x.brand_slug, set: new Set<string>() }; e.set.add(x.line_slug); brandLines.set(x.brand_slug, e); }
 const topBrands = [...brandLines.values()].sort((a, b) => b.set.size - a.set.size || a.brand.localeCompare(b.brand)).slice(0, 10);
 const have = new Set(siteBrands.map((b) => b.slug));
+const queryKeys = new Set(querySizes.map((s) => s.key));
 const topCombos = [...all].sort((a, b) => (b.wear_min as number) - (a.wear_min as number)).slice(0, 8);
 const comboSize = (x: (typeof all)[number]) => ss.find((s) => s.rows.includes(x))!;
 const prev = RIMS[i - 1], next = RIMS[i + 1];
@@ -41,10 +44,10 @@ const ld = [
   <h1>{r}-inch tires: sizes and treadwear</h1>
   <div class="answer"><strong>Quick answer:</strong> {answer}</div>
   <h2>{r}-inch sizes in the NHTSA data</h2>
-  <div class="tw"><table data-sortable><thead><tr><th>Size</th><th class="n">Graded lines</th><th class="n">Highest treadwear</th><th class="n">Median treadwear</th></tr></thead><tbody>
-    {per.slice(0, 40).map((x) => <tr><td>{sizeSet.has(x.s.key) ? <a href={sizeUrl(x.s.key)}>{x.s.label}</a> : x.s.label}</td><td class="n">{x.n}</td><td class="n">{x.hi}</td><td class="n">{fmt(x.med)}</td></tr>)}
+  <div class="tw"><table data-sortable><thead><tr><th>Size</th><th class="n">Graded lines</th><th class="n">Highest treadwear</th><th class="n">Median treadwear</th><th data-nosort>Also</th></tr></thead><tbody>
+    {per.slice(0, 40).map((x) => <tr><td>{sizeSet.has(x.s.key) ? <a href={sizeUrl(x.s.key)}>{x.s.label}</a> : x.s.label}</td><td class="n">{x.n}</td><td class="n">{x.hi}</td><td class="n">{fmt(x.med)}</td><td>{queryKeys.has(x.s.key) ? <><a href={sizeMeaningPath(x.s.key)}>Meaning</a> · <a href={sizeCostPath(x.s.key)}>Cost per mile</a></> : '—'}</td></tr>)}
   </tbody></table></div>
-  <p class="tbl-note">{per.length > 40 ? `Showing 40 of ${per.length} sizes, most graded lines first. ` : ''}Sizes link only where this build has a page. Click a heading to sort.</p>
+  <p class="tbl-note">{per.length > 40 ? `Showing 40 of ${per.length} sizes, most graded lines first. ` : ''}Sizes link only where this build has a page. Meaning decodes the size code. Cost per mile uses a quote you type. Click a heading to sort.</p>
   <h2>Treadwear mix at {r} inches</h2>
   <div class="tw"><table><thead><tr><th>Treadwear band</th><th class="n">Line × size grades</th><th class="n">Share</th></tr></thead><tbody>{bandRows.map(({ b, c }) => <tr><td><a href={`/treadwear/${b.slug}/`}>{b.label}</a></td><td class="n">{c}</td><td class="n">{share(c, all.length)}%</td></tr>)}</tbody></table></div>
   <h2>Brands with the most {r}-inch lines</h2>
