@@ -1,8 +1,9 @@
 import { LEGAL_LINKS } from '../lib/site';
-import { COMPARE_PATH, REPLACE_PATH, HOLIDAY_PATH, REBATE_PATH, AFTER_REBATE_PATH } from '../lib/paths';
+import { COMPARE_PATH, REPLACE_PATH, HOLIDAY_PATH, REBATE_PATH, AFTER_REBATE_PATH, sizeCostPath, sizeMeaningPath } from '../lib/paths';
 import { GUIDES, guideUrl } from '../lib/all-guides';
 import { BANDS, TYPES, RIMS, bandUrl, typeUrl, rimUrl } from '../lib/taxonomy';
 import { siteLines, siteSizes, siteBrands, S, UPDATED, lineUrl, sizeUrl, SOURCE_URL } from '../lib/data';
+import { querySizes } from '../lib/size-facts';
 export const GET = ({ site }: { site: URL }) => {
   const u = (p: string) => new URL(p, site).href;
   const body = `# TireMileage
@@ -17,7 +18,7 @@ ${LEGAL_LINKS.map((l) => `- [${l.name}](${u(l.href)}): ${l.desc}`).join('\n')}
 - [Tire lines by brand](${u('/tires/')})
 - [Guides](${u('/guides/')}) ([Atom feed](${u('/guides/feed.xml')})); [HTML site map](${u('/sitemap/')})
 - [Where to buy](${u('/where-to-buy/')}): TireMileage does not sell tires; it links to Amazon and Discount Tire search results (affiliate disclosure, fitment and DOT-date checks)
-- [Compare two tires: cost per mile](${u(COMPARE_PATH)}): user-entered prices only; cost per 1,000 miles and break-even miles
+- [Compare two tires: cost per mile](${u(COMPARE_PATH)}): user-entered prices only; cost per 1,000 miles and break-even miles. A size page can open it with that size selected (?size=225-65r17).
 - [Cost per mile after a rebate](${u(AFTER_REBATE_PATH)}): user-entered price, rebate, and miles; NHTSA treadwear when a line is picked; rebate amounts are not filled in
 - [Tire rebate lookup, November and December 2026](${u(REBATE_PATH)}): manufacturer purchase windows only where the maker’s own page states them; sources and dates linked
 - [When to replace your tires](${u(REPLACE_PATH)}): 2/32 inch, 4/32 inch wet and snow notes, and age guidance, each with a source
@@ -33,7 +34,11 @@ ${TYPES.map((x) => `- [${x.label} (name markers only)](${u(typeUrl(x))})`).join(
 ${RIMS.map((r) => `- [${r}-inch rim](${u(rimUrl(r))})`).join('\n')}
 
 ## Tire sizes
-${siteSizes.map((s) => `- [${s.label}](${u(sizeUrl(s.key))}): ${s.lines} lines ranked by NHTSA treadwear`).join('\n')}
+Each size below has a treadwear ranking, a page that decodes the size code (overall diameter is calculated from the code and labeled as a calculation, not a measurement), and a cost-per-mile page that uses a price and miles you type. No prices are stored. Load index, speed rating and vehicle fitment are not stated.
+${siteSizes.map((s) => {
+  const extra = querySizes.some((q) => q.key === s.key) ? ` [What ${s.label} means](${u(sizeMeaningPath(s.key))}). [${s.label} cost per mile](${u(sizeCostPath(s.key))}).` : '';
+  return `- [${s.label}](${u(sizeUrl(s.key))}): ${s.lines} lines ranked by NHTSA treadwear.${extra}`;
+}).join('\n')}
 
 ## Brands
 ${siteBrands.map((b) => `- [${b.name}](${u(`/tires/${b.slug}/`)}): ${b.lines.length} line page(s)`).join('\n')}

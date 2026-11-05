@@ -1,4 +1,4 @@
-import { A, X, Z, Ln, type Guide } from './guides';
+import { A, X, Z, Ln, sizeCostLink, sizeMeaningLink, type Guide } from './guides';
 import { HOLIDAY_SLUG, PAGE_DATE, COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH, REBATE_DATE } from './paths';
 import { buildFreeQueryUrl, LINK_REL, AMAZON_DISCLOSURE } from './retailers';
 
@@ -33,6 +33,7 @@ export const GUIDES_F: Guide[] = [
 <p>Continental’s offers page, read ${REBATE_DATE}, says the promotion has ended (${X('contiOffers', 'Continental Tire Offers')}). The dated promotion page says purchases from July 1 through August 31, 2026, with the form postmarked or submitted by September 30, 2026, for a 110-dollar prepaid Mastercard on four qualifying tires plus 90 dollars more with a Continental Tire credit card (${X('contiPromotion', 'Continental’s promotion page')}). That purchase window is not November or December 2026, so it is not in the lookup table.</p>
 <h2>Winter tires</h2>
 <p>Dedicated winter tires are for snow, ice and cold. Federal UTQG grading does not apply to deep-tread, winter-type snow tires (${X('cfr104', '49 CFR 575.104')}), which is why this site does not rank them by treadwear. The season definitions are in ${A('/guides/all-season-vs-all-weather-vs-winter-tires/', 'all-season vs. all-weather vs. winter')}. USTMA’s care guide says the same exclusion and says dedicated winter/snow tires are designed for adverse winter driving (${X('ustmaGuide', 'USTMA')}).</p>
+<p>The size on the placard has its own pages here. For a common one: ${sizeMeaningLink('225-65r17')} and ${sizeCostLink('225-65r17')}. The NHTSA grade list for that size is ${Z('225-65r17')}. Those pages do not rank winter tires. Confirm the size, then search it and run the quote through the calculator.</p>
 <p>Michelin’s winter-life page says the Michelin X-Ice Snow+ has a 60,000-mile limited treadwear warranty, and that winter tires should come off the car when winter ends because the compound wears faster in warm weather (${X('michelinWinter', 'Michelin')}). That mileage figure is Michelin’s warranty statement for that tire, not a price and not a promise of how many miles you will get.</p>
 <div class="grid g2">
 ${card('Winter / snow tires', '<p>Search Amazon for winter snow tires. Confirm the size on your door placard and the three-peak mountain snowflake mark on the tire you buy.</p>', 'winter snow tires')}

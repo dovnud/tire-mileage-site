@@ -28,7 +28,8 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/meth
     <li><strong>Percentile:</strong> share of all lines whose median is strictly lower.</li>
     <li><strong>Brand rank:</strong> position among the brand's lines by median treadwear.</li>
     <li><strong>Size rank:</strong> lines with a record for that exact size, sorted by the lowest grade filed for that size; ties share a rank.</li>
-    <li><strong>Cost per 1,000 miles</strong> = price per set ÷ (expected miles ÷ 1,000), from user input only.</li>
+    <li><strong>Cost per 1,000 miles</strong> = price per set ÷ (expected miles ÷ 1,000), from user input only. Each published size also has <code>/sizes/&lt;size&gt;/cost-per-mile/</code> for that formula, with that size’s NHTSA summary beside it. No price is stored.</li>
+    <li><strong>Size-code geometry</strong> on <code>/sizes/&lt;size&gt;/meaning/</code>: width, aspect ratio, radial mark and rim come from the size code. Overall diameter, sidewall height and revolutions per mile are calculated here (25.4 mm per inch; 63,360 inches per mile) and labeled as a calculation, not a measurement of a tire.</li>
   </ul>
   <h2>Retailer links and maker warranties</h2>
   <ul>
@@ -47,6 +48,6 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/meth
   <ul>
     <li>No price feed, and maker warranty mileage only on a handful of lines, so no cost-per-mile ranking yet.</li>
     <li>Size pages list only lines that NHTSA names for that size; a full size catalog feed is needed.</li>
-    <li>No vehicle fitment pages yet.</li>
+    <li>No vehicle fitment feed, so there are no vehicle pages and the size-code pages do not name cars.</li>
   </ul>
 </Base>

@@ -1,6 +1,8 @@
 import { GUIDES, guideUrl } from '../lib/all-guides';
 import { SRC } from '../lib/guides';
-import { S, UPDATED, SOURCE_URL } from '../lib/data';
+import { S, UPDATED, SOURCE_URL, fmt, sizeUrl } from '../lib/data';
+import { sizeCostPath, sizeMeaningPath } from '../lib/paths';
+import { oneDecimal, parseMetricSize, querySizes, rankSize, revsLabel, sizeCodeGeometry, topLinePhrase } from '../lib/size-facts';
 import { CONTACT_EMAIL, SITE_NAME } from '../lib/site';
 import { COMPARE_PATH, REPLACE_PATH, PAGE_DATE, REBATE_PATH, AFTER_REBATE_PATH, REBATE_DATE } from '../lib/paths';
 import { compareFaqs, replaceFaqs, rebateFaqs, afterRebateFaqs } from '../lib/tool-faqs';
@@ -73,6 +75,25 @@ ${sources}
 ---
 
 ${guides}
+
+---
+
+# Exact size pages
+
+What a metric size code means: section width in millimeters, aspect ratio (sidewall height as a percent of that width), R for radial, rim diameter in inches. Overall diameter in inches = rim + 2 × (width × aspect / 100) / 25.4. Revolutions per mile = 63360 / (π × diameter in inches). Those two figures are calculations from the size code, not measurements of a tire. Load index, speed rating and vehicle fitment are not in the code and are not stated. NHTSA counts are lines whose rating record names that exact size. Cost-per-mile pages use a price and miles the reader types. No price is stored.
+
+${querySizes.map((s) => {
+  const g = parseMetricSize(s.key)!;
+  const geo = sizeCodeGeometry(g.width, g.aspect, g.rim);
+  const ranked = rankSize(s);
+  const top = topLinePhrase(ranked.topTies);
+  return `- ${s.label}: ${ranked.n} NHTSA lines, median treadwear ${fmt(ranked.med)}, highest ${top}, lowest ${ranked.lowest?.key}. Calculated overall diameter about ${oneDecimal(geo.diameterIn)} in; about ${revsLabel(geo.revsPerMile)} revolutions per mile (calculated). [What it means](${u(sizeMeaningPath(s.key))}). [Cost per mile](${u(sizeCostPath(s.key))}). [Ranking](${u(sizeUrl(s.key))}).`;
+}).join('\n')}
+
+## Sources
+- [NHTSA tire ratings API](${SOURCE_URL})
+- [49 CFR 575.104](https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-575/subpart-B/section-575.104)
+- [Tire Industry Association, Reading a Tire Sidewall](https://www.tireindustry.org/resources/consumer-education/consumer-safety-overview/reading-a-tire-sidewall/) (how width, aspect ratio, construction and rim are read). Diameter and revolutions per mile are this site’s calculation.
 
 ---
 

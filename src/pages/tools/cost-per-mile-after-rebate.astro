@@ -3,7 +3,8 @@ import Base from '../../layouts/Base.astro';
 import FaqList from '../../components/FaqList.astro';
 import { siteSizes } from '../../lib/data';
 import { AMAZON_DISCLOSURE } from '../../lib/retailers';
-import { AFTER_REBATE_PATH, REBATE_PATH, REBATE_DATE, COMPARE_PATH, REPLACE_PATH } from '../../lib/paths';
+import { AFTER_REBATE_PATH, REBATE_PATH, REBATE_DATE, COMPARE_PATH, REPLACE_PATH, sizeCostPath } from '../../lib/paths';
+import { popularSizes } from '../../lib/size-facts';
 import { afterRebateFaqs } from '../../lib/tool-faqs';
 import { SITE_NAME } from '../../lib/site';
 const title = 'Cost per Mile After a Tire Rebate';
@@ -12,6 +13,7 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Cost per mile after rebate
 const faqs = afterRebateFaqs;
 const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
 const hinted = ['michelin', 'bf-goodrich', 'goodyear', 'cooper', 'pirelli'];
+const popular = popularSizes();
 ---
 <Base title={title} description={description} crumbs={crumbs} ld={ld} published={REBATE_DATE} modified={REBATE_DATE}>
   <p class="eyebrow">Tool · buying math</p>
@@ -22,6 +24,7 @@ const hinted = ['michelin', 'bf-goodrich', 'goodyear', 'cooper', 'pirelli'];
   <section class="calc" aria-labelledby="ar-h" data-rebate-path={REBATE_PATH} data-hinted={hinted.join(',')}>
     <h2 id="ar-h">Your two sets, after the rebate you type</h2>
     <p>Pick tire lines that already have a page here, or skip the lists and type a price, a rebate, and miles. The formula is <code>cost per 1,000 miles = (price per tire × tires in the set − rebate) ÷ (expected miles ÷ 1,000)</code>. Verified November and December 2026 maker amounts are on the <a href={REBATE_PATH}>tire rebate lookup</a>. They are not copied into these boxes. A worked example with invented numbers, and no rebate, is in the <a href="/guides/tire-cost-per-mile/">cost-per-mile guide</a>.</p>
+    <p>A size page can open this tool with that size already selected. The single-quote page for a common size: {popular.map((s, i) => <span><a href={sizeCostPath(s.key)}>{s.label}</a>{i < popular.length - 1 ? ', ' : ''}</span>)}.</p>
     <p><label>Limit the suggestion lists to a size on this site
       <select id="ar-size">
         <option value="">Any size</option>
@@ -95,6 +98,8 @@ const hinted = ['michelin', 'bf-goodrich', 'goodyear', 'cooper', 'pirelli'];
   const load = () => rows.length ? Promise.resolve(rows) : fetch('/tools/lines.json').then((r) => r.json()).then((j: { lines: Row[] }) => { rows = j.lines; return rows; });
   const sizeSel = document.getElementById('ar-size') as HTMLSelectElement;
   const out = document.getElementById('ar-out') as HTMLOutputElement;
+  const preset = new URLSearchParams(location.search).get('size') || '';
+  if (preset && [...sizeSel.options].some((o) => o.value === preset)) sizeSel.value = preset;
 
   function sideBox(el: HTMLElement) {
     const price = el.querySelector<HTMLInputElement>('[data-price]')!;

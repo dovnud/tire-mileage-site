@@ -1,0 +1,122 @@
+---
+import Badge from '../../../components/Badge.astro';
+import FaqList from '../../../components/FaqList.astro';
+import ShopBar from '../../../components/ShopBar.astro';
+import ShopSize from '../../../components/ShopSize.astro';
+import SizeQueryNav from '../../../components/SizeQueryNav.astro';
+import Base from '../../../layouts/Base.astro';
+import { CFR_URL, NHTSA_GUIDE, SOURCE_URL, fmt, hasLine, lineUrl, range, sizeUrl, wearBand } from '../../../lib/data';
+import { HOLIDAY_PATH, REBATE_PATH, sizeCostPath, sizeMeaningPath } from '../../../lib/paths';
+import { hasRimHub, oneDecimal, parseMetricSize, querySizes, rankSize, relatedSizes, revsLabel, sizeCodeGeometry, topLinePhrase } from '../../../lib/size-facts';
+import { rimUrl } from '../../../lib/taxonomy';
+
+export function getStaticPaths() {
+  return querySizes.map((s) => ({ params: { size: s.key }, props: { s } }));
+}
+const { s } = Astro.props as { s: (typeof querySizes)[number] };
+const label = s.label;
+const parsed = parseMetricSize(s.key)!;
+const geo = sizeCodeGeometry(parsed.width, parsed.aspect, parsed.rim);
+const rankedSize = rankSize(s);
+if (rankedSize.med == null || !rankedSize.top || !rankedSize.lowest) throw new Error(`no grades for ${s.key}`);
+const { ranked, n, topTies } = rankedSize;
+const medN = rankedSize.med;
+const lowest = rankedSize.lowest;
+const diameter = oneDecimal(geo.diameterIn);
+const sidewallMm = oneDecimal(geo.sidewallMm);
+const sidewallIn = oneDecimal(geo.sidewallIn);
+const revs = revsLabel(geo.revsPerMile);
+const topPhrase = topLinePhrase(topTies);
+const band = wearBand(medN);
+const related = relatedSizes(s.key);
+const showRim = hasRimHub(s.key);
+const title = `What Does ${label} Mean?`;
+const description = `${label} means ${parsed.width} mm wide, sidewall ${parsed.aspect}% of that width, radial, ${parsed.rim}-inch wheel. Calculated diameter about ${diameter} in. NHTSA lists ${n} graded lines (median treadwear ${fmt(medN)}).`;
+const answer = `${label} is a metric tire size: section width ${parsed.width} mm, sidewall height ${parsed.aspect}% of that width (about ${sidewallMm} mm), radial construction, and a ${parsed.rim}-inch wheel. A calculated overall diameter is about ${diameter} inches. That diameter is arithmetic on the size code, not a measurement of a tire. NHTSA lists ${n} lines with a treadwear grade for this exact size; the median grade is ${fmt(medN)}.`;
+const faqs = [
+  { q: `What does ${label} mean?`, a: `Section width ${parsed.width} millimeters, aspect ratio ${parsed.aspect} (the sidewall height is ${parsed.aspect} percent of the width), radial construction, and a ${parsed.rim}-inch rim. A letter in front of the width, such as P or LT, and the load index and speed symbol are separate marks. They are not part of this code.` },
+  { q: `What is the diameter of a ${label} tire?`, a: `Calculated from the size code, the overall diameter is about ${diameter} inches and the sidewall is about ${sidewallMm} mm (${sidewallIn} inches). Revolutions per mile on that circle are about ${revs}. A real tire’s diameter is set by its maker and can differ. This is not a measured tire and it is not a statement that the size fits a vehicle.` },
+  { q: `How many ${label} tires does NHTSA grade?`, a: `${n} lines have a treadwear grade filed for this exact size. The highest is ${topPhrase}. The median is ${fmt(medN)} and the lowest is ${lowest.key}. Lines filed only as “All sizes” are not in that count.` },
+  { q: `Does ${label} include the load index?`, a: `No. Load index and speed rating are separate codes, usually printed after the size. Match the placard on the driver’s door edge or the owner’s manual. This site has no vehicle fitment list, so it does not name the cars that use ${label}.` },
+];
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Sizes', href: '/sizes/' },
+  ...(showRim ? [{ name: `${parsed.rim}-inch`, href: rimUrl(parsed.rim) }] : []),
+  { name: label, href: sizeUrl(s.key) },
+  { name: 'What it means', href: sizeMeaningPath(s.key) },
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+const preview = ranked.slice(0, 5);
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={`size/${s.key}`}>
+  <p class="eyebrow">Size code</p>
+  <h1>What does {label} mean?</h1>
+  <SizeQueryNav sizeKey={s.key} label={label} current="meaning" />
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <ShopSize label={label} />
+
+  <h2>The four parts of {label}</h2>
+  <p>The Tire Industry Association reads a size as width, aspect ratio, construction and rim diameter. The same reading applied to {label}:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Part</th><th>In {label}</th><th>What it denotes</th></tr></thead>
+    <tbody>
+      <tr><td>{parsed.width}</td><td class="n">{parsed.width} mm</td><td>Approximate section width, sidewall to sidewall, in millimeters.</td></tr>
+      <tr><td>{parsed.aspect}</td><td class="n">{parsed.aspect}%</td><td>Aspect ratio: sidewall height as a percentage of the section width. {parsed.aspect}% of {parsed.width} mm is about {sidewallMm} mm.</td></tr>
+      <tr><td>R</td><td>Radial</td><td>Radial construction. The size key on this site does not carry a bias-ply mark.</td></tr>
+      <tr><td>{parsed.rim}</td><td class="n">{parsed.rim} in</td><td>Rim diameter in inches. The tire fits a {parsed.rim}-inch wheel.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tbl-note">Source for the four-part reading: Tire Industry Association, Reading a Tire Sidewall. The millimeters are this page’s multiplication, not a TIA measurement of {label}.</p>
+
+  <h2>Calculated size, labeled as a calculation</h2>
+  <p>These figures use only the three numbers in the code. Overall diameter in inches = rim + 2 × (section width in mm × aspect ratio ÷ 100) ÷ 25.4. Revolutions per mile = 63,360 ÷ (π × that diameter). 25.4 millimeters is one inch, and 63,360 is the number of inches in a mile. Nothing here was measured on a tire.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Calculated figure</th><th class="n">From the {label} code</th></tr></thead>
+    <tbody>
+      <tr><td>Sidewall height</td><td class="n">{sidewallMm} mm ({sidewallIn} in)</td></tr>
+      <tr><td>Overall diameter</td><td class="n">about {diameter} in</td></tr>
+      <tr><td>Revolutions per mile</td><td class="n">about {revs}</td></tr>
+    </tbody>
+  </table></div>
+  <p>A maker’s spec sheet for a specific tire can differ. Use the placard and the sidewall of the tire you buy, not this table, to confirm fit.</p>
+
+  <h2>What {label} does not say</h2>
+  <ul>
+    <li><strong>No load index or speed rating.</strong> Those codes follow the size. See <a href="/guides/load-index-and-speed-rating/">load index and speed rating</a> and <a href="/guides/how-to-read-a-tire-sidewall/">how to read a sidewall</a>.</li>
+    <li><strong>No P, LT or Euro-metric mark.</strong> NHTSA’s size key used here is the numeric size only. The letter in front of the width changes how load is read. See <a href="/guides/p-metric-vs-euro-metric-vs-lt-tires/">P-metric vs. Euro-metric vs. LT</a>.</li>
+    <li><strong>No vehicle list.</strong> This site has no fitment feed, so it does not say which cars use {label}. The placard on the driver’s door edge is the source for the car.</li>
+    <li><strong>No price.</strong> A quote you type is handled on the <a href={sizeCostPath(s.key)}>{label} cost-per-mile page</a>.</li>
+  </ul>
+
+  <h2>NHTSA treadwear filed for {label}</h2>
+  <p>NHTSA’s UTQG file names this exact size on {n} lines. The highest grade is {topPhrase}. The median is {fmt(medN)}, which sits in the {band.band} band: {band.text} The lowest filed grade is {lowest.key}. The full sort is the <a href={sizeUrl(s.key)}>{label} treadwear ranking</a>. Grades are assigned by each maker and are most comparable within one maker. <a href="/methodology/">Methodology</a> · <a href={NHTSA_GUIDE} rel="noopener">NHTSA TireWise</a>.</p>
+  <div class="tw"><table>
+    <thead><tr><th class="n">Rank</th><th>Line</th><th class="n">Treadwear</th><th>Traction</th><th>Temp.</th></tr></thead>
+    <tbody>{preview.map((r) => <tr>
+      <td class="n">{r.rank}</td>
+      <td>{hasLine(r) ? <a href={lineUrl(r)}>{r.brand} {r.line}</a> : `${r.brand} ${r.line}`}</td>
+      <td class="n">{range(r.wear_min, r.wear_max)}</td>
+      <td>{r.traction ? <Badge kind="traction" grade={r.traction} /> : 'unverified'}</td>
+      <td>{r.temperature ? <Badge kind="temp" grade={r.temperature} /> : 'unverified'}</td>
+    </tr>)}</tbody>
+  </table></div>
+  <p class="tbl-note">Top of the ranking only. If a line has several records for this size, the lowest grade is the one used here.</p>
+
+  <h2>Winter tires in {label}</h2>
+  <p>Federal UTQG rules do not apply to deep-tread winter-type snow tires (<a href={CFR_URL} rel="noopener">49 CFR 575.104</a>), so the table above is not a winter ranking and this site does not invent one. Season definitions are in <a href="/guides/all-season-vs-all-weather-vs-winter-tires/">all-season vs. all-weather vs. winter</a>. Gear and the 2026 rebate dates we could verify are on the <a href={HOLIDAY_PATH}>holiday 2026 gift guide</a>. To price a quote, use the <a href={sizeCostPath(s.key)}>cost-per-mile calculator</a> and the <a href={REBATE_PATH}>rebate lookup</a>, then search the size with the button above.</p>
+
+  {related.length > 0 && <p>Nearby sizes: {related.map((x, i) => <span><a href={sizeMeaningPath(x.key)}>{x.label}</a> (<a href={sizeCostPath(x.key)}>cost per mile</a>, <a href={sizeUrl(x.key)}>ranking</a>){i < related.length - 1 ? '; ' : ''}</span>)}.</p>}
+  {showRim && <p>Every published {parsed.rim}-inch size is on the <a href={rimUrl(parsed.rim)}>{parsed.rim}-inch rim page</a>.</p>}
+
+  <FaqList faqs={faqs} />
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>
+      <li><a href="https://www.tireindustry.org/resources/consumer-education/consumer-safety-overview/reading-a-tire-sidewall/" rel="noopener">Reading a Tire Sidewall</a>, Tire Industry Association. Width, aspect ratio, construction and rim diameter.</li>
+      <li><a href={SOURCE_URL} rel="noopener">NHTSA tire ratings API</a>, pulled into the <a href="/data/">dataset on this site</a>. Treadwear counts and grades for {label}.</li>
+      <li><a href={CFR_URL} rel="noopener">49 CFR 575.104</a>. What a treadwear grade is, and the exclusion for deep-tread winter-type snow tires.</li>
+      <li>Overall diameter, sidewall height and revolutions per mile are calculated on this page from the size code, as described above. They are not copied from a maker spec sheet.</li>
+    </ol>
+  </section>
+  <ShopBar sizeLabel={label} />
+</Base>

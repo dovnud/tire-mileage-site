@@ -1,4 +1,4 @@
-import { A, X, Z, Ln, SRC, table, nf, nRec, notMult20, myDist, nhtsaDist, nRatedLines, lines600, mtRows, mtLo, mtHi, cwRows, rg, R, S, fmt, BANDS, bandUrl, rimUrl, share, type Guide } from './guides';
+import { A, X, Z, Ln, SRC, table, nf, nRec, notMult20, myDist, nhtsaDist, nRatedLines, lines600, mtRows, mtLo, mtHi, cwRows, rg, R, S, fmt, BANDS, bandUrl, rimUrl, share, sizeMeaningLink, type Guide } from './guides';
 
 export const GUIDES_A: Guide[] = [
   {
@@ -94,7 +94,7 @@ ${table(['Tire (225/65R17)', 'Michelin-reported estimated life (miles)', 'NHTSA 
 <h2>The size code, piece by piece</h2>
 <p>Using the Tire Industry Association’s example <strong>P225/60R16 97V</strong> (${X('tiaSidewall', 'TIA')}):</p>
 ${table(['Part', 'Meaning', 'In this example'], [['P', 'Tire type: P = passenger (P-metric), LT = light truck, ST = special trailer, T = temporary. No letter means Euro-metric, which can have different load capacities.', 'Passenger'], ['225', 'Approximate section width, sidewall to sidewall, in millimeters', '225 mm'], ['60', 'Aspect ratio: sidewall height as a percentage of the width', `60% of 225 mm ≈ ${Math.round(225 * 0.6)} mm (TIA: approximately 135 mm)`], ['R', 'Radial construction (B, X or – would mean bias-ply)', 'Radial'], ['16', 'Rim (bead) diameter in inches', 'Fits a 16-inch wheel'], ['97V', 'Service description: load index + speed symbol', 'Load index 97, speed V']], 'Source: Tire Industry Association, Reading a Tire Sidewall.')}
-<p>Our tables use the size without the “P”, such as ${Z('225-65r17')} or ${Z('235-55r19')}; each rim diameter has its own hub: ${[16, 17, 18].map((r) => A(rimUrl(r), `${r}-inch`)).join(', ')}.</p>
+<p>Our tables use the size without the “P”, such as ${Z('225-65r17')} or ${Z('235-55r19')}; each rim diameter has its own hub: ${[16, 17, 18].map((r) => A(rimUrl(r), `${r}-inch`)).join(', ')}. Published sizes each have a decoder for that exact code, for example ${sizeMeaningLink('225-65r17')}. The decoder calculates an overall diameter from the three numbers and labels it as a calculation, then links the NHTSA ranking and the cost-per-mile calculator for that size.</p>
 
 <h2>Load index and speed rating</h2>
 <ul>

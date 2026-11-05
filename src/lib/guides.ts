@@ -1,6 +1,7 @@
 // Guides: every factual claim is attributed to a page we actually fetched (see SRC), or computed from the NHTSA dataset at build time.
 // Illustrative numbers are labelled "made-up" in the text. No prices, no invented statistics.
 import { allLines, allSizes, hasLine, lineUrl, sizeSet, sizeUrl, S, UPDATED, fmt, median } from './data';
+import { sizeCostPath, sizeMeaningPath } from './paths';
 import records from '../../data/normalized/records.json';
 import { BANDS, TYPES, ratedLines, bandUrl, typeUrl, rimUrl, share } from './taxonomy';
 
@@ -51,6 +52,8 @@ export interface Guide { slug: string; title: string; h1: string; description: s
 export const A = (href: string, t: string) => `<a href="${href}">${t}</a>`;
 export const X = (id: string, t?: string) => `<a href="${SRC[id].url}" rel="noopener">${t ?? SRC[id].publisher}</a>`;
 export const Z = (k: string) => { const s = allSizes.find((x) => x.key === k); return s ? (sizeSet.has(k) ? A(sizeUrl(k), s.label) : s.label) : k; };
+export const sizeMeaningLink = (k: string, text?: string) => { const s = allSizes.find((x) => x.key === k); if (!s || !sizeSet.has(k)) return text ?? k; return A(sizeMeaningPath(k), text ?? `what ${s.label} means`); };
+export const sizeCostLink = (k: string, text?: string) => { const s = allSizes.find((x) => x.key === k); if (!s || !sizeSet.has(k)) return text ?? k; return A(sizeCostPath(k), text ?? `${s.label} cost per mile`); };
 export const lineOf = (k: string) => allLines.find((l) => `${l.brand_slug}/${l.line_slug}` === k);
 export const Ln = (k: string, label?: string) => { const l = lineOf(k); if (!l) return label ?? k; const t = label ?? `${l.brand} ${l.line}`; return hasLine(l) ? A(lineUrl(l), t) : t; };
 const isNum = (c: unknown) => /^[~$]?[\d,.]+(%| mph| miles)?$/.test(String(c));

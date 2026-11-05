@@ -1,10 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import ShopSize from '../components/ShopSize.astro';
-import { sizeUrl, siteSizes, NHTSA_GUIDE } from '../lib/data';
+import { sizeUrl, NHTSA_GUIDE } from '../lib/data';
+import { sizeCostPath, sizeMeaningPath } from '../lib/paths';
+import { popularSizes } from '../lib/size-facts';
 import { enabledRetailers, AMAZON_DISCLOSURE, CHECKED_ON } from '../lib/retailers';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Where to buy', href: '/where-to-buy/' }];
-const popular = ["225-65r17","235-65r17","205-55r16","215-60r16","235-55r19","245-45r18","265-70r17","225-45r17"].map((k) => siteSizes.find((s) => s.key === k)).filter((s) => !!s) as typeof siteSizes;
+const popular = popularSizes();
+const example = popular.find((s) => s.key === '225-65r17') ?? popular[0];
 const names = enabledRetailers().map((r) => r.name);
 ---
 <Base title="Where to Buy Tires: How TireMileage Links to Retailers" description="TireMileage is a data reference and does not sell tires. See which retailers we link to, how affiliate links work, and what to check before you buy." crumbs={crumbs}>
@@ -20,6 +23,7 @@ const names = enabledRetailers().map((r) => r.name);
     </form>
     <p id="lookup-msg" class="lookup-msg lookup-msg-light" role="status" aria-live="polite"></p>
     <div class="chips" aria-label="Popular sizes">{popular.map((s) => <a class="chip" href={sizeUrl(s.key)}>{s.label}</a>)}</div>
+    {example && <p class="meta">The size code is decoded on a meaning page, and a quote becomes cost per mile on a calculator page. For {example.label}: <a href={sizeMeaningPath(example.key)}>what it means</a> · <a href={sizeCostPath(example.key)}>cost per mile</a>.</p>}
     <ShopSize label="225/65R17" />
     <p class="meta" style="margin-bottom:0">225/65R17 is a common size so you can search it now. Your size is printed on the tire sidewall. You can also search a tire line by name in the search box at the top of the page.</p>
   </section>

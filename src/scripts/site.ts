@@ -4,7 +4,7 @@ let index: Row[] | null = null;
 let loading: Promise<Row[]> | null = null;
 const load = () => (index ? Promise.resolve(index) : (loading ??= fetch('/search-index.json').then((r) => r.json()).then((j: Row[]) => (index = j))));
 const norm = (s: string) => s.toLowerCase().replace(/[\/\-_.,()]+/g, ' ').replace(/\s+/g, ' ').trim();
-const TYPE: Record<string, string> = { L: 'Tire line', B: 'Brand', S: 'Size' };
+const TYPE: Record<string, string> = { L: 'Tire line', B: 'Brand', S: 'Size', M: 'Size code', C: 'Cost per mile', T: 'Tool' };
 
 export function parseSize(v: string): string | null {
   const m = v.toLowerCase().replace(/\b(p|lt|ltx)(?=\d)/, '').match(/(\d{3})\s*[\/\- ]?\s*(\d{2})\s*(?:z?r|-|\s)?\s*(\d{2})\b/);
@@ -19,7 +19,10 @@ function search(q: string, rows: Row[], max = 8): Row[] {
   const out: [number, Row][] = [];
   for (const r of rows) {
     const hay = norm(r[1]);
-    if (sk && r[0] === 'S' && r[4] === sk) { out.push([100, r]); continue; }
+    if (sk && r[4] === sk && (r[0] === 'S' || r[0] === 'M' || r[0] === 'C')) {
+      out.push([r[0] === 'S' ? 100 : r[0] === 'M' ? 96 : 94, r]);
+      continue;
+    }
     if (!toks.every((t) => hay.includes(t))) continue;
     out.push([(hay.startsWith(toks[0]) ? 10 : 0) + (r[0] === 'B' ? 3 : r[0] === 'S' ? 2 : 0) - hay.length / 100, r]);
   }

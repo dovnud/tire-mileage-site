@@ -1,0 +1,136 @@
+---
+import FaqList from '../../../components/FaqList.astro';
+import ReminderForm from '../../../components/ReminderForm.astro';
+import ShopBar from '../../../components/ShopBar.astro';
+import ShopSize from '../../../components/ShopSize.astro';
+import SizeQueryNav from '../../../components/SizeQueryNav.astro';
+import Base from '../../../layouts/Base.astro';
+import { NHTSA_GUIDE, SOURCE_URL, fmt, hasLine, lineUrl, range, sizeUrl, wearBand } from '../../../lib/data';
+import { REBATE_PATH, REPLACE_PATH, afterRebateSizePath, compareSizePath, sizeCostPath, sizeMeaningPath } from '../../../lib/paths';
+import { hasRimHub, parseMetricSize, querySizes, rankSize, relatedSizes, topLinePhrase } from '../../../lib/size-facts';
+import { rimUrl } from '../../../lib/taxonomy';
+
+export function getStaticPaths() {
+  return querySizes.map((s) => ({ params: { size: s.key }, props: { s } }));
+}
+const { s } = Astro.props as { s: (typeof querySizes)[number] };
+const label = s.label;
+const parsed = parseMetricSize(s.key)!;
+const rankedSize = rankSize(s);
+if (rankedSize.med == null || !rankedSize.lowest) throw new Error(`no grades for ${s.key}`);
+const { ranked, n, topTies } = rankedSize;
+const medN = rankedSize.med;
+const lowest = rankedSize.lowest;
+const topPhrase = topLinePhrase(topTies);
+const band = wearBand(medN);
+const related = relatedSizes(s.key);
+const showRim = hasRimHub(s.key);
+const bands = [['under 200', 0, 199], ['200–299', 200, 299], ['300–399', 300, 399], ['400–499', 400, 499], ['500–599', 500, 599], ['600 and up', 600, 9999]] as const;
+const bandCounts = bands.map(([b, lo, hi]) => [b, ranked.filter((r) => r.key >= lo && r.key <= hi).length] as const).filter(([, c]) => c > 0);
+const title = `${label} Cost per Mile`;
+const description = `${label} cost per mile uses the price and miles you type. NHTSA lists ${n} lines for this size, median treadwear ${fmt(medN)}. No price is stored or filled in.`;
+const answer = `Cost per 1,000 miles for a ${label} set is the price you type for the set, divided by the miles you expect, times 1,000. This page does not store a price or a warranty mileage. NHTSA lists ${n} graded lines for ${label}; the median treadwear grade is ${fmt(medN)}. A treadwear grade is not a mile count, so it is not filled into the miles box.`;
+const faqs = [
+  { q: `What is the cost per mile of ${label} tires?`, a: `It depends on the price you pay and the miles you get. Enter both. Cost per 1,000 miles equals (price per tire × number of tires) ÷ (expected miles ÷ 1,000). No price is filled in, because this site has no price feed.` },
+  { q: `Can I use the ${label} treadwear grade as the miles?`, a: `No. For this size the median NHTSA treadwear grade is ${fmt(medN)} and the highest filed grade is ${topPhrase}. Those numbers compare wear rate on a government test. They are not miles and they are not typed into the calculator.` },
+  { q: `How do I compare two ${label} quotes?`, a: `Use the compare tool with this size pre-selected, or the after-rebate tool if you are subtracting a rebate you were quoted. Rebate dollar amounts are not filled in. Verified November and December 2026 maker windows are on the rebate lookup.` },
+  { q: `Does a higher treadwear grade mean a lower cost per mile?`, a: `Not by itself. Cost per mile uses your price and your miles. A higher grade means the maker rated that line to wear more slowly than a lower grade on the government test, and grades are most comparable within one maker.` },
+];
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Sizes', href: '/sizes/' },
+  ...(showRim ? [{ name: `${parsed.rim}-inch`, href: rimUrl(parsed.rim) }] : []),
+  { name: label, href: sizeUrl(s.key) },
+  { name: 'Cost per mile', href: sizeCostPath(s.key) },
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+const preview = ranked.slice(0, 8);
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={`size/${s.key}`}>
+  <p class="eyebrow">Buying math · {label}</p>
+  <h1>{label} cost per mile</h1>
+  <SizeQueryNav sizeKey={s.key} label={label} current="cost" />
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+
+  <section class="calc" aria-labelledby="cpm-h">
+    <h2 id="cpm-h">Your quote for a {label} set</h2>
+    <p>Nothing is filled in. The formula is <code>cost per 1,000 miles = (price per tire × tires in the set) ÷ (expected miles ÷ 1,000)</code>. The same arithmetic is documented in <a href="/guides/tire-cost-per-mile/">how to calculate tire cost per mile</a>. A worked example on that guide uses invented numbers and says so. This calculator does not.</p>
+    <div class="calc-form">
+      <label>Price you were quoted per tire ($)
+        <input id="cpm-price" type="number" min="0" step="0.01" inputmode="decimal" />
+      </label>
+      <label>Tires in the set
+        <input id="cpm-count" type="number" min="1" step="1" value="4" />
+      </label>
+      <label>Miles you expect
+        <input id="cpm-miles" type="number" min="1" step="1" inputmode="numeric" />
+      </label>
+    </div>
+    <h2>Result</h2>
+    <output id="cpm-out" aria-live="polite">Enter a price and the miles you expect. This page does not look up a price.</output>
+    <p class="meta">Set price is price per tire times the number of tires. Cost per mile is the set price divided by the miles you typed. A warranty figure is a ceiling the maker will stand behind, not a forecast. See <a href="/guides/treadwear-vs-warranty-mileage/">treadwear versus warranty mileage</a>.</p>
+  </section>
+
+  <p>Two quotes: <a href={compareSizePath(s.key)}>compare cost per mile</a> opens with {label} already selected. A rebate you type: <a href={afterRebateSizePath(s.key)}>cost per mile after a rebate</a>, same size. Maker windows we could verify for November and December 2026 are on the <a href={REBATE_PATH}>tire rebate lookup</a>. Those amounts are not copied into the boxes. Worn-out and age thresholds: <a href={REPLACE_PATH}>when to replace your tires</a>.</p>
+
+  <ShopSize label={label} />
+
+  <h2>Treadwear context for {label}, not a mileage input</h2>
+  <p>The median grade among the {n} NHTSA lines for this size is {fmt(medN)} ({band.band} band). The highest is {topPhrase}. The lowest is {lowest.key}. {band.text} Use the grade to narrow which lines to price. Type the miles from your paperwork or your own estimate. The full sort, with an empty price box on every row, is the <a href={sizeUrl(s.key)}>{label} treadwear ranking</a>. What the code itself means is on <a href={sizeMeaningPath(s.key)}>what {label} means</a>.</p>
+  <div class="tw"><table>
+    <thead><tr><th class="n">Rank</th><th>Line</th><th class="n">Treadwear</th></tr></thead>
+    <tbody>{preview.map((r) => <tr>
+      <td class="n">{r.rank}</td>
+      <td>{hasLine(r) ? <a href={lineUrl(r)}>{r.brand} {r.line}</a> : `${r.brand} ${r.line}`}</td>
+      <td class="n">{range(r.wear_min, r.wear_max)}</td>
+    </tr>)}</tbody>
+  </table></div>
+  <p class="tbl-note">Highest eight grades filed for this size. No prices: this site has no price feed. <a href={NHTSA_GUIDE} rel="noopener">NHTSA TireWise</a> describes the grade.</p>
+
+  <h2>How the {n} lines spread</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Treadwear band</th><th class="n">Lines</th><th class="n">Share</th></tr></thead>
+    <tbody>{bandCounts.map(([b, c]) => <tr><td>{b}</td><td class="n">{c}</td><td class="n">{Math.round((100 * c) / n)}%</td></tr>)}</tbody>
+  </table></div>
+
+  {related.length > 0 && <p>Cost per mile for nearby sizes: {related.map((x, i) => <span><a href={sizeCostPath(x.key)}>{x.label}</a> (<a href={sizeUrl(x.key)}>ranking</a>){i < related.length - 1 ? ', ' : ''}</span>)}.</p>}
+  {showRim && <p>Other {parsed.rim}-inch sizes: <a href={rimUrl(parsed.rim)}>{parsed.rim}-inch rim page</a>.</p>}
+
+  <ReminderForm tire={label} />
+  <p class="meta">The reminder form stores a request and does not send a message.</p>
+
+  <FaqList faqs={faqs} />
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>
+      <li>The cost-per-1,000-miles formula is this site’s arithmetic, the same one in <a href="/guides/tire-cost-per-mile/">How to calculate tire cost per mile</a>. No outside price source is used.</li>
+      <li>Treadwear grades come from <a href={SOURCE_URL} rel="noopener">NHTSA’s tire ratings API</a>, via the <a href="/data/">dataset on this site</a>. They are not miles.</li>
+      <li>Rebate amounts are not stored on this page. The <a href={REBATE_PATH}>rebate lookup</a> cites the manufacturer pages it read.</li>
+    </ol>
+  </section>
+  <script is:inline>
+    (function () {
+      var price = document.getElementById('cpm-price');
+      var count = document.getElementById('cpm-count');
+      var miles = document.getElementById('cpm-miles');
+      var out = document.getElementById('cpm-out');
+      if (!price || !count || !miles || !out) return;
+      function render() {
+        var pr = parseFloat(price.value);
+        var n = parseFloat(count.value);
+        var mi = parseFloat(miles.value);
+        if (!(pr >= 0) || price.value === '' || !(n >= 1) || !(mi > 0)) {
+          out.textContent = 'Enter a price and the miles you expect. This page does not look up a price.';
+          return;
+        }
+        var set = pr * n;
+        var per1k = set / (mi / 1000);
+        var per = set / mi;
+        out.textContent = 'Set price $' + set.toFixed(2) + '. $' + per1k.toFixed(2) + ' per 1,000 miles ($' + per.toFixed(4) + ' per mile) over ' + Math.round(mi).toLocaleString('en-US') + ' miles. The price came from what you typed.';
+      }
+      price.addEventListener('input', render);
+      count.addEventListener('input', render);
+      miles.addEventListener('input', render);
+    })();
+  </script>
+  <ShopBar sizeLabel={label} />
+</Base>
