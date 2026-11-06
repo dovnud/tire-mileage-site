@@ -2,6 +2,7 @@ import lines from '../../data/normalized/lines.json';
 import sizes from '../../data/normalized/sizes.json';
 import records from '../../data/normalized/records.json';
 import summary from '../../data/normalized/summary.json';
+import { WAVE2_LINE_KEYS, WAVE2_SIZE_KEYS } from './wave2';
 
 export type Line = (typeof lines)[number] & { brand_rank?: number; brand_lines_rated?: number };
 export type Rec = (typeof records)[number];
@@ -59,11 +60,33 @@ function pickTranche1Lines(): Line[] {
   const ranked = [...rated].sort((a, b) => (Number(featured.has(key(b))) - Number(featured.has(key(a)))) || (b.records_with_explicit_size - a.records_with_explicit_size) || (major(b) - major(a)) || (b.records - a.records) || key(a).localeCompare(key(b)));
   return ranked.slice(0, TRANCHE1_LINES);
 }
-export const siteLines: Line[] = FULL ? allLines.filter((l) => l.wear_median != null) : TRANCHE1 ? pickTranche1Lines() : pickPrototypeLines();
+function addWave2Lines(base: Line[]): Line[] {
+  const have = new Set(base.map((l) => `${l.brand_slug}/${l.line_slug}`));
+  const extra: Line[] = [];
+  for (const k of WAVE2_LINE_KEYS) {
+    const l = allLines.find((x) => `${x.brand_slug}/${x.line_slug}` === k);
+    if (!l || l.wear_median == null) throw new Error(`wave 2 line missing or unrated: ${k}`);
+    if (!have.has(k)) extra.push(l);
+  }
+  return [...base, ...extra];
+}
+function addWave2Sizes(base: typeof allSizes): typeof allSizes {
+  const have = new Set(base.map((s) => s.key));
+  const extra: (typeof allSizes)[number][] = [];
+  for (const k of WAVE2_SIZE_KEYS) {
+    const s = allSizes.find((x) => x.key === k);
+    if (!s || s.lines < MIN_SIZE_LINES) throw new Error(`wave 2 size missing or under ${MIN_SIZE_LINES} lines: ${k}`);
+    if (!have.has(k)) extra.push(s);
+  }
+  return [...base, ...extra];
+}
+const baseLines: Line[] = FULL ? allLines.filter((l) => l.wear_median != null) : TRANCHE1 ? pickTranche1Lines() : pickPrototypeLines();
+export const siteLines: Line[] = addWave2Lines(baseLines);
 // Prototype: the 12 sizes with the most lines plus a few of the most common U.S. fitments (all have >=23 rated lines in NHTSA data).
 const FEATURED_SIZES = ['225-65r17', '235-55r19', '245-45r18', '265-70r17', '215-65r16', '225-50r17'];
-export const siteSizes = FULL ? allSizes.filter((s) => s.lines >= MIN_SIZE_LINES) : TRANCHE1 ? allSizes.filter((s) => s.lines >= TRANCHE1_MIN_SIZE_LINES)
+const baseSizes = FULL ? allSizes.filter((s) => s.lines >= MIN_SIZE_LINES) : TRANCHE1 ? allSizes.filter((s) => s.lines >= TRANCHE1_MIN_SIZE_LINES)
   : [...allSizes.slice(0, 12), ...FEATURED_SIZES.map((k) => allSizes.find((x) => x.key === k)).filter((x): x is (typeof allSizes)[number] => !!x)];
+export const siteSizes = addWave2Sizes(baseSizes);
 export const lineSet = new Set(siteLines.map((l) => `${l.brand_slug}/${l.line_slug}`));
 export const sizeSet = new Set(siteSizes.map((s) => s.key));
 export const siteBrands = (() => {

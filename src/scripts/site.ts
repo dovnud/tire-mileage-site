@@ -4,7 +4,7 @@ let index: Row[] | null = null;
 let loading: Promise<Row[]> | null = null;
 const load = () => (index ? Promise.resolve(index) : (loading ??= fetch('/search-index.json').then((r) => r.json()).then((j: Row[]) => (index = j))));
 const norm = (s: string) => s.toLowerCase().replace(/[\/\-_.,()]+/g, ' ').replace(/\s+/g, ' ').trim();
-const TYPE: Record<string, string> = { L: 'Tire line', B: 'Brand', S: 'Size', M: 'Size code', C: 'Cost per mile', T: 'Tool' };
+const TYPE: Record<string, string> = { L: 'Tire line', B: 'Brand', S: 'Size', M: 'Size code', C: 'Cost per mile', T: 'Tool', Q: 'Exact lookup', I: 'Load index', V: 'Speed rating' };
 
 export function parseSize(v: string): string | null {
   const m = v.toLowerCase().replace(/\b(p|lt|ltx)(?=\d)/, '').match(/(\d{3})\s*[\/\- ]?\s*(\d{2})\s*(?:z?r|-|\s)?\s*(\d{2})\b/);

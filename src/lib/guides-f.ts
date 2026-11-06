@@ -1,5 +1,5 @@
 import { A, X, Z, Ln, sizeCostLink, sizeMeaningLink, type Guide } from './guides';
-import { HOLIDAY_SLUG, PAGE_DATE, COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH, REBATE_DATE } from './paths';
+import { HOLIDAY_SLUG, PAGE_DATE, COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH, REBATE_DATE, blackFridayPath, cyberMondayPath } from './paths';
 import { buildFreeQueryUrl, LINK_REL, AMAZON_DISCLOSURE } from './retailers';
 
 const amz = (query: string) => `<div class="shop-btns"><a class="sbtn sbtn-amz" href="${buildFreeQueryUrl('amazon', query)}" target="_blank" rel="${LINK_REL}">Search on Amazon<span aria-hidden="true"> ↗</span><span class="sr"> (opens in a new tab)</span></a></div>`;
@@ -17,7 +17,7 @@ export const GUIDES_F: Guide[] = [
     answer: 'Michelin’s Fall-North and Fall-South pages publish an 80-dollar reward on four Michelin tires bought from September 3 through November 30, 2026. Those pages do not call the window Black Friday. Every maker window we could verify for November and December 2026 is on the rebate lookup. The gear below is Amazon search links for a tread gauge, a pressure gauge, an inflator and valve caps. No prices are shown.',
     body: `
 <h2>Rebate dates published for 2026</h2>
-<p>Gear sources below were read on ${PAGE_DATE}. Rebate pages were read again on ${REBATE_DATE}. A date is included only when the maker’s own page states it. The full November and December 2026 list, including offers this guide does not repeat, is ${A(REBATE_PATH, 'the tire rebate lookup')}. No maker page we read uses the words Black Friday or Cyber Monday, and none states a tire shipping cutoff.</p>
+<p>Gear sources below were read on ${PAGE_DATE}. Rebate pages were read again on ${REBATE_DATE}. A date is included only when the maker’s own page states it. The full November and December 2026 list, including offers this guide does not repeat, is ${A(REBATE_PATH, 'the tire rebate lookup')}. No maker page we read uses the words Black Friday or Cyber Monday, and none states a tire shipping cutoff. The calendar pages for those two days are ${A(blackFridayPath, 'Black Friday, November 27, 2026')} and ${A(cyberMondayPath, 'Cyber Monday, November 30, 2026')}. They do not add a price.</p>
 <h3>Michelin Fall-North and Fall-South</h3>
 <p>Michelin publishes two promotion pages with the same purchase window and the same reward (${X('michelinFallNorth', 'Fall-North')}, ${X('michelinFallSouth', 'Fall-South')}):</p>
 <ul>
@@ -63,6 +63,6 @@ ${card('Valve stem caps', `<p>Michelin’s FAQ says the caps keep moisture and d
     sources: ['michelinFallNorth', 'michelinFallSouth', 'contiOffers', 'contiPromotion', 'michelinWinter', 'michelinTread', 'michelinFaq', 'ustmaGuide', 'nhtsa', 'cfr104'],
     sizes: ['225-65r17'],
     lines: [],
-    related: ['all-season-vs-all-weather-vs-winter-tires', 'when-to-replace-tires', 'tire-cost-per-mile', 'how-to-make-tires-last-longer'],
+    related: ['black-friday-2026-tire-rebates', 'cyber-monday-2026-tire-rebates', 'all-season-vs-all-weather-vs-winter-tires', 'when-to-replace-tires', 'tire-cost-per-mile', 'how-to-make-tires-last-longer'],
   },
 ];

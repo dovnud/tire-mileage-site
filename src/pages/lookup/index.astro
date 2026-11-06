@@ -1,0 +1,61 @@
+---
+import FaqList from '../../components/FaqList.astro';
+import Base from '../../layouts/Base.astro';
+import { lineUrl, siteLines, siteSizes, sizeUrl } from '../../lib/data';
+import {
+  CHART_DATE, LOAD_INDEX_PATH, LOOKUP_PATH, REBATE_PATH, SPEED_RATING_PATH, blackFridayPath, cyberMondayPath, loadIndexPath, sizeCostPath, sizeMeaningPath, speedRatingPath,
+} from '../../lib/paths';
+import { LOAD_PAGES, SPEED_PAGES } from '../../lib/service-ratings';
+import { WAVE2_LINE_KEYS, WAVE2_SIZE_KEYS } from '../../lib/wave2';
+
+const sizes = WAVE2_SIZE_KEYS.map((k) => siteSizes.find((s) => s.key === k)).filter((s): s is (typeof siteSizes)[number] => !!s);
+const lines = WAVE2_LINE_KEYS.map((k) => siteLines.find((l) => `${l.brand_slug}/${l.line_slug}` === k)).filter((l): l is (typeof siteLines)[number] => !!l);
+const title = 'Exact Tire Size and Line Lookups';
+const description = 'Exact pages for common tire sizes under ten NHTSA lines, named lines filed without a size, Michelin load and speed charts, and November 27 and 30, 2026.';
+const answer = `This page lists one URL per query: eight common sizes that have fewer than ten graded lines in the NHTSA file, ten major-brand lines whose ratings are mostly filed as “All sizes,” six load indexes and six speed ratings quoted from Michelin’s charts (read ${CHART_DATE}), and the November 27 and November 30, 2026 buy-timing pages. No prices are added.`;
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Exact lookups', href: LOOKUP_PATH }];
+const faqs = [
+  { q: 'Why do these sizes have their own pages?', a: 'Each of them has at least five graded lines in the NHTSA file and fewer than ten. A cutoff of ten lines leaves them unpublished. The ranking on each size page is only the lines NHTSA names for that size.' },
+  { q: 'Why do these tire lines have their own pages?', a: 'The launch list keeps the 300 lines with the most records that name a specific size. These lines are filed mostly as “All sizes,” so that cutoff skips them even though the file has a treadwear grade.' },
+  { q: 'Do the November pages list a sale price?', a: 'No. November 27, 2026 and November 30, 2026 are calendar dates. A maker rebate is included only when that maker’s own page states a purchase window that includes the day. Amounts stay in the maker’s words.' },
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og="lookup" modified={CHART_DATE}>
+  <p class="eyebrow">Exact match · wave 2</p>
+  <h1>Exact tire size and line lookups</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+
+  <h2>Common sizes with fewer than ten graded lines</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Size</th><th class="n">Graded lines</th><th>Pages</th></tr></thead>
+    <tbody>{sizes.map((s) => <tr>
+      <td><a href={sizeUrl(s.key)}>{s.label}</a></td>
+      <td class="n">{s.lines}</td>
+      <td><a href={sizeMeaningPath(s.key)}>What it means</a> · <a href={sizeCostPath(s.key)}>Cost per mile</a></td>
+    </tr>)}</tbody>
+  </table></div>
+  <p class="tbl-note">Grades are NHTSA UTQG records that name the size. The cost page uses a price you type. All published sizes are on <a href="/sizes/">the size list</a>.</p>
+
+  <h2>Tire lines the explicit-size cutoff skips</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Line</th><th class="n">Median treadwear</th><th class="n">NHTSA records</th></tr></thead>
+    <tbody>{lines.map((l) => <tr>
+      <td><a href={lineUrl(l)}>{l.brand} {l.line}</a></td>
+      <td class="n">{l.wear_median}</td>
+      <td class="n">{l.records}</td>
+    </tr>)}</tbody>
+  </table></div>
+  <p class="tbl-note">The median is the line’s NHTSA treadwear grades, not miles. Brand hubs are on <a href="/tires/">tire lines</a>.</p>
+
+  <h2>Load index and speed rating</h2>
+  <p>Charts read {CHART_DATE} from Michelin. <a href={LOAD_INDEX_PATH}>Load index chart</a>: {LOAD_PAGES.map((p, i) => <span><a href={loadIndexPath(p.code)}>{p.code}</a>{i < LOAD_PAGES.length - 1 ? ', ' : ''}</span>)}. <a href={SPEED_RATING_PATH}>Speed rating chart</a>: {SPEED_PAGES.map((r, i) => <span><a href={speedRatingPath(r.letter)}>{r.letter}</a>{i < SPEED_PAGES.length - 1 ? ', ' : ''}</span>)}. The rules page is <a href="/guides/load-index-and-speed-rating/">load index and speed rating</a>.</p>
+
+  <h2>November 27 and November 30, 2026</h2>
+  <ul>
+    <li><a href={blackFridayPath}>Black Friday 2026 tire rebate dates</a> (Friday, November 27).</li>
+    <li><a href={cyberMondayPath}>Cyber Monday 2026 tire rebate dates</a> (Monday, November 30).</li>
+    <li><a href={REBATE_PATH}>Rebate lookup</a> for every November and December 2026 window the maker pages stated. The lookup is not gated.</li>
+  </ul>
+  <FaqList faqs={faqs} />
+</Base>

@@ -1,0 +1,66 @@
+---
+import FaqList from '../../components/FaqList.astro';
+import Base from '../../layouts/Base.astro';
+import { CHART_DATE, LOAD_INDEX_PATH, LOOKUP_PATH, SPEED_RATING_PATH, loadIndexPath, speedRatingPath } from '../../lib/paths';
+import { MICHELIN_UK_CHART, MICHELIN_US_101, MICHELIN_US_CHANGE, SPEED_PAGES } from '../../lib/service-ratings';
+
+export function getStaticPaths() {
+  return SPEED_PAGES.map((r) => ({ params: { letter: r.letter.toLowerCase() }, props: { r } }));
+}
+const { r } = Astro.props as { r: (typeof SPEED_PAGES)[number] };
+const letter = r.letter;
+const i = SPEED_PAGES.findIndex((x) => x.letter === letter);
+const prev = SPEED_PAGES[i - 1];
+const next = SPEED_PAGES[i + 1];
+const title = `What Speed Rating ${letter} Means`;
+const description = `Speed rating ${letter} is ${r.mph} mph (${r.kmh} km/h) on Michelin’s UK and USA charts. Match or exceed the placard. It is not a treadwear grade.`;
+const answer = `Speed rating ${letter} is ${r.mph} mph (${r.kmh} km/h) on both Michelin charts read ${CHART_DATE}. Michelin USA’s chart labels ${letter} as “${r.usLabel}.” That label is Michelin’s description, not a rule about which vehicles may use the tire. The letter is the maximum speed under the specified load when the tire is properly inflated. It is not a treadwear grade and it is not a price.`;
+const faqs = [
+  { q: `What does speed rating ${letter} mean?`, a: `Michelin’s UK chart and Michelin USA’s change-size chart both list ${letter} as ${r.mph} mph (${r.kmh} km/h).` },
+  { q: `Can I install a tire rated below ${letter}?`, a: 'Michelin says a replacement should meet or exceed the speed rating the vehicle manufacturer specifies. A lower rating is not recommended, except for winter-capable tires, and even then the vehicle must not be driven above the tire’s rated speed.' },
+  { q: `Is ${letter} a treadwear rating?`, a: `No. ${letter} is the speed symbol in the service description. Treadwear is a separate UTQG number. This page does not state a price.` },
+];
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Exact lookups', href: LOOKUP_PATH },
+  { name: 'Speed rating', href: SPEED_RATING_PATH },
+  { name: letter, href: speedRatingPath(letter) },
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={`speed-rating/${letter.toLowerCase()}`} modified={CHART_DATE}>
+  <p class="eyebrow">Speed rating · Michelin chart</p>
+  <h1>What does speed rating {letter} mean?</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+
+  <h2>The cell for {letter}</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Symbol</th><th class="n">mph</th><th class="n">km/h</th><th>Michelin USA’s label</th></tr></thead>
+    <tbody><tr>
+      <td><strong>{letter}</strong></td>
+      <td class="n">{r.mph}</td>
+      <td class="n">{r.kmh}</td>
+      <td>{r.usLabel}</td>
+    </tr></tbody>
+  </table></div>
+  <p class="tbl-note">Both Michelin charts print these speeds. The vehicle-type words are only on the USA chart. Retrieved {CHART_DATE}.</p>
+
+  <h2>How to use the letter</h2>
+  <ul>
+    <li>Michelin’s replacement rule is to meet or exceed the speed rating on the placard or in the owner’s manual. A higher letter may be installed.</li>
+    <li>Michelin’s UK page says not to fit a lower speed index, unless the tires are winter-capable (winter tires or all-season tires, in that page’s words). The vehicle still must not be driven above the tire’s rated speed.</li>
+    <li>Michelin’s USA page says a lower-rated tire is not designed for the heat that builds up at sustained high speeds. The UTQG temperature letter is a separate laboratory grade.</li>
+    <li>The load index is the number beside the letter. Michelin’s sidewall example is 91V. <a href={loadIndexPath('91')}>Load index 91</a> is 615 kg on Michelin’s chart.</li>
+  </ul>
+  <p>The full letter list is the <a href={SPEED_RATING_PATH}>speed rating chart</a>. Load indexes are the <a href={LOAD_INDEX_PATH}>load index chart</a>. The longer explanation is <a href="/guides/load-index-and-speed-rating/">load index and speed rating</a>.</p>
+  <p>{prev && <a href={speedRatingPath(prev.letter)}>Speed rating {prev.letter}</a>}{prev && next && ' · '}{next && <a href={speedRatingPath(next.letter)}>Speed rating {next.letter}</a>}</p>
+
+  <FaqList faqs={faqs} />
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>
+      <li><a href={MICHELIN_UK_CHART} rel="noopener">Tyre load rating and speed rating chart</a>, Michelin. {letter} is {r.mph} mph ({r.kmh} km/h). Retrieved {CHART_DATE}.</li>
+      <li><a href={MICHELIN_US_CHANGE} rel="noopener">Choose the right tire</a>, Michelin USA. The same speed, labeled “{r.usLabel}.” Retrieved {CHART_DATE}.</li>
+      <li><a href={MICHELIN_US_101} rel="noopener">Tire load rating and speed rating</a>, Michelin USA. Meet or exceed the placard. The 91V example is on this page.</li>
+    </ol>
+  </section>
+</Base>

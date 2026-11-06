@@ -1,4 +1,5 @@
 import { A, X, Z, Ln, table, nf, fmt, lineRange, S, R, type Guide } from './guides';
+import { CHART_DATE, LOAD_INDEX_PATH, SPEED_RATING_PATH } from './paths';
 import { siteSizes } from './data';
 import { nRated, nSpread, nSingleGrade, spreadGapMedian, spreadGapMax, explicitSpreads, nCatchAllAndRange, lineFiling, nRim12OrLess, typeStats } from './guide-facts';
 import { typeUrl, TYPES, bandUrl, BANDS } from './taxonomy';
@@ -59,13 +60,13 @@ export const GUIDES_D: Guide[] = [
     sources: ['cfr574', 'nhtsa', 'tiaSidewall', 'contiWarranty', 'ustma'], sizes: ['225-65r17', '235-55r19'], lines: ['michelin/defender-2'], related: ['when-to-replace-tires', 'how-to-read-a-tire-sidewall', 'replacing-two-tires-instead-of-four'],
   },
   {
-    slug: 'load-index-and-speed-rating', kicker: 'Fitment', updated: R,
+    slug: 'load-index-and-speed-rating', kicker: 'Fitment', updated: CHART_DATE,
     title: 'Tire Load Index and Speed Rating, Explained', h1: 'Load index and speed rating, explained',
     description: 'Load index and speed rating are the service description on the sidewall. What Michelin and the Tire Industry Association say you must match, including XL and HL.',
     answer: 'The load index is a code for the maximum load one tire can carry at the speed indicated by the speed symbol, when the tire is properly inflated. Michelin says a replacement must meet or exceed the vehicle maker’s load index and speed rating. A higher code does not raise the vehicle’s own weight limit.',
     body: `
 <h2>The two characters after the size</h2>
-<p>Michelin’s sidewall example is <strong>205/55R17 91V</strong>. The 91 is the load index and the V is the speed rating. Together they are the service description (${X('michelinRatings', 'Michelin')}). The Tire Industry Association uses <strong>P225/60R16 97V</strong> and calls the same pair of marks the service description: a two- or three-digit load index and a speed symbol (${X('tiaSidewall', 'TIA')}). TIA says the load index represents the maximum load that can be carried at the speed indicated by the speed symbol, and that you have to consult a load-index chart to turn the code into a weight. This guide does not print that chart. The chart was not part of the text on the pages we read, and a remembered table would be an invented number.</p>
+<p>Michelin’s sidewall example is <strong>205/55R17 91V</strong>. The 91 is the load index and the V is the speed rating. Together they are the service description (${X('michelinRatings', 'Michelin')}). The Tire Industry Association uses <strong>P225/60R16 97V</strong> and calls the same pair of marks the service description: a two- or three-digit load index and a speed symbol (${X('tiaSidewall', 'TIA')}). TIA says the load index represents the maximum load that can be carried at the speed indicated by the speed symbol, and that you have to consult a load-index chart to turn the code into a weight. Michelin publishes that chart. The cells checked on ${CHART_DATE} are on the ${A(LOAD_INDEX_PATH, 'load index pages')} and the ${A(SPEED_RATING_PATH, 'speed rating pages')}. Michelin’s kilogram chart lists index 91 as 615 kg. Michelin USA prints 1,356 lb for that index. A USA kilogram cell that does not match the kilogram chart is not used.</p>
 <p>The size in front of those characters (width, aspect ratio, construction, rim) is a different topic, covered in ${A('/guides/how-to-read-a-tire-sidewall/', 'how to read a sidewall')} and ${A('/guides/p-metric-vs-euro-metric-vs-lt-tires/', 'P-metric, Euro-metric, and LT')}. Two tires can share 225/60R16 and still differ in load index or speed symbol. Michelin says that is why you read both before you choose a replacement.</p>
 
 <h2>Where the required numbers come from</h2>
@@ -92,12 +93,12 @@ export const GUIDES_D: Guide[] = [
 <h2>What to compare on this site</h2>
 <p>Use the placard first, then a size page such as ${Z('215-65r16')} or ${Z('265-70r17')} to see which lines NHTSA has graded in that size. The grade is a wear-rate index. The load index and speed symbol still have to be read on the tire you buy, or on the retailer’s size selector, because NHTSA’s public ratings rows often omit them. Price is a third, separate input: ${A('/guides/tire-cost-per-mile/', 'cost per mile')} uses the quote you type in, not a load index.</p>`,
     faqs: [
-      { q: 'What is a tire load index?', a: 'It is a numerical code, such as 91 or 97, for the maximum load that tire can carry at the speed shown by the speed symbol, when it is properly inflated. The code is not the weight in pounds; a load-index chart converts it.' },
+      { q: 'What is a tire load index?', a: 'It is a numerical code, such as 91 or 97, for the maximum load that tire can carry at the speed shown by the speed symbol, when it is properly inflated. Michelin’s chart lists 91 as 615 kg for one tire. The code is not itself the weight.' },
       { q: 'Can I install a tire with a higher load index?', a: 'Michelin says yes, a higher load index is permitted, but it does not increase the vehicle’s maximum allowable load. Do not install a lower load index than the placard or the owner’s manual.' },
       { q: 'What do speed ratings H, V, W, and Y mean?', a: 'Michelin lists H as 130 mph, V as 149 mph, W as 168 mph, and Y as 186 mph, as the maximum speed under the specified load when the tire is properly inflated.' },
       { q: 'What does XL mean on a tire?', a: 'Michelin says XL, Extra Load, is a reinforced tire that carries more load at a higher inflation pressure than a standard-load tire of the same size. If the factory tire is XL, the replacement should be XL too.' },
     ],
-    sources: ['michelinRatings', 'tiaSidewall', 'tiaReplace', 'nhtsa'], sizes: ['225-65r17', '245-45r18', '215-65r16'], lines: ['michelin/defender-2'], related: ['how-to-read-a-tire-sidewall', 'p-metric-vs-euro-metric-vs-lt-tires', 'utqg-traction-and-temperature-grades'],
+    sources: ['michelinRatings', 'michelinUkChart', 'michelinSizeChange', 'tiaSidewall', 'tiaReplace', 'nhtsa'], sizes: ['225-65r17', '245-45r18', '215-65r16'], lines: ['michelin/defender-2'], related: ['how-to-read-a-tire-sidewall', 'p-metric-vs-euro-metric-vs-lt-tires', 'utqg-traction-and-temperature-grades'],
   },
   {
     slug: 'why-treadwear-grades-differ-by-size', kicker: 'UTQG data', updated: R,

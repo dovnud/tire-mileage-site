@@ -4,7 +4,8 @@ import { S, UPDATED, SOURCE_URL, fmt, sizeUrl } from '../lib/data';
 import { sizeCostPath, sizeMeaningPath } from '../lib/paths';
 import { oneDecimal, parseMetricSize, querySizes, rankSize, revsLabel, sizeCodeGeometry, topLinePhrase } from '../lib/size-facts';
 import { CONTACT_EMAIL, SITE_NAME } from '../lib/site';
-import { COMPARE_PATH, REPLACE_PATH, PAGE_DATE, REBATE_PATH, AFTER_REBATE_PATH, REBATE_DATE } from '../lib/paths';
+import { COMPARE_PATH, REPLACE_PATH, PAGE_DATE, REBATE_PATH, AFTER_REBATE_PATH, REBATE_DATE, CHART_DATE, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, loadIndexPath, speedRatingPath } from '../lib/paths';
+import { LOAD_KG, LOAD_PAGES, SPEED_ROWS, lbLabel } from '../lib/service-ratings';
 import { compareFaqs, replaceFaqs, rebateFaqs, afterRebateFaqs } from '../lib/tool-faqs';
 import { REBATE_OFFERS, OUTSIDE_OFFERS, UNVERIFIED_NOTES } from '../lib/rebates-2026';
 
@@ -172,6 +173,30 @@ ${afterRebateFaqs.map((f) => `### ${f.q}\n\n${f.a}`).join('\n\n')}
 ## Sources
 - This site’s cost-per-mile guide and NHTSA ratings file. No price source.
 - Rebate dates: the tire rebate lookup, read ${REBATE_DATE}.
+
+---
+
+# Load index and speed rating charts
+
+Read ${CHART_DATE}. Kilograms are Michelin’s chart, indexes 70 through 120. A pound figure is quoted only when Michelin USA’s change-size page was checked for that index. A USA kilogram cell that does not match is not used. Speed letters are the ones both Michelin charts state at the same mph. Z and ZR are open-ended and are not given one speed. These are not UTQG grades and not prices.
+
+URL: ${u(LOOKUP_PATH)}
+Load chart: ${u(LOAD_INDEX_PATH)}
+Speed chart: ${u(SPEED_RATING_PATH)}
+
+## Checked load indexes
+${LOAD_PAGES.map((p) => `- [${p.code}](${u(loadIndexPath(p.code))}): ${p.kg} kg. Michelin USA pound cell: ${lbLabel(p.lb)} lb. USA kilogram cell: ${p.usKg} kg${p.usKgAgrees ? ' (matches)' : ' (does not match; not used)'}.`).join('\n')}
+
+## Kilogram chart
+${LOAD_KG.map((c) => `${c.index}: ${c.kg} kg`).join(', ')}
+
+## Speed letters
+${SPEED_ROWS.map((r) => `- ${r.page ? `[${r.letter}](${u(speedRatingPath(r.letter))})` : r.letter}: ${r.mph} mph (${r.kmh} km/h). Michelin USA label: ${r.usLabel}.`).join('\n')}
+
+## Sources
+- [Michelin UK load and speed chart](https://www.michelin.co.uk/auto/advice/tyre-basics/tyre-load-rating-speed-rating)
+- [Michelin USA change-size charts](https://www.michelinman.com/auto/auto-tips-and-advice/tire-buying-guide/change-size-spec)
+- [Michelin USA load and speed explainer](https://www.michelinman.com/auto/auto-tips-and-advice/tires-101/tire-load-rating-speed-rating)
 `;
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 };

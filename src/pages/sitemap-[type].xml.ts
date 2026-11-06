@@ -1,14 +1,15 @@
 import { LEGAL_LINKS } from '../lib/site';
-import { COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH } from '../lib/paths';
+import { COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, loadIndexPath, speedRatingPath } from '../lib/paths';
 import { GUIDES, guideUrl } from '../lib/all-guides';
 import { BANDS, TYPES, RIMS, bandUrl, typeUrl, rimUrl } from '../lib/taxonomy';
 import { siteLines, siteSizes, siteBrands, UPDATED, lineUrl, sizeUrl } from '../lib/data';
 import { sizeCostPath, sizeMeaningPath } from '../lib/paths';
 import { querySizes } from '../lib/size-facts';
+import { LOAD_PAGES, SPEED_PAGES } from '../lib/service-ratings';
 export const getStaticPaths = () => ['pages', 'guides', 'tags', 'brands', 'tires', 'sizes'].map((type) => ({ params: { type } }));
 export const GET = ({ site, params }: { site: URL; params: { type: string } }) => {
   const paths: Record<string, string[]> = {
-    pages: ['/', '/tires/', '/sizes/', '/where-to-buy/', '/methodology/', '/about/', ...LEGAL_LINKS.map((l) => l.href), '/data/', '/sitemap/', COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH],
+    pages: ['/', '/tires/', '/sizes/', '/where-to-buy/', '/methodology/', '/about/', ...LEGAL_LINKS.map((l) => l.href), '/data/', '/sitemap/', COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, ...LOAD_PAGES.map((p) => loadIndexPath(p.code)), SPEED_RATING_PATH, ...SPEED_PAGES.map((r) => speedRatingPath(r.letter))],
     guides: ['/guides/', ...GUIDES.map(guideUrl)],
     tags: ['/treadwear/', ...BANDS.map(bandUrl), '/type/', ...TYPES.map(typeUrl), '/rim/', ...RIMS.map(rimUrl)],
     brands: siteBrands.map((b) => `/tires/${b.slug}/`),

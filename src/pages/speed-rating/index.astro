@@ -1,0 +1,48 @@
+---
+import FaqList from '../../components/FaqList.astro';
+import Base from '../../layouts/Base.astro';
+import { CHART_DATE, LOAD_INDEX_PATH, LOOKUP_PATH, SPEED_RATING_PATH, speedRatingPath } from '../../lib/paths';
+import { MICHELIN_UK_CHART, MICHELIN_US_CHANGE, SPEED_ROWS } from '../../lib/service-ratings';
+
+const title = 'Tire Speed Rating Chart';
+const description = 'Speed ratings L through Y as both Michelin charts print them, in mph and km/h. Open-ended Z and ZR symbols are named, not given one speed.';
+const answer = 'The speed rating is the letter after the load index. It is the maximum speed under the specified load when the tire is properly inflated. Michelin’s UK chart and Michelin USA’s change-size chart agree on L, M, N, Q, R, S, T, U, H, V, W, and Y. A replacement should meet or exceed the letter on the placard.';
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Exact lookups', href: LOOKUP_PATH },
+  { name: 'Speed rating', href: SPEED_RATING_PATH },
+];
+const faqs = [
+  { q: 'What is a tire speed rating?', a: 'It is a letter for the maximum speed at which the tire can carry the load shown by its load index, when it is properly inflated. Michelin prints the letter next to the load index in the service description.' },
+  { q: 'Do the two Michelin charts agree?', a: 'On L, M, N, Q, R, S, T, U, H, V, W, and Y, the mph and km/h figures match. Michelin USA also prints a vehicle-type label for each letter. That label is Michelin’s wording.' },
+  { q: 'What about Z and ZR?', a: 'Michelin USA prints Z as 149 mph or higher. Michelin’s UK chart prints ZR as above 149 mph and ZR (Y) as above 186 mph. Those are open-ended symbols, so this page does not assign them one speed.' },
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og="speed-rating/index" modified={CHART_DATE}>
+  <p class="eyebrow">Speed rating · Michelin chart</p>
+  <h1>Tire speed rating chart</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <p>Load indexes are on the <a href={LOAD_INDEX_PATH}>load index chart</a>. The rules are in <a href="/guides/load-index-and-speed-rating/">load index and speed rating</a>.</p>
+
+  <h2>Letters both charts state at the same speed</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Symbol</th><th class="n">mph</th><th class="n">km/h</th><th>Michelin USA’s label</th></tr></thead>
+    <tbody>{SPEED_ROWS.map((r) => <tr>
+      <td>{r.page ? <a href={speedRatingPath(r.letter)}>{r.letter}</a> : r.letter}</td>
+      <td class="n">{r.mph}</td>
+      <td class="n">{r.kmh}</td>
+      <td>{r.usLabel}</td>
+    </tr>)}</tbody>
+  </table></div>
+  <p class="tbl-note">Speeds are on both Michelin charts, read {CHART_DATE}. The vehicle-type column is Michelin USA’s label only. Linked letters have their own page. H sits between U and V on the chart; the list is not alphabetical.</p>
+
+  <h2>Open-ended symbols</h2>
+  <ul>
+    <li>Michelin USA prints Z as 149 mph or higher (240 km/h or higher), and (Y) as 186 mph or higher.</li>
+    <li>Michelin’s UK chart prints ZR as above 149 mph (above 240 km/h), and ZR (Y) as above 186 mph (above 300 km/h).</li>
+  </ul>
+  <p>The two pages do not use the same symbol for that open end, so this site does not collapse them into one number. The UK page also says W, Y, and (Y) have specific cases on vehicles capable of more than 270 km/h, and to ask a dealer if that applies.</p>
+  <p class="meta">Sources: <a href={MICHELIN_UK_CHART} rel="noopener">Michelin UK chart</a> and <a href={MICHELIN_US_CHANGE} rel="noopener">Michelin USA change-size chart</a>, retrieved {CHART_DATE}. Listed on <a href={LOOKUP_PATH}>exact tire lookups</a>.</p>
+  <FaqList faqs={faqs} />
+</Base>

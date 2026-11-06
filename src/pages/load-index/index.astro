@@ -1,0 +1,58 @@
+---
+import FaqList from '../../components/FaqList.astro';
+import Base from '../../layouts/Base.astro';
+import { CHART_DATE, LOAD_INDEX_PATH, LOOKUP_PATH, SPEED_RATING_PATH, loadIndexPath } from '../../lib/paths';
+import { LOAD_KG, LOAD_PAGES, MICHELIN_UK_CHART, MICHELIN_US_CHANGE, lbLabel } from '../../lib/service-ratings';
+
+const title = 'Tire Load Index Chart';
+const description = 'Michelin’s load index chart from 70 to 120, in kilograms, plus the pound cells checked on Michelin USA’s page. Not a vehicle weight limit.';
+const answer = 'A load index is a code for the maximum load one tire can carry at the speed shown by the speed symbol, when the tire is properly inflated. Michelin’s chart lists indexes 70 through 120 in kilograms. This page quotes that table. Pound figures are quoted only for the six indexes whose Michelin USA cells were checked.';
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Exact lookups', href: LOOKUP_PATH },
+  { name: 'Load index', href: LOAD_INDEX_PATH },
+];
+const faqs = [
+  { q: 'What is a tire load index?', a: 'It is a numerical code for the maximum load one tire can carry at the speed indicated by the speed symbol, when the tire is properly inflated. Michelin’s chart converts the code into kilograms. The code is not itself a weight, and it is not the vehicle’s weight limit.' },
+  { q: 'Why are only some indexes in pounds?', a: 'Michelin USA’s change-size page prints a pound column. Some kilogram cells on that page do not match Michelin’s kilogram chart. This site quotes a pound cell only after checking it, and it does not use a conflicting kilogram cell.' },
+  { q: 'Does a higher load index let the vehicle carry more?', a: 'Michelin says a higher load index is allowed as a replacement, and that it does not increase the vehicle’s maximum load. Match or exceed the placard. Do not go below it.' },
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+const checked = new Map(LOAD_PAGES.map((p) => [Number(p.code), p]));
+const kgRows = Array.from({ length: 17 }, (_, i) => [LOAD_KG[i], LOAD_KG[i + 17], LOAD_KG[i + 34]]);
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og="load-index/index" modified={CHART_DATE}>
+  <p class="eyebrow">Load index · Michelin chart</p>
+  <h1>Tire load index chart</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <p>The exact pages are {LOAD_PAGES.map((p, i) => <span><a href={loadIndexPath(p.code)}>{p.code}</a>{i < LOAD_PAGES.length - 1 ? ', ' : ''}</span>)}. Speed letters are on the <a href={SPEED_RATING_PATH}>speed rating chart</a>. The rules, including XL, are in <a href="/guides/load-index-and-speed-rating/">load index and speed rating</a>.</p>
+
+  <h2>Indexes with a checked pound cell</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Load index</th><th class="n">kg</th><th class="n">lb printed by Michelin USA</th><th>USA kilogram cell</th></tr></thead>
+    <tbody>{LOAD_PAGES.map((p) => <tr>
+      <td><a href={loadIndexPath(p.code)}>{p.code}</a></td>
+      <td class="n">{p.kg}</td>
+      <td class="n">{lbLabel(p.lb)}</td>
+      <td>{p.usKgAgrees ? `Prints ${p.usKg} kg, which matches.` : `Prints ${lbLabel(p.usKg)} kg, which does not match. Not used.`}</td>
+    </tr>)}</tbody>
+  </table></div>
+  <p class="tbl-note">Read {CHART_DATE}. Kilograms: Michelin’s chart. Pounds: the pound cell on Michelin USA’s change-size page.</p>
+
+  <h2>Michelin’s kilogram chart, 70 through 120</h2>
+  <p>Every cell below is from Michelin’s chart. This site did not extend the table past 120, and it did not add a pound column for the rows that were not checked.</p>
+  <div class="tw"><table>
+    <thead><tr><th class="n">Load index</th><th class="n">kg per tire</th><th class="n">Load index</th><th class="n">kg per tire</th><th class="n">Load index</th><th class="n">kg per tire</th></tr></thead>
+    <tbody>
+      {kgRows.map(([a, b, c]) => <tr>
+        {[a, b, c].map((row) => {
+          const page = checked.get(row.index);
+          return <><td class="n">{page ? <a href={loadIndexPath(page.code)}>{row.index}</a> : row.index}</td><td class="n">{row.kg}</td></>;
+        })}
+      </tr>)}
+    </tbody>
+  </table></div>
+  <p class="tbl-note">Source: <a href={MICHELIN_UK_CHART} rel="noopener">Michelin, tyre load rating chart</a>, retrieved {CHART_DATE}. The three columns follow that page’s layout.</p>
+  <p class="meta">Michelin USA’s pound chart: <a href={MICHELIN_US_CHANGE} rel="noopener">Choose the right tire</a>, retrieved {CHART_DATE}. All of these pages are listed on <a href={LOOKUP_PATH}>exact tire lookups</a>.</p>
+  <FaqList faqs={faqs} />
+</Base>
