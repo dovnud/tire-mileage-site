@@ -1,0 +1,72 @@
+---
+import FaqList from '../../components/FaqList.astro';
+import Base from '../../layouts/Base.astro';
+import { CHART_DATE, LOAD_INDEX_PATH, LOOKUP_PATH, SPEED_RATING_PATH, loadIndexPath, speedRatingPath } from '../../lib/paths';
+import { LOAD_PAGES, MICHELIN_UK_CHART, MICHELIN_US_101, MICHELIN_US_CHANGE, lbLabel, loadNeighbors } from '../../lib/service-ratings';
+
+export function getStaticPaths() {
+  return LOAD_PAGES.map((p) => ({ params: { code: p.code }, props: { p } }));
+}
+const { p } = Astro.props as { p: (typeof LOAD_PAGES)[number] };
+const index = Number(p.code);
+const neighbors = loadNeighbors(index);
+const prev = LOAD_PAGES.filter((x) => Number(x.code) < index).at(-1);
+const next = LOAD_PAGES.find((x) => Number(x.code) > index);
+const lb = lbLabel(p.lb);
+const title = `What Load Index ${p.code} Means`;
+const description = p.usKgAgrees
+  ? `Load index ${p.code} is ${p.kg} kg (${lb} lb) on Michelin’s charts. That is the maximum load for one tire at the speed symbol, not the vehicle’s weight limit.`
+  : `Load index ${p.code} is ${p.kg} kg on Michelin’s chart. Michelin USA prints ${lb} lb for that index. The USA kilogram cell does not match, so it is not used.`;
+const answer = p.usKgAgrees
+  ? `Load index ${p.code} is ${p.kg} kg per tire on Michelin’s kilogram chart, and ${lb} lb on Michelin USA’s pound cell for the same index. The two pages agree. That figure is the maximum load one tire can carry at the speed shown by the speed symbol, when it is properly inflated. It is not the vehicle’s weight limit.`
+  : `Load index ${p.code} is ${p.kg} kg per tire on Michelin’s kilogram chart. Michelin USA’s change-size page prints ${lb} lb in the pound cell for ${p.code}. The kilogram cell on that same USA row prints ${lbLabel(p.usKg)}, which does not match ${p.kg} kg, so this page does not use it. The figure is the maximum load one tire can carry at the speed shown by the speed symbol, when it is properly inflated. It is not the vehicle’s weight limit.`;
+const faqs = [
+  { q: `What does load index ${p.code} mean?`, a: `Michelin’s kilogram chart lists it as ${p.kg} kg for one tire. Michelin USA prints ${lb} lb in the pound cell for the same index.${p.usKgAgrees ? ' The kilogram cell on that USA row matches.' : ` The kilogram cell on that USA row does not match ${p.kg} kg, so it is not used.`}` },
+  { q: `Can a tire with a higher load index than ${p.code} replace one marked ${p.code}?`, a: 'Michelin says a replacement must meet or exceed the load index the vehicle manufacturer specifies. A higher index does not raise the vehicle’s own weight limit.' },
+  { q: `Is load index ${p.code} a treadwear rating or a price?`, a: 'No. Treadwear is a separate UTQG grade. This page has no price. The speed letter next to the load index is a different code.' },
+];
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Exact lookups', href: LOOKUP_PATH },
+  { name: 'Load index', href: LOAD_INDEX_PATH },
+  { name: p.code, href: loadIndexPath(p.code) },
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og={`load-index/${p.code}`} modified={CHART_DATE}>
+  <p class="eyebrow">Load index · Michelin chart</p>
+  <h1>What does load index {p.code} mean?</h1>
+  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <p>The number is the service description, printed after the size. Michelin’s example is 205/55R17 91V: 91 is the load index and V is the speed rating. <a href={speedRatingPath('v')}>Speed rating V</a> is a different code.</p>
+
+  <h2>The cell for {p.code}</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Index</th><th class="n">kg per tire</th><th>Where that number is printed</th></tr></thead>
+    <tbody>
+      {neighbors.map((c) => <tr>
+        <td>{c.index === index ? <strong>{c.index}</strong> : LOAD_PAGES.some((x) => x.code === String(c.index)) ? <a href={loadIndexPath(String(c.index))}>{c.index}</a> : c.index}</td>
+        <td class="n">{c.kg}</td>
+        <td>{c.index === index ? `Michelin kilogram chart. Michelin USA prints ${lb} lb for this index.` : 'Michelin kilogram chart. The neighboring pound cell is not quoted on this page.'}</td>
+      </tr>)}
+    </tbody>
+  </table></div>
+  <p class="tbl-note">Kilograms are Michelin’s UK chart, read {CHART_DATE}. The pound figure is the cell printed on Michelin USA’s change-size page, read the same day. {p.usKgAgrees ? `That USA row also prints ${p.usKg} kg, which matches.` : `That USA row prints ${lbLabel(p.usKg)} kg, which does not match ${p.kg} kg, so the USA kilogram cell is not used.`}</p>
+
+  <h2>What the number does not change</h2>
+  <ul>
+    <li>Michelin says the load rating must meet or exceed the value the vehicle manufacturer specifies. A higher index is allowed. It does not increase the vehicle’s maximum load.</li>
+    <li>XL means Extra Load: reinforced construction that carries a higher load than a standard tire of the same size at a higher inflation pressure. If the placard says XL, the replacement should be XL. This page does not convert {p.code} into an XL pressure.</li>
+    <li>NHTSA’s UTQG file grades treadwear, traction, and temperature. It is not this chart. A high treadwear grade does not mean the tire is load index {p.code}.</li>
+  </ul>
+  <p>Read the placard on the driver’s door edge, then the sidewall. The chart turns the code into a weight. It does not pick a tire. The rules page is <a href="/guides/load-index-and-speed-rating/">load index and speed rating</a>. Other checked indexes are on the <a href={LOAD_INDEX_PATH}>load index chart</a>. Speed letters are on the <a href={SPEED_RATING_PATH}>speed rating chart</a>.</p>
+  <p>{prev && <a href={loadIndexPath(prev.code)}>Load index {prev.code}</a>}{prev && next && ' · '}{next && <a href={loadIndexPath(next.code)}>Load index {next.code}</a>}</p>
+
+  <FaqList faqs={faqs} />
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>
+      <li><a href={MICHELIN_UK_CHART} rel="noopener">Tyre load rating and speed rating chart</a>, Michelin. Index {p.code} is {p.kg} kg. Retrieved {CHART_DATE}.</li>
+      <li><a href={MICHELIN_US_CHANGE} rel="noopener">Choose the right tire</a>, Michelin USA. The pound cell for {p.code} prints {lb} lb.{p.usKgAgrees ? ` The kilogram cell prints ${p.usKg} kg.` : ` The kilogram cell prints ${lbLabel(p.usKg)}, which is not used.`} Retrieved {CHART_DATE}.</li>
+      <li><a href={MICHELIN_US_101} rel="noopener">Tire load rating and speed rating</a>, Michelin USA. Meet or exceed the placard. XL is reinforced construction. The 91V example is on this page.</li>
+    </ol>
+  </section>
+</Base>

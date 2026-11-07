@@ -44,6 +44,8 @@ export const SRC: Record<string, Source> = {
   miTread: { id: 'miTread', label: 'Michigan Compiled Laws 257.710', url: 'https://www.legislature.mi.gov/Laws/MCL?objectName=MCL-257-710', publisher: 'Michigan Legislature', retrieved: '2026-10-31' },
   cfr139: { id: 'cfr139', label: '49 CFR § 571.139 New pneumatic radial tires for light vehicles', url: 'https://www.ecfr.gov/current/title-49/subtitle-B/chapter-V/part-571/subpart-B/section-571.139', publisher: 'U.S. Code of Federal Regulations (eCFR)', retrieved: '2026-10-31' },
   contiOffers: { id: 'contiOffers', label: 'Continental Tire Offers', url: 'https://continentaltire.com/offers', publisher: 'Continental Tire', retrieved: '2026-11-04' },
+  michelinUkChart: { id: 'michelinUkChart', label: 'Tyre load rating and speed rating chart', url: 'https://www.michelin.co.uk/auto/advice/tyre-basics/tyre-load-rating-speed-rating', publisher: 'Michelin', retrieved: '2026-11-06' },
+  michelinSizeChange: { id: 'michelinSizeChange', label: 'Choose the right tire (load and speed charts)', url: 'https://www.michelinman.com/auto/auto-tips-and-advice/tire-buying-guide/change-size-spec', publisher: 'Michelin USA', retrieved: '2026-11-06' },
 };
 export interface Faq { q: string; a: string }
 export interface Guide { slug: string; title: string; h1: string; description: string; kicker: string; updated: string; answer: string; body: string; faqs: Faq[]; sources: string[]; sizes: string[]; lines: string[]; related: string[] }

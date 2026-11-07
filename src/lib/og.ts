@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import { FULL, siteBrands, siteSizes, siteLines, S, fmt } from './data';
 import { GUIDES } from './all-guides';
 import { BANDS, TYPES, RIMS, inBand, inType, rimSlug, sizesForRim } from './taxonomy';
+import { LOAD_PAGES, SPEED_PAGES } from './service-ratings';
 
 export interface OgEntry { slug: string; kicker: string; title: string; sub: string }
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -11,11 +12,16 @@ export function ogEntries(): OgEntry[] {
   const e: OgEntry[] = [
     { slug: 'default', kicker: 'TireMileage', title: 'Tire treadwear ratings by size', sub: `${S.normalized_lines.toLocaleString()} tire lines from NHTSA’s UTQG ratings` },
     { slug: 'guides/index', kicker: 'Guides', title: 'Tire guides', sub: `${GUIDES.length} guides on treadwear, warranties, and sidewalls` },
+    { slug: 'lookup', kicker: 'Exact match', title: 'Exact tire size and line lookups', sub: 'Sizes, lines, load index, speed rating, 2026 dates' },
+    { slug: 'load-index/index', kicker: 'Load index', title: 'Tire load index chart', sub: 'Michelin chart, kilograms, indexes 70–120' },
+    { slug: 'speed-rating/index', kicker: 'Speed rating', title: 'Tire speed rating chart', sub: 'Letters both Michelin charts agree on' },
     { slug: 'treadwear/index', kicker: 'Browse by treadwear', title: 'Tires by treadwear band', sub: 'Under 200 to 800 and up' },
     { slug: 'type/index', kicker: 'Browse by type', title: 'Tires by category', sub: 'All-season, touring, performance, all-terrain, highway' },
     { slug: 'rim/index', kicker: 'Browse by rim size', title: 'Tires by rim diameter', sub: `${RIMS[0]}- to ${RIMS[RIMS.length - 1]}-inch` },
   ];
   for (const g of GUIDES) e.push({ slug: `guides/${g.slug}`, kicker: `Guide · ${g.kicker}`, title: g.h1, sub: `Updated ${g.updated}` });
+  for (const p of LOAD_PAGES) e.push({ slug: `load-index/${p.code}`, kicker: 'Load index', title: `What load index ${p.code} means`, sub: `${p.kg} kg on Michelin’s chart` });
+  for (const r of SPEED_PAGES) e.push({ slug: `speed-rating/${r.letter.toLowerCase()}`, kicker: 'Speed rating', title: `What speed rating ${r.letter} means`, sub: `${r.mph} mph on Michelin’s charts` });
   for (const b of BANDS) e.push({ slug: `treadwear/${b.slug}`, kicker: 'Treadwear band', title: `Tires with treadwear ${b.label}`, sub: `${inBand(b).length} NHTSA-rated lines` });
   for (const t of TYPES) e.push({ slug: `type/${t.slug}`, kicker: 'Tire category', title: `${t.label} tires: treadwear and grades`, sub: `${inType(t).length} NHTSA-rated lines carry this marker` });
   for (const r of RIMS) e.push({ slug: `rim/${rimSlug(r)}`, kicker: 'Rim diameter', title: `${r}-inch tires: sizes and treadwear`, sub: `${sizesForRim(r).length} sizes in NHTSA’s data` });
