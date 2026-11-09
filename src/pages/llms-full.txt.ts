@@ -7,6 +7,7 @@ import { CONTACT_EMAIL, SITE_NAME } from '../lib/site';
 import { COMPARE_PATH, REPLACE_PATH, PAGE_DATE, REBATE_PATH, AFTER_REBATE_PATH, REBATE_DATE, CHART_DATE, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, loadIndexPath, speedRatingPath } from '../lib/paths';
 import { LOAD_KG, LOAD_PAGES, SPEED_ROWS, lbLabel } from '../lib/service-ratings';
 import { compareFaqs, replaceFaqs, rebateFaqs, afterRebateFaqs } from '../lib/tool-faqs';
+import { EXACT_DATE, EXACT_PAGES, exactPath } from '../lib/exact-match';
 import { REBATE_OFFERS, OUTSIDE_OFFERS, UNVERIFIED_NOTES } from '../lib/rebates-2026';
 
 function decode(s: string): string {
@@ -197,6 +198,25 @@ ${SPEED_ROWS.map((r) => `- ${r.page ? `[${r.letter}](${u(speedRatingPath(r.lette
 - [Michelin UK load and speed chart](https://www.michelin.co.uk/auto/advice/tyre-basics/tyre-load-rating-speed-rating)
 - [Michelin USA change-size charts](https://www.michelinman.com/auto/auto-tips-and-advice/tire-buying-guide/change-size-spec)
 - [Michelin USA load and speed explainer](https://www.michelinman.com/auto/auto-tips-and-advice/tires-101/tire-load-rating-speed-rating)
+
+---
+
+# Exact-match queries
+
+Read ${EXACT_DATE}. Warranty miles and rebate amounts are quoted from the maker page linked on each URL. A “best mileage” page reports the highest UTQG treadwear grade NHTSA filed for that size. It is not a road test and not a warranty. Comparison pages use the NHTSA grades. No prices are stored.
+
+${EXACT_PAGES.map((p) => `# ${p.h1}
+
+URL: ${u(exactPath(p.slug))}
+Last updated: ${EXACT_DATE}
+
+${p.answer}
+
+${p.faqs.map((f) => `### ${f.q}\n\n${f.a}`).join('\n\n')}
+
+## Sources
+${p.sources.map((s) => `- [${s.label}](${s.url}) (${s.publisher})`).join('\n')}
+`).join('\n')}
 `;
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 };

@@ -1,6 +1,7 @@
 import { siteLines, siteBrands, siteSizes, lineUrl, sizeUrl, fmt } from '../lib/data';
 import { COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH, HOLIDAY_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, blackFridayPath, cyberMondayPath, loadIndexPath, sizeCostPath, sizeMeaningPath, speedRatingPath } from '../lib/paths';
 import { querySizes } from '../lib/size-facts';
+import { EXACT_PAGES, exactPath } from '../lib/exact-match';
 import { LOAD_PAGES, SPEED_PAGES, lbLabel } from '../lib/service-ratings';
 // Compact client-side search index: [type, label, url, extra]. L=line, B=brand, S=size. Loaded lazily on first search focus.
 export function GET() {
@@ -16,6 +17,7 @@ export function GET() {
     ['T', 'When to replace your tires', REPLACE_PATH, 'tool'],
     ['T', 'Holiday 2026 winter tire and gear gift guide', HOLIDAY_PATH, 'tool'],
     ['Q', 'Exact tire size and line lookups', LOOKUP_PATH, 'wave 2'],
+    ...EXACT_PAGES.map((p) => ['Q', p.h1, exactPath(p.slug), p.kicker]),
     ['I', 'Tire load index chart', LOAD_INDEX_PATH, 'Michelin kg'],
     ...LOAD_PAGES.map((p) => ['I', `Load index ${p.code}`, loadIndexPath(p.code), `${p.kg} kg, ${lbLabel(p.lb)} lb`]),
     ['V', 'Tire speed rating chart', SPEED_RATING_PATH, 'mph'],

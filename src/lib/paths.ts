@@ -16,6 +16,10 @@ export const CYBER_MONDAY_SLUG = 'cyber-monday-2026-tire-rebates';
 export const blackFridayPath = `/guides/${BLACK_FRIDAY_SLUG}/`;
 export const cyberMondayPath = `/guides/${CYBER_MONDAY_SLUG}/`;
 export const LOOKUP_PATH = '/lookup/';
+/** One exact-query page. Slug is lowercase [a-z0-9-]. */
+export const exactPath = (slug: string) => `/lookup/${slug}/`;
+/** Date the November 2026 exact-match warranty and rebate pages were read. */
+export const EXACT_DATE = '2026-11-09';
 export const LOAD_INDEX_PATH = '/load-index/';
 export const SPEED_RATING_PATH = '/speed-rating/';
 export const loadIndexPath = (code: string) => `/load-index/${code}/`;
