@@ -12,6 +12,7 @@ import Badge from '../../../components/Badge.astro';
 import WhereToBuy from '../../../components/WhereToBuy.astro';
 import ShopCta from '../../../components/ShopCta.astro';
 import ShopBar from '../../../components/ShopBar.astro';
+import { exactPagesForLine, exactPath } from '../../../lib/exact-match';
 import { MAKER_FACTS } from '../../../lib/makers';
 import { wearPct, wearTier } from '../../../lib/data';
 import { siteLines, allLines, recordsFor, hasLine, lineUrl, sizeUrl, sizeSet, S, UPDATED, fmt, range, pct, ordinal, wearBand, TRACTION, TEMPERATURE, mostCommon, trendLabel, SOURCE_URL, NHTSA_GUIDE, CFR_URL } from '../../../lib/data';
@@ -29,6 +30,7 @@ const shown = [...recs].sort((a, b) => (b.treadwear ?? 0) - (a.treadwear ?? 0) |
 const sizeLinks = [...new Set(explicit.map((r) => r.size_key))].filter((k) => sizeSet.has(k));
 const rank = l.brand_rank!;
 const maker = MAKER_FACTS[`${l.brand_slug}/${l.line_slug}`];
+const exactForLine = exactPagesForLine(`${l.brand_slug}/${l.line_slug}`);
 const arc = 2 * Math.PI * 80 / 2; // semicircle length for r=80
 const above = brandLines.find((x) => x.brand_rank === rank - 1), below = brandLines.find((x) => x.brand_rank === rank + 1);
 const spread = l.wear_min === l.wear_max ? `a single treadwear grade of ${l.wear_min}` : `treadwear grades from ${l.wear_min} to ${l.wear_max} (median ${fmt(l.wear_median)})`;
@@ -123,6 +125,7 @@ const similar = allLines.filter((x) => x.wear_median != null && x.brand_slug !==
   <p><a href={`/tires/${l.brand_slug}/`}>All {l.brand} lines →</a></p>
 
   {similar.length > 0 && <section class="relblock"><h2>Similar treadwear from other brands</h2><p>Other lines in the same treadwear band (<a href={`/treadwear/${tband.slug}/`}>{tband.label}</a>) with a page here: {similar.map((x, i) => <span><a href={lineUrl(x)}>{x.brand} {x.line}</a> ({fmt(x.wear_median)}){i < similar.length - 1 ? ', ' : ''}</span>)}.</p></section>}
+  {exactForLine.length > 0 && <section class="relblock"><h2>Exact pages for this line</h2><ul class="rel">{exactForLine.map((p) => <li><a href={exactPath(p.slug)}>{p.h1}</a></li>)}</ul></section>}
   <GuideLinks slugs={guideSlugs} />
 
   <h2>FAQ</h2>

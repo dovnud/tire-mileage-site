@@ -1,0 +1,49 @@
+---
+import FaqList from '../../components/FaqList.astro';
+import ShopCta from '../../components/ShopCta.astro';
+import ShopSize from '../../components/ShopSize.astro';
+import Base from '../../layouts/Base.astro';
+import { EXACT_DATE, EXACT_PAGES, exactPath, type ExactPage } from '../../lib/exact-match';
+import { LOOKUP_PATH } from '../../lib/paths';
+
+export function getStaticPaths() {
+  return EXACT_PAGES.map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+const { page } = Astro.props as { page: ExactPage };
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Exact lookups', href: LOOKUP_PATH },
+  { name: page.h1, href: exactPath(page.slug) },
+];
+const ld = [{
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: page.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+}];
+---
+<Base title={page.title} description={page.description} crumbs={crumbs} ld={ld} og={`lookup/${page.slug}`} modified={EXACT_DATE}>
+  <p class="eyebrow">{page.kicker}</p>
+  <h1>{page.h1}</h1>
+  {page.shopLine && <ShopCta brand={page.shopLine.brand} line={page.shopLine.line} brandSlug={page.shopLine.brandSlug} lineSlug={page.shopLine.lineSlug} />}
+  {page.shopSize && <ShopSize label={page.shopSize} />}
+  <div class="answer"><strong>Quick answer:</strong> {page.answer}</div>
+  {page.blocks.map((b) => {
+    if (b.kind === 'p') return <p>{b.segs!.map((s) => s.href ? <a href={s.href}>{s.text}</a> : s.text)}</p>;
+    if (b.kind === 'ul') return <ul>{b.items!.map((item) => <li>{item.map((s) => s.href ? <a href={s.href}>{s.text}</a> : s.text)}</li>)}</ul>;
+    return <div>
+      <div class="tw"><table>
+        <thead><tr>{b.head!.map((h) => <th>{h}</th>)}</tr></thead>
+        <tbody>{b.rows!.map((row) => <tr>{row.map((c) => <td>{c.href ? <a href={c.href}>{c.text}</a> : c.text}</td>)}</tr>)}</tbody>
+      </table></div>
+      {b.note && <p class="tbl-note">{b.note}</p>}
+    </div>;
+  })}
+  <FaqList faqs={page.faqs} />
+  <section class="relblock"><h2>Related pages</h2><ul class="rel">
+    {page.related.map((r) => <li><a href={r.href}>{r.label}</a></li>)}
+  </ul></section>
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>{page.sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a>, {s.publisher}. <span class="why">Retrieved {EXACT_DATE}.</span></li>)}</ol>
+    <p class="why">NHTSA grades are from the <a href="/data/">dataset this site publishes</a>, pulled 2026-10-25. Maker warranties and rebate dates are the maker’s own pages. Found an error? See <a href="/about/">About &amp; corrections</a>.</p>
+  </section>
+</Base>

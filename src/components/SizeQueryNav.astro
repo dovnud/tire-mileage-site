@@ -1,12 +1,15 @@
 ---
+import { exactMileageForSize, exactPath } from '../lib/exact-match';
 import { sizeUrl } from '../lib/data';
 import { REBATE_PATH, REPLACE_PATH, afterRebateSizePath, compareSizePath, sizeCostPath, sizeMeaningPath } from '../lib/paths';
 const { sizeKey, label, current } = Astro.props as { sizeKey: string; label: string; current: 'rank' | 'meaning' | 'cost' };
+const mileage = exactMileageForSize(sizeKey);
 ---
 <div class="chips" aria-label={`More on ${label}`}>
   {current !== 'rank' && <a class="chip" href={sizeUrl(sizeKey)}>{label} treadwear ranking</a>}
   {current !== 'meaning' && <a class="chip" href={sizeMeaningPath(sizeKey)}>What does {label} mean?</a>}
   {current !== 'cost' && <a class="chip" href={sizeCostPath(sizeKey)}>{label} cost per mile</a>}
+  {mileage && <a class="chip" href={exactPath(mileage.slug)}>{label} best mileage tire</a>}
   <a class="chip" href={compareSizePath(sizeKey)}>Compare two quotes</a>
   <a class="chip" href={afterRebateSizePath(sizeKey)}>After a rebate</a>
   <a class="chip" href={REBATE_PATH}>Tire rebates</a>

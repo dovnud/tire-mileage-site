@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import { FULL, siteBrands, siteSizes, siteLines, S, fmt } from './data';
 import { GUIDES } from './all-guides';
 import { BANDS, TYPES, RIMS, inBand, inType, rimSlug, sizesForRim } from './taxonomy';
+import { EXACT_PAGES } from './exact-match';
 import { LOAD_PAGES, SPEED_PAGES } from './service-ratings';
 
 export interface OgEntry { slug: string; kicker: string; title: string; sub: string }
@@ -20,6 +21,7 @@ export function ogEntries(): OgEntry[] {
     { slug: 'rim/index', kicker: 'Browse by rim size', title: 'Tires by rim diameter', sub: `${RIMS[0]}- to ${RIMS[RIMS.length - 1]}-inch` },
   ];
   for (const g of GUIDES) e.push({ slug: `guides/${g.slug}`, kicker: `Guide · ${g.kicker}`, title: g.h1, sub: `Updated ${g.updated}` });
+  for (const p of EXACT_PAGES) e.push({ slug: `lookup/${p.slug}`, kicker: p.kicker, title: p.h1, sub: `Read ${p.sources[0]?.publisher ?? 'source'} · ${p.sources.length} source${p.sources.length === 1 ? '' : 's'}` });
   for (const p of LOAD_PAGES) e.push({ slug: `load-index/${p.code}`, kicker: 'Load index', title: `What load index ${p.code} means`, sub: `${p.kg} kg on Michelin’s chart` });
   for (const r of SPEED_PAGES) e.push({ slug: `speed-rating/${r.letter.toLowerCase()}`, kicker: 'Speed rating', title: `What speed rating ${r.letter} means`, sub: `${r.mph} mph on Michelin’s charts` });
   for (const b of BANDS) e.push({ slug: `treadwear/${b.slug}`, kicker: 'Treadwear band', title: `Tires with treadwear ${b.label}`, sub: `${inBand(b).length} NHTSA-rated lines` });
