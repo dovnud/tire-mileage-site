@@ -26,7 +26,7 @@ ${LEGAL_LINKS.map((l) => `- [${l.name}](${u(l.href)}): ${l.desc}`).join('\n')}
 - [Tire rebate lookup, November and December 2026](${u(REBATE_PATH)}): manufacturer purchase windows only where the maker’s own page states them; sources and dates linked
 - [When to replace your tires](${u(REPLACE_PATH)}): 2/32 inch, 4/32 inch wet and snow notes, and age guidance, each with a source
 - [Holiday 2026 gift guide](${u(HOLIDAY_PATH)}): winter tires and tire gear; Amazon searches; rebate dates only where a maker page publishes them for 2026
-- [Exact tire lookups](${u(LOOKUP_PATH)}): common sizes with fewer than ten NHTSA lines, tire lines filed mostly as “All sizes,” Michelin load and speed charts, the November 27 and November 30, 2026 date pages, and ${EXACT_PAGES.length} query pages read ${EXACT_DATE}
+- [Exact tire lookups](${u(LOOKUP_PATH)}): common sizes with fewer than ten NHTSA lines, tire lines filed mostly as “All sizes,” Michelin load and speed charts, the November 27 and November 30, 2026 date pages, and ${EXACT_PAGES.length} query pages. The first set was read ${EXACT_DATE}. Later mileage, treadwear, comparison, and longest-warranty pages use the date on each URL.
 
 ## Exact-match queries
 Each page opens with the answer, a table, and the primary source. Warranty miles and rebate amounts are the maker’s words. “Best mileage” means the highest UTQG treadwear grade NHTSA filed for that size, not a road test and not a warranty.

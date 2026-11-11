@@ -3,6 +3,7 @@
 // Treadwear grades are read from the NHTSA file in data/normalized. Nothing here is a price.
 import { allLines, allSizes, fmt, hasLine, lineUrl, sizeSet, sizeUrl, trendLabel, type Line } from './data';
 import { EXACT_DATE, exactPath, LOOKUP_PATH, REBATE_PATH, blackFridayPath, cyberMondayPath } from './paths';
+import { WAVE3_PAGES } from './exact-wave3';
 import { rankSize, type RankedRow } from './size-facts';
 
 export { EXACT_DATE, exactPath };
@@ -140,7 +141,9 @@ export interface Block {
 }
 export interface ExactPage {
   slug: string;
-  kind: 'warranty' | 'mileage' | 'compare' | 'rebate';
+  kind: 'warranty' | 'mileage' | 'compare' | 'rebate' | 'treadwear' | 'longest' | 'winter';
+  /** When set, the page was read on this date. Older pages stay on EXACT_DATE. */
+  retrieved?: string;
   title: string;
   h1: string;
   description: string;
@@ -949,7 +952,10 @@ function withRelated(pages: ExactPage[]): ExactPage[] {
       .filter((p) => !seen.has(exactPath(p.slug)))
       .slice(0, 6)
       .map((p) => ({ href: exactPath(p.slug), label: p.h1 }));
-    const lineLinks = page.lineKeys.map(mustLine).filter(hasLine).map((l) => ({ href: lineUrl(l), label: lineLabel(l) }));
+    const lineLinks = page.lineKeys.flatMap((k) => {
+      const l = lineByKey.get(k);
+      return l && l.wear_median != null && hasLine(l) ? [{ href: lineUrl(l), label: lineLabel(l) }] : [];
+    });
     const hubs = [
       { href: LOOKUP_PATH, label: 'All exact lookups' },
       { href: '/tires/', label: 'Tire lines' },
@@ -972,6 +978,7 @@ const built = withRelated([
   ...MILEAGE_SIZES.map(buildMileage),
   ...COMPARES.map(buildCompare),
   ...REBATES.flatMap((b) => (['november', 'black-friday', 'cyber-monday'] as const).map((d) => buildRebate(b, d))),
+  ...WAVE3_PAGES,
 ]).map((p) => ({ ...p, sources: dedupeSources(p.sources) }));
 
 const slugs = new Set<string>();
@@ -984,9 +991,10 @@ for (const page of built) {
   if (page.sources.length < 1) throw new Error(`no sources ${page.slug}`);
   if (page.faqs.length < 3) throw new Error(`faqs ${page.slug}`);
 }
-if (built.length < 40 || built.length > 60) throw new Error(`exact page count ${built.length}`);
+if (built.length !== 94) throw new Error(`exact page count ${built.length}`);
 
 export const EXACT_PAGES: ExactPage[] = built;
 export const exactBySlug = (slug: string) => EXACT_PAGES.find((p) => p.slug === slug);
 export const exactPagesForLine = (key: string) => EXACT_PAGES.filter((p) => p.lineKeys.includes(key));
 export const exactMileageForSize = (key: string) => EXACT_PAGES.find((p) => p.kind === 'mileage' && p.sizeKey === key);
+export const exactLongestForSize = (key: string) => EXACT_PAGES.find((p) => p.kind === 'longest' && p.sizeKey === key);
