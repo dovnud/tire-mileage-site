@@ -7,8 +7,8 @@ import { serpTitle, serpDescription } from '../lib/serp';
 import { pageGraph } from '../lib/schema';
 import Crumbs from '../components/Crumbs.astro';
 import Logo from '../components/Logo.astro';
-interface Props { title: string; description: string; crumbs?: { name: string; href: string }[]; ld?: unknown[]; noindex?: boolean; og?: string; ogType?: 'website' | 'article'; published?: string; modified?: string; }
-const { title: titleIn, description: descriptionIn, crumbs = [], ld = [], noindex = false, og = 'default', ogType = 'website', published, modified } = Astro.props;
+interface Props { title: string; description: string; crumbs?: { name: string; href: string }[]; ld?: unknown[]; noindex?: boolean; thin?: boolean; og?: string; ogType?: 'website' | 'article'; published?: string; modified?: string; }
+const { title: titleIn, description: descriptionIn, crumbs = [], ld = [], noindex = false, thin = false, og = 'default', ogType = 'website', published, modified } = Astro.props;
 const title = serpTitle(titleIn);
 const description = serpDescription(descriptionIn);
 const ogImage = new URL(`/og/${og}.png`, Astro.site!.origin).href;
@@ -30,7 +30,7 @@ const nav: [string, string, string?][] = [['Tire lines', '/tires/'], ['Sizes', '
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  {(PREVIEW || noindex) && <meta name="robots" content="noindex, nofollow" />}
+  {(PREVIEW || noindex) ? <meta name="robots" content="noindex, nofollow" /> : thin && <meta name="robots" content="noindex, follow" />}
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content={ogType} /><meta property="og:site_name" content={SITE_NAME} /><meta property="og:locale" content="en_US" />
   <meta property="og:image" content={ogImage} /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:image:alt" content={title} />
   <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={ogImage} />
@@ -55,7 +55,6 @@ const nav: [string, string, string?][] = [['Tire lines', '/tires/'], ['Sizes', '
     <ul id="q-results" class="results" role="listbox" aria-label="Search results" hidden></ul>
   </form>
 </div></header>
-<div class="disc"><div class="wrap"><strong>Disclosure:</strong> <span class="disc-more">TireMileage is independent and sells nothing. </span>{AMAZON_DISCLOSURE}<span class="disc-more"> Amazon links on this site carry our Associates tag; other retailer links are plain. It never changes a ranking.</span> <a href="/affiliate-disclosure/">Affiliate disclosure</a> · <a href="/where-to-buy/">Where to buy</a></div></div>
 <main id="main"><div class="wrap">
   {crumbs.length > 1 && <Crumbs items={crumbs} />}
   <slot />
@@ -69,7 +68,7 @@ const nav: [string, string, string?][] = [['Tire lines', '/tires/'], ['Sizes', '
   </div>
   <nav class="legal-links" aria-label="Legal"><ul>{LEGAL_LINKS.map((l) => <li><a href={l.href}>{l.name}</a></li>)}</ul></nav>
   <p class="fine">Source: U.S. National Highway Traffic Safety Administration (NHTSA) Uniform Tire Quality Grading data, a U.S. federal government work. Grades are assigned by tire makers; they are not mileage guarantees. Tire data here is informational, not safety advice (<a href="/disclaimer/">disclaimer</a>). Not affiliated with NHTSA or any tire maker or retailer. Prices are not shown; manufacturer warranty figures appear only where cited from the maker’s own page.</p>
-  <p class="fine">{AMAZON_DISCLOSURE}</p>
+  <p class="fine disc"><strong>Disclosure:</strong> TireMileage doesn’t sell tires. {AMAZON_DISCLOSURE} Amazon links on this site carry our Associates tag; other retailer links are plain. Commissions never change a ranking. <a href="/affiliate-disclosure/">Affiliate disclosure</a> · <a href="/where-to-buy/">Where to buy</a></p>
 </div></footer>
 <script>import '../scripts/site.ts';</script>
 {GA4_ID && <script is:inline define:vars={{ GA4_ID }}>

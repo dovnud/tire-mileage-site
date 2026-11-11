@@ -1,5 +1,5 @@
 import { LEGAL_LINKS } from '../lib/site';
-import { COMPARE_PATH, REPLACE_PATH, HOLIDAY_PATH, REBATE_PATH, AFTER_REBATE_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, blackFridayPath, cyberMondayPath, loadIndexPath, sizeCostPath, sizeMeaningPath, speedRatingPath } from '../lib/paths';
+import { COST_PATH, COMPARE_PATH, REPLACE_PATH, HOLIDAY_PATH, REBATE_PATH, AFTER_REBATE_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, blackFridayPath, cyberMondayPath, loadIndexPath, sizeMeaningPath, speedRatingPath } from '../lib/paths';
 import { GUIDES, guideUrl } from '../lib/all-guides';
 import { BANDS, TYPES, RIMS, bandUrl, typeUrl, rimUrl } from '../lib/taxonomy';
 import { siteLines, siteSizes, siteBrands, S, UPDATED, lineUrl, sizeUrl, SOURCE_URL } from '../lib/data';
@@ -20,6 +20,7 @@ ${LEGAL_LINKS.map((l) => `- [${l.name}](${u(l.href)}): ${l.desc}`).join('\n')}
 - [Tire lines by brand](${u('/tires/')})
 - [Guides](${u('/guides/')}) ([Atom feed](${u('/guides/feed.xml')})); [HTML site map](${u('/sitemap/')})
 - [Where to buy](${u('/where-to-buy/')}): TireMileage does not sell tires; it links to Amazon and Discount Tire search results (affiliate disclosure, fitment and DOT-date checks)
+- [Tire cost per mile calculator](${u(COST_PATH)}): one quote, user-entered price and miles; takes the size as an input (?size=225-65r17).
 - [Compare two tires: cost per mile](${u(COMPARE_PATH)}): user-entered prices only; cost per 1,000 miles and break-even miles. A size page can open it with that size selected (?size=225-65r17).
 - [Cost per mile after a rebate](${u(AFTER_REBATE_PATH)}): user-entered price, rebate, and miles; NHTSA treadwear when a line is picked; rebate amounts are not filled in
 - [Tire rebate lookup, November and December 2026](${u(REBATE_PATH)}): manufacturer purchase windows only where the maker’s own page states them; sources and dates linked
@@ -49,7 +50,7 @@ ${RIMS.map((r) => `- [${r}-inch rim](${u(rimUrl(r))})`).join('\n')}
 ## Tire sizes
 Each size below has a treadwear ranking, a page that decodes the size code (overall diameter is calculated from the code and labeled as a calculation, not a measurement), and a cost-per-mile page that uses a price and miles you type. No prices are stored. Load index, speed rating and vehicle fitment are not stated. Some published sizes have fewer than ten graded lines; the count is only the lines NHTSA names for that size.
 ${siteSizes.map((s) => {
-  const extra = querySizes.some((q) => q.key === s.key) ? ` [What ${s.label} means](${u(sizeMeaningPath(s.key))}). [${s.label} cost per mile](${u(sizeCostPath(s.key))}).` : '';
+  const extra = querySizes.some((q) => q.key === s.key) ? ` [What ${s.label} means](${u(sizeMeaningPath(s.key))}).` : '';
   return `- [${s.label}](${u(sizeUrl(s.key))}): ${s.lines} lines ranked by NHTSA treadwear.${extra}`;
 }).join('\n')}
 

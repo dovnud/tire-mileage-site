@@ -5,7 +5,9 @@ export const REBATE_PATH = '/tools/tire-rebates/';
 export const AFTER_REBATE_PATH = '/tools/cost-per-mile-after-rebate/';
 /** Exact-query pages for one published size. */
 export const sizeMeaningPath = (key: string) => `/sizes/${key}/meaning/`;
-export const sizeCostPath = (key: string) => `/sizes/${key}/cost-per-mile/`;
+/** One cost-per-mile calculator for every size (replaced the per-size /sizes/<size>/cost-per-mile/ pages, which now 301 here). */
+export const COST_PATH = '/tools/cost-per-mile/';
+export const sizeCostPath = (key: string) => `${COST_PATH}?size=${key}`;
 /** Opens a tool with that size already selected. The size key is [0-9r-]. */
 export const compareSizePath = (key: string) => `${COMPARE_PATH}?size=${key}`;
 export const afterRebateSizePath = (key: string) => `${AFTER_REBATE_PATH}?size=${key}`;

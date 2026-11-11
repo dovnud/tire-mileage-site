@@ -1,0 +1,3 @@
+# Nov 10 2026 audit: the 163 per-size cost-per-mile pages were folded into one calculator.
+/sizes/:size/cost-per-mile/ /tools/cost-per-mile/?size=:size 301
+/sizes/:size/cost-per-mile /tools/cost-per-mile/?size=:size 301

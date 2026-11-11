@@ -60,7 +60,7 @@ const ld = [
     <p class="shop-fine">{AMAZON_DISCLOSURE}</p>
   </section>}
   <Chips chips={chips} label="Tags for this tire size" />
-  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <div class="answer">{answer}</div>
   <SizeQueryNav sizeKey={s.key} label={label} current="rank" />
 
   <h2>Ranking: {label} tire lines by NHTSA treadwear grade</h2>
@@ -72,7 +72,7 @@ const ld = [
   <p class="tbl-note">Click a column heading (on phones, a “Sort by” button) to sort. Treadwear bar shows the lowest grade filed for this size.</p>
   <p class="meta">Percentile in size = share of the {n} lines for {label} with a lower treadwear grade. Cost column: price per set ÷ (expected miles ÷ 1,000), calculated in your browser from your inputs only.</p>
   <ReminderForm />
-  <p><a href={`/sizes/${s.key}/meaning/`}>What {label} means</a> decodes the size code. <a href={`/sizes/${s.key}/cost-per-mile/`}>{label} cost per mile</a> runs the calculator for one quote. Compare two quotes on <a href={`/tools/compare-cost-per-mile/?size=${s.key}`}>cost per mile</a> (this size pre-selected) or subtract a rebate you type on <a href={`/tools/cost-per-mile-after-rebate/?size=${s.key}`}>cost per mile after a rebate</a>. Tread and age thresholds: <a href="/tools/when-to-replace/">when to replace your tires</a>. The reminder form on this page stores a request and does not send a message.</p>
+  <p><a href={`/sizes/${s.key}/meaning/`}>What {label} means</a> decodes the size code. <a href={`/tools/cost-per-mile/?size=${s.key}`}>{label} cost per mile</a> runs the calculator for one quote. Compare two quotes on <a href={`/tools/compare-cost-per-mile/?size=${s.key}`}>cost per mile</a> (this size pre-selected) or subtract a rebate you type on <a href={`/tools/cost-per-mile-after-rebate/?size=${s.key}`}>cost per mile after a rebate</a>. Tread and age thresholds: <a href="/tools/when-to-replace/">when to replace your tires</a>. The reminder form on this page stores a request and does not send a message.</p>
 
   <h2>How the {n} lines spread across treadwear bands</h2>
   <div class="tw"><table>
@@ -92,7 +92,7 @@ const ld = [
     <li><strong>Coverage:</strong> NHTSA lists a specific size for only {Math.round(100 * S.records_with_explicit_size / S.raw_records)}% of its records ({S.records_with_explicit_size.toLocaleString()} of {S.raw_records.toLocaleString()}); the rest are filed as “All sizes” or size ranges. Those lines may well be sold in {label} but cannot be placed here, so this is a lower bound, not a full catalog. A size catalog feed is needed for completeness.</li>
     <li><strong>Size types in records:</strong> {types}. Load index and speed rating are not compared here.</li>
     <li>Treadwear grades are set by each manufacturer and are most reliable for comparing tires of the same maker. See <a href="/methodology/">methodology</a> and <a href={NHTSA_GUIDE}>NHTSA TireWise</a>.</li>
-    <li><a href={`/sizes/${s.key}/meaning/`}>What {label} means</a> separates the size code from load index, speed rating and vehicle fitment. <a href={`/sizes/${s.key}/cost-per-mile/`}>{label} cost per mile</a> uses a quote you type.</li>
+    <li><a href={`/sizes/${s.key}/meaning/`}>What {label} means</a> separates the size code from load index, speed rating and vehicle fitment. <a href={`/tools/cost-per-mile/?size=${s.key}`}>{label} cost per mile</a> uses a quote you type.</li>
     <li>A line filed only as “All sizes” cannot appear in this table. <a href="/guides/why-your-size-may-be-missing/">Why your size may be missing a tire</a>.</li>
     <li>If you are replacing only two tires, mount them using the rear-axle rule in <a href="/guides/replacing-two-tires-instead-of-four/">replacing two tires instead of four</a>. The pressure light is not a substitute for a gauge: <a href="/guides/what-tpms-does-not-tell-you/">what TPMS does not tell you</a>.</li>
   </ul>

@@ -1,5 +1,5 @@
 import { siteLines, siteBrands, siteSizes, lineUrl, sizeUrl, fmt } from '../lib/data';
-import { COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH, HOLIDAY_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, blackFridayPath, cyberMondayPath, loadIndexPath, sizeCostPath, sizeMeaningPath, speedRatingPath } from '../lib/paths';
+import { COST_PATH, COMPARE_PATH, REPLACE_PATH, REBATE_PATH, AFTER_REBATE_PATH, HOLIDAY_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, blackFridayPath, cyberMondayPath, loadIndexPath, sizeCostPath, sizeMeaningPath, speedRatingPath } from '../lib/paths';
 import { querySizes } from '../lib/size-facts';
 import { EXACT_PAGES, exactPath } from '../lib/exact-match';
 import { LOAD_PAGES, SPEED_PAGES, lbLabel } from '../lib/service-ratings';
@@ -11,6 +11,7 @@ export function GET() {
     ...querySizes.map((s) => ['C', `${s.label} cost per mile`, sizeCostPath(s.key), 'your quote', s.key]),
     ...siteBrands.map((b) => ['B', b.name, `/tires/${b.slug}/`, `${b.lines.length} lines`]),
     ...siteLines.map((l) => ['L', `${l.brand} ${l.line}`, lineUrl(l), `treadwear ${fmt(l.wear_median)}`]),
+    ['T', 'Tire cost per mile calculator', COST_PATH, 'tool'],
     ['T', 'Compare two tires by cost per mile', COMPARE_PATH, 'tool'],
     ['T', 'Cost per mile after a rebate', AFTER_REBATE_PATH, 'tool'],
     ['T', 'November and December 2026 tire rebates', REBATE_PATH, 'tool'],

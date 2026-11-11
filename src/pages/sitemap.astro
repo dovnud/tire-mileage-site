@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import { GUIDES, guideUrl } from '../lib/all-guides';
 import { BANDS, TYPES, RIMS, bandUrl, typeUrl, rimUrl } from '../lib/taxonomy';
 import { LEGAL_LINKS } from '../lib/site';
-import { COMPARE_PATH, REPLACE_PATH, HOLIDAY_PATH, REBATE_PATH, AFTER_REBATE_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, blackFridayPath, cyberMondayPath, loadIndexPath, sizeCostPath, sizeMeaningPath, speedRatingPath } from '../lib/paths';
+import { COST_PATH, COMPARE_PATH, REPLACE_PATH, HOLIDAY_PATH, REBATE_PATH, AFTER_REBATE_PATH, LOOKUP_PATH, LOAD_INDEX_PATH, SPEED_RATING_PATH, blackFridayPath, cyberMondayPath, loadIndexPath, sizeMeaningPath, speedRatingPath } from '../lib/paths';
 import { LOAD_PAGES, SPEED_PAGES } from '../lib/service-ratings';
 import { siteBrands, siteSizes, siteLines, lineUrl, sizeUrl } from '../lib/data';
 import { EXACT_PAGES, exactPath } from '../lib/exact-match';
@@ -14,7 +14,7 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Site map', href: '/sitemap
   <h1>Site map</h1>
   <div class="sitemap-h">
     <h2>Main</h2><ul><li><a href="/">Home</a></li><li><a href="/sitemap.xml">XML sitemap</a></li><li><a href="/sitemap-index.xml">XML sitemap index</a></li><li><a href="/where-to-buy/">Where to buy</a></li><li><a href="/methodology/">Methodology</a></li><li><a href="/data/">Dataset downloads</a></li><li><a href="/about/">About &amp; corrections</a></li>{LEGAL_LINKS.map((l) => <li><a href={l.href}>{l.name}</a></li>)}<li><a href="/llms.txt">llms.txt</a></li><li><a href="/llms-full.txt">llms-full.txt</a></li><li><a href="/guides/feed.xml">Guides Atom feed</a></li></ul>
-    <h2>Tools</h2><ul><li><a href={COMPARE_PATH}>Compare two tires: cost per mile</a></li><li><a href={AFTER_REBATE_PATH}>Cost per mile after a rebate</a></li><li><a href={REBATE_PATH}>Tire rebate lookup: November and December 2026</a></li><li><a href={REPLACE_PATH}>When to replace your tires</a></li><li><a href={HOLIDAY_PATH}>Holiday 2026 winter tire and gear gift guide</a></li><li><a href={blackFridayPath}>Black Friday 2026 tire rebate dates</a></li><li><a href={cyberMondayPath}>Cyber Monday 2026 tire rebate dates</a></li></ul>
+    <h2>Tools</h2><ul><li><a href={COST_PATH}>Tire cost per mile calculator</a></li><li><a href={COMPARE_PATH}>Compare two tires: cost per mile</a></li><li><a href={AFTER_REBATE_PATH}>Cost per mile after a rebate</a></li><li><a href={REBATE_PATH}>Tire rebate lookup: November and December 2026</a></li><li><a href={REPLACE_PATH}>When to replace your tires</a></li><li><a href={HOLIDAY_PATH}>Holiday 2026 winter tire and gear gift guide</a></li><li><a href={blackFridayPath}>Black Friday 2026 tire rebate dates</a></li><li><a href={cyberMondayPath}>Cyber Monday 2026 tire rebate dates</a></li></ul>
     <h2>Exact lookups</h2><ul><li><a href={LOOKUP_PATH}>Exact tire size and line lookups</a></li>{EXACT_PAGES.map((p) => <li><a href={exactPath(p.slug)}>{p.h1}</a></li>)}<li><a href={LOAD_INDEX_PATH}>Load index chart</a></li>{LOAD_PAGES.map((p) => <li><a href={loadIndexPath(p.code)}>Load index {p.code}</a></li>)}<li><a href={SPEED_RATING_PATH}>Speed rating chart</a></li>{SPEED_PAGES.map((r) => <li><a href={speedRatingPath(r.letter)}>Speed rating {r.letter}</a></li>)}</ul>
     <h2>Guides</h2><ul><li><a href="/guides/">All guides</a></li>{GUIDES.map((g) => <li><a href={guideUrl(g)}>{g.h1}</a></li>)}</ul>
     <h2>By treadwear band</h2><ul><li><a href="/treadwear/">All bands</a></li>{BANDS.map((b) => <li><a href={bandUrl(b)}>Treadwear {b.label}</a></li>)}</ul>
@@ -23,7 +23,7 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Site map', href: '/sitemap
     <h2>Brands</h2><ul><li><a href="/tires/">All brands</a></li>{siteBrands.map((b) => <li><a href={`/tires/${b.slug}/`}>{b.name}</a></li>)}</ul>
     <h2>Sizes</h2><ul><li><a href="/sizes/">All sizes</a></li>{siteSizes.map((s) => {
       const q = querySizes.some((x) => x.key === s.key);
-      return <li><a href={sizeUrl(s.key)}>{s.label} treadwear ranking</a>{q && <> · <a href={sizeMeaningPath(s.key)}>what it means</a> · <a href={sizeCostPath(s.key)}>cost per mile</a></>}</li>;
+      return <li><a href={sizeUrl(s.key)}>{s.label} treadwear ranking</a>{q && <> · <a href={sizeMeaningPath(s.key)}>what it means</a></>}</li>;
     })}</ul>
     {siteLines.length <= 200 && <><h2>Tire lines</h2><ul>{siteLines.map((l) => <li><a href={lineUrl(l)}>{l.brand} {l.line}</a></li>)}</ul></>}
   </div>

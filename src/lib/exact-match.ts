@@ -153,6 +153,9 @@ export interface ExactPage {
   sizeKey?: string;
   shopLine?: { brand: string; line: string; brandSlug: string; lineSlug: string };
   shopSize?: string;
+  /** Rebate pages: last purchase date printed by the maker (YYYY-MM-DD) and the date that end date was last read. */
+  endsOn?: string;
+  endsReadOn?: string;
   related: { href: string; label: string }[];
 }
 
@@ -543,6 +546,10 @@ interface RebateBrand {
   notes: string[];
   sourceIds: string[];
   lineKeys: string[];
+  /** Last purchase day of the window, as printed in `window` (YYYY-MM-DD). After it, the page shows “This rebate has ended”. */
+  endsOn: string;
+  /** Date the end date was last read on the source, when later than EXACT_DATE. */
+  endsReadOn?: string;
 }
 
 const REBATES: RebateBrand[] = [
@@ -551,6 +558,7 @@ const REBATES: RebateBrand[] = [
     maker: 'Michelin',
     slug: 'michelin',
     window: 'Purchase must be completed between September 3, 2026 and November 30, 2026.',
+    endsOn: '2026-11-30',
     submission: 'All requests must be received by December 31, 2026.',
     reward: 'One 80-dollar Visa reward card or Visa virtual account per purchase of four new Michelin passenger or light truck tires, including the Agilis family.',
     tires: 'New Michelin passenger or light truck tires, including the Agilis family. The legal text does not limit the offer to one model.',
@@ -570,6 +578,7 @@ const REBATES: RebateBrand[] = [
     maker: 'BFGoodrich',
     slug: 'bfgoodrich',
     window: 'Purchase must be completed between September 3, 2026 and November 30, 2026.',
+    endsOn: '2026-11-30',
     submission: 'All requests must be received by December 31, 2026.',
     reward: 'One 80-dollar Visa reward card or Visa virtual account per purchase of four new BFGoodrich passenger or light truck tires, including the HD Pro and Route Control families.',
     tires: 'New BFGoodrich passenger or light truck tires, including the HD Pro and Route Control families.',
@@ -589,6 +598,7 @@ const REBATES: RebateBrand[] = [
     maker: 'Goodyear',
     slug: 'goodyear',
     window: 'Offer valid on purchases made September 1, 2026 through November 30, 2026.',
+    endsOn: '2026-11-30',
     submission: 'The FAQ says consumers have one month from the promotion end date to submit. Its example is a promotion ending March 31 that must be postmarked or submitted online no later than April 30. The page does not print a December 2026 submission date.',
     reward: 'Headings on the page: up to 200 dollars back with the Goodyear Credit Card (Eagle F1 All Season; Wrangler DuraTrac RT); up to 150 dollars back with the Goodyear Credit Card (Assurance WeatherReady 2); 100 dollars back with any payment type (Wrangler Outbound AT); 80 dollars back with any payment type (Wrangler Steadfast HT; Vector 4Seasons Gen-3; Assurance MaxLife 2); 60 dollars back with any payment type (Assurance ComfortDrive). The savings line says online or mail-in rebate, paid by prepaid card.',
     tires: 'The models named under those headings. “Up to” is the page’s wording on the credit-card headings.',
@@ -605,6 +615,10 @@ const REBATES: RebateBrand[] = [
     maker: 'Cooper',
     slug: 'cooper',
     window: 'The Cooper block on Goodyear’s offers page says the offer is valid on purchases made September 1, 2026 through November 30, 2026.',
+    endsOn: '2026-11-30',
+    // Re-read 2026-11-10 on https://www.goodyear.com/en-us/offers/tire-rebate: “Cooper Tire Rebates … Offer valid on purchases made 9/1/26 through 11/30/26.”
+    // Cooper’s own offers page did not return the offer text (script-rendered). After 2026-11-30, redirect or unpublish the three cooper-* rebate pages.
+    endsReadOn: '2026-11-10',
     submission: 'The FAQ on that Goodyear page is the one-month-from-the-end rule, with the March 31 to April 30 example. It does not print a December 2026 submission date.',
     reward: 'Headings on the Cooper block: up to 140 dollars back with the Goodyear Credit Card (TractionCommand); up to 120 dollars back with the Goodyear Credit Card (ProControl; Discoverer Stronghold AT; Discoverer Road+Trail AT); 70 dollars back with any payment type (Discoverer Rugged Trek; Discoverer HT; Cobra Instinct). The Cooper savings line says online or mail-in rebate, paid by prepaid card.',
     tires: 'The models named under those headings. Discoverer HT is printed with an asterisk. A note on the page says “Subject to availability.”',
@@ -621,6 +635,7 @@ const REBATES: RebateBrand[] = [
     maker: 'Pirelli',
     slug: 'pirelli',
     window: 'A new set of four qualifying tires from participating dealers between November 1, 2026 and November 30, 2026.',
+    endsOn: '2026-11-30',
     submission: 'The overview page, and page 1 of the terms PDF, say requests must be postmarked if mailed, or submitted online, by December 30, 2026, at 11:59 p.m. EST. The terms section of the same PDF says October 30, 2026, at 11:59 EST. Both dates are printed. This page does not choose between them.',
     reward: 'A 100-dollar Pirelli Visa prepaid card. The card is issued as a digital card unless the buyer opts for a physical card. The PDF says the digital card is issued within four weeks, and a physical card takes six to eight weeks. A physical card expires six months after issuance.',
     tires: 'Scorpion Weatheractive or Cinturato Weatheractive, a set of four. The qualifying-tire list in the PDF names those two and no others.',
@@ -893,6 +908,8 @@ function buildRebate(brand: RebateBrand, day: 'november' | 'black-friday' | 'cyb
     ],
     sources: srcs(brand.sourceIds),
     lineKeys: brand.lineKeys,
+    endsOn: brand.endsOn,
+    endsReadOn: brand.endsReadOn ?? EXACT_DATE,
     related: [
       ...siblings,
       { href: REBATE_PATH, label: 'November and December 2026 rebate lookup' },

@@ -36,7 +36,7 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: 
 <Base title={title} description={description} crumbs={crumbs} ld={ld} og={`load-index/${p.code}`} modified={CHART_DATE}>
   <p class="eyebrow">Load index · Michelin chart</p>
   <h1>What does load index {p.code} mean?</h1>
-  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <div class="answer">{answer}</div>
   <p>The number is the service description, printed after the size. Michelin’s example is 205/55R17 91V: 91 is the load index and V is the speed rating. <a href={speedRatingPath('v')}>Speed rating V</a> is a different code.</p>
 
   <h2>The cell for {p.code}</h2>

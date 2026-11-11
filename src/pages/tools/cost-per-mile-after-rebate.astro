@@ -3,8 +3,7 @@ import Base from '../../layouts/Base.astro';
 import FaqList from '../../components/FaqList.astro';
 import { siteSizes } from '../../lib/data';
 import { AMAZON_DISCLOSURE } from '../../lib/retailers';
-import { AFTER_REBATE_PATH, REBATE_PATH, REBATE_DATE, COMPARE_PATH, REPLACE_PATH, sizeCostPath } from '../../lib/paths';
-import { popularSizes } from '../../lib/size-facts';
+import { AFTER_REBATE_PATH, REBATE_PATH, REBATE_DATE, COMPARE_PATH, REPLACE_PATH, COST_PATH } from '../../lib/paths';
 import { afterRebateFaqs } from '../../lib/tool-faqs';
 import { SITE_NAME } from '../../lib/site';
 const title = 'Cost per Mile After a Tire Rebate';
@@ -13,18 +12,17 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Cost per mile after rebate
 const faqs = afterRebateFaqs;
 const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
 const hinted = ['michelin', 'bf-goodrich', 'goodyear', 'cooper', 'pirelli'];
-const popular = popularSizes();
 ---
 <Base title={title} description={description} crumbs={crumbs} ld={ld} published={REBATE_DATE} modified={REBATE_DATE}>
   <p class="eyebrow">Tool · buying math</p>
   <h1>Cost per mile after a rebate</h1>
   <p class="guide-meta"><span>By {SITE_NAME}</span><span>Last updated <time datetime={REBATE_DATE}>{REBATE_DATE}</time></span></p>
-  <div class="answer"><strong>Quick answer:</strong> Net set price is the price you type for the set, minus the rebate you type. Cost per 1,000 miles uses that net price and the miles you type. Nothing is pre-filled. A treadwear grade from NHTSA is shown when you pick a line that has a page here. It is not a mileage number and it is not a rebate.</div>
+  <div class="answer">Net set price is the price you type for the set, minus the rebate you type. Cost per 1,000 miles uses that net price and the miles you type. Nothing is pre-filled. A treadwear grade from NHTSA is shown when you pick a line that has a page here. It is not a mileage number and it is not a rebate.</div>
 
   <section class="calc" aria-labelledby="ar-h" data-rebate-path={REBATE_PATH} data-hinted={hinted.join(',')}>
     <h2 id="ar-h">Your two sets, after the rebate you type</h2>
     <p>Pick tire lines that already have a page here, or skip the lists and type a price, a rebate, and miles. The formula is <code>cost per 1,000 miles = (price per tire × tires in the set − rebate) ÷ (expected miles ÷ 1,000)</code>. Verified November and December 2026 maker amounts are on the <a href={REBATE_PATH}>tire rebate lookup</a>. They are not copied into these boxes. A worked example with invented numbers, and no rebate, is in the <a href="/guides/tire-cost-per-mile/">cost-per-mile guide</a>.</p>
-    <p>A size page can open this tool with that size already selected. The single-quote page for a common size: {popular.map((s, i) => <span><a href={sizeCostPath(s.key)}>{s.label}</a>{i < popular.length - 1 ? ', ' : ''}</span>)}.</p>
+    <p>A size page can open this tool with that size already selected. For one quote without a rebate, use the <a href={COST_PATH}>cost-per-mile calculator</a>.</p>
     <p><label>Limit the suggestion lists to a size on this site
       <select id="ar-size">
         <option value="">Any size</option>

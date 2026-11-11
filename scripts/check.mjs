@@ -58,7 +58,7 @@ for (const f of htmls) {
     else { const bar = h.slice(h.indexOf('class="shopbar"'), h.indexOf('class="shopbar"') + 1800); if (!/Search [^<]*on Amazon/.test(bar) || !bar.includes('As an Amazon Associate I earn from qualifying purchases.')) err.push(`${rel}: size sticky bar lacks Amazon search or disclosure`); }
   }
   if (rel === 'index.html') {
-    if (!/Find tires for your size/.test(h) || !/we link to retailers/.test(h) || !/How it works/.test(h)) err.push(`${rel}: home lacks size flow / how-it-works line`);
+    if (!/Find tires for your size/.test(h) || !/click through to Amazon or Discount Tire/.test(h) || !/How it works/.test(h)) err.push(`${rel}: home lacks size flow / how-it-works line`);
     if ((h.match(/<li><h3>/g) || []).length < 3) err.push(`${rel}: home lacks 3-step strip`);
     if (!/View &amp; shop/.test(h)) err.push(`${rel}: home tire cards lack View & shop`);
     if (!/data-shop="amazon"/.test(h) || !/Search on Amazon/.test(h)) err.push(`${rel}: home cards lack Search on Amazon`);
@@ -77,7 +77,7 @@ const sitemapLocs = new Set(); for (const f of files.filter((x) => /sitemap-[a-z
 const idx = fs.readFileSync(path.join(DIST, 'sitemap-index.xml'), 'utf8');
 for (const n of ['pages', 'guides', 'tags', 'brands', 'tires', 'sizes']) if (!idx.includes(`sitemap-${n}.xml`)) err.push(`sitemap-index missing ${n}`);
 for (const l of sitemapLocs) if (!exists(l)) err.push(`sitemap lists missing page ${l}`);
-let guideCount = 0, hubCount = 0;
+let guideCount = 0, hubCount = 0, thinCount = 0;
 for (const f of htmls) {
   const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f); const url = pageRel(f);
   for (const m of h.matchAll(/href="(\/[^"#?]*)/g)) if (m[1] !== url) linked.add(m[1]);
@@ -108,7 +108,9 @@ for (const f of htmls) {
   if (!h.includes('name="twitter:card" content="summary_large_image"')) err.push(`${rel}: missing twitter card`);
   const og = (h.match(/property="og:image" content="([^"]*)"/) || [])[1]; if (og) { const op = new URL(og).pathname; if (!exists(op) || !fs.existsSync(path.join(DIST, op))) err.push(`${rel}: og:image file missing ${op}`); }
   if (!/rel="alternate" type="application\/atom\+xml"/.test(h)) err.push(`${rel}: no feed autodiscovery link`);
-  if (!sitemapLocs.has(url) && url !== '/404') err.push(`${rel}: not in any sitemap`);
+  const thinNoindex = /<meta name="robots" content="noindex, follow"/.test(h);
+  if (thinNoindex) { if (!/^tires\/[^/]+\/[^/]+\/index\.html$/.test(rel)) err.push(`${rel}: noindex,follow outside tire-line pages`); thinCount++; if (sitemapLocs.has(url)) err.push(`${rel}: noindexed thin page is still in a sitemap`); }
+  else if (!sitemapLocs.has(url) && url !== '/404') err.push(`${rel}: not in any sitemap`);
   if (rel.startsWith('guides/') && rel !== 'guides/index.html') {
     guideCount++; const faqN = (h.match(/<details open>/g) || []).length;
     if (!types.includes('Article')) err.push(`${rel}: no Article JSON-LD`); if (!types.includes('FAQPage')) err.push(`${rel}: no FAQPage JSON-LD`);
@@ -155,7 +157,7 @@ if (!preview) {
   const hd = fs.readFileSync(path.join(DIST, '_headers'), 'utf8');
   if (hd.split(/\n\s*\n/).some((b) => b.startsWith('/*') && /X-Robots-Tag/.test(b))) err.push('launch _headers has a global X-Robots-Tag');
   if (!/https:\/\/:project\.pages\.dev\/\*\s*\n\s+X-Robots-Tag: noindex/.test(hd)) err.push('launch _headers missing pages.dev noindex rule');
-  for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f); if (/name="robots" content="noindex/.test(h) && !rel.startsWith('404') && !/^sitemap\/index/.test(rel)) err.push(`${rel}: noindex in launch build`); }
+  for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f); if (/name="robots" content="noindex/.test(h) && !/content="noindex, follow"/.test(h) && !rel.startsWith('404') && !/^sitemap\/index/.test(rel)) err.push(`${rel}: noindex in launch build`); }
   if (!/^https:\/\/tiremileage\.com$/.test(ORIGIN)) err.push(`launch origin is ${ORIGIN}, expected https://tiremileage.com`);
   for (const f of ['robots.txt', 'llms.txt', 'sitemap.xml', 'sitemap-index.xml', ...files.filter((x) => /sitemap-[a-z]+\.xml$/.test(x)).map((x) => path.relative(DIST, x)), 'guides/feed.xml']) { const t = fs.readFileSync(path.join(DIST, f), 'utf8'); if (/pages\.dev|localhost/.test(t)) err.push(`${f}: references pages.dev/localhost`); }
   for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); if (/pages\.dev/.test(h)) err.push(`${path.relative(DIST, f)}: references pages.dev`); }
@@ -208,7 +210,7 @@ if (!preview) {
   // Footer: one-line data-disclaimer pointer on every page; short disclosures link to the full affiliate disclosure.
   for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f);
     if (!h.includes('not safety advice (<a href="/disclaimer/">disclaimer</a>)')) err.push(`${rel}: footer lacks disclaimer pointer`);
-    if (!/class="disc"[\s\S]*?href="\/affiliate-disclosure\/"/.test(h)) err.push(`${rel}: disclosure strip lacks affiliate-disclosure link`); }
+    if (!/class="fine disc"[\s\S]*?href="\/affiliate-disclosure\/"/.test(h)) err.push(`${rel}: disclosure strip lacks affiliate-disclosure link`); }
   console.log(`Legal pages: ${legal.join(' ')}; contact ${contactOn ? 'ENABLED' : 'off (not generated)'}`); }
 // ---- GA4 (see src/layouts/Base.astro): inert when GA4_ID is empty; when set, an inline loader on every page, never a render-blocking <script src> ----
 { const ga = ((r) => /^G-[A-Z0-9]{4,20}$/.test(r) ? r : '')((process.env.GA4_ID !== undefined ? process.env.GA4_ID : 'G-B5K5T7CP0E').trim()) /* must mirror src/lib/site.ts */;
@@ -217,6 +219,25 @@ if (!preview) {
     if (!ga) { if (/googletagmanager|google-analytics|gtag\(/.test(h)) err.push(`${rel}: GA4 code present but GA4_ID is empty`); }
     else if (!h.includes('googletagmanager.com/gtag/js') || !h.includes(ga) || !h.includes('globalPrivacyControl') || !h.includes("'load'")) err.push(`${rel}: GA4_ID set but loader missing/incomplete`); }
   console.log(`GA4 mode: ${ga ? 'ENABLED (' + ga + ')' : 'off (inert)'}`); }
+// ---- Nov 10 2026 audit guards ----
+{ const SELF = /doesn’t sell tires|don’t sell tires|do not sell tires|does not sell tires|sells nothing/gi;
+  const selfOk = new Set(['about/index.html', 'where-to-buy/index.html', 'affiliate-disclosure/index.html']);
+  for (const f of htmls) { const h = fs.readFileSync(f, 'utf8'); const rel = path.relative(DIST, f);
+    const vis = h.slice(Math.max(0, h.indexOf('<body'))).replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '');
+    if (/Quick answer:/.test(vis)) err.push(`${rel}: "Quick answer:" label is back`);
+    const h1 = vis.search(/<h1[ >]/), d = vis.indexOf('class="fine disc"');
+    if (h1 >= 0 && d >= 0 && d < h1) err.push(`${rel}: disclosure appears before the h1`);
+    if (h1 >= 0 && vis.slice(0, h1).includes('As an Amazon Associate')) err.push(`${rel}: affiliate disclosure text before the h1`);
+    const n = (vis.match(SELF) || []).length; if (n > (selfOk.has(rel) ? 2 : 1)) err.push(`${rel}: "doesn't sell tires" self-description ${n}x`);
+    if (/href="\/sizes\/[^"/]+\/cost-per-mile\/?"/.test(h)) err.push(`${rel}: links a retired /sizes/<size>/cost-per-mile/ URL`); }
+  const calc = fs.existsSync(path.join(DIST, 'tools/cost-per-mile/index.html')) ? fs.readFileSync(path.join(DIST, 'tools/cost-per-mile/index.html'), 'utf8') : '';
+  if (!calc || !/id="cpm-size"/.test(calc) || !/id="cpm-price"/.test(calc) || !/id="cpm-miles"/.test(calc)) err.push('cost-per-mile calculator missing or lacks size/price/miles inputs');
+  if (fs.existsSync(path.join(DIST, 'sizes')) && fs.readdirSync(path.join(DIST, 'sizes')).some((k) => fs.existsSync(path.join(DIST, 'sizes', k, 'cost-per-mile')))) err.push('a retired /sizes/<size>/cost-per-mile/ page was built');
+  const rd = fs.existsSync(path.join(DIST, '_redirects')) ? fs.readFileSync(path.join(DIST, '_redirects'), 'utf8') : '';
+  if (!/^\/sizes\/:size\/cost-per-mile\/ \/tools\/cost-per-mile\/\?size=:size 301$/m.test(rd)) err.push('_redirects lacks the cost-per-mile 301 rule');
+  if (thinCount > 25) err.push(`${thinCount} thin noindex line pages (cap 25): check src/lib/thin.ts`);
+  for (const f of htmls.filter((x) => /lookup\/[^/]+-(tire-rebate-november-2026|black-friday-2026-tire-rebate|cyber-monday-2026-tire-rebate)\/index\.html$/.test(x))) { const h = fs.readFileSync(f, 'utf8'); if (!/id="rebate-ended"[^>]*data-ends="\d{4}-\d{2}-\d{2}"/.test(h) || !h.includes('This rebate has ended.')) err.push(`${path.relative(DIST, f)}: rebate page lacks dated expiry notice`); }
+  console.log(`Audit: ${thinCount} thin line pages noindexed; calculator ${calc ? 'ok' : 'MISSING'}`); }
 console.log(`${guideCount} guides, ${hubCount} hub pages, ${sitemapLocs.size} sitemap URLs`);
 for (const [t, p] of titles) if (p.length > 1) err.push(`duplicate title "${t}": ${p.join(', ')}`);
 if (preview) { const hd = fs.readFileSync(path.join(DIST, '_headers'), 'utf8'); if (!/X-Robots-Tag: noindex/i.test(hd)) err.push('_headers missing X-Robots-Tag noindex'); }

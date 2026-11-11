@@ -9,7 +9,7 @@ const plain = retailers.filter((r) => r.id !== 'amazon').map((r) => ({ id: r.id,
 ---
 <section class="shop-cta shop-size" id="shop-size" aria-labelledby="shop-size-h">
   <h2 id="shop-size-h">Shop {label} tires</h2>
-  <p class="shop-sub">TireMileage doesn’t sell tires. Search on Amazon opens Amazon’s search for {label} tires. Pick a line from the ranking for a closer match.</p>
+  <p class="shop-sub">Pick a line from the ranking for a closer match.</p>
   <ShopLinks amazonHref={amazon ? buildSizeRetailerUrl('amazon', label) : undefined} amazonLabel={`Search ${label} tires on Amazon`} plain={plain} />
-  <p class="shop-fine">{AMAZON_DISCLOSURE} The Amazon button may earn us a commission at no cost to you. Confirm the size fits your vehicle before you buy. <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
+  <p class="shop-fine">{AMAZON_DISCLOSURE} Confirm the size fits your vehicle before you buy. <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
 </section>
