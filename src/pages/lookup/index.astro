@@ -7,6 +7,7 @@ import {
 } from '../../lib/paths';
 import { LOAD_PAGES, SPEED_PAGES } from '../../lib/service-ratings';
 import { EXACT_DATE, EXACT_PAGES, exactPath } from '../../lib/exact-match';
+import { WAVE3_DATE } from '../../lib/paths';
 import { WAVE2_LINE_KEYS, WAVE2_SIZE_KEYS } from '../../lib/wave2';
 
 const sizes = WAVE2_SIZE_KEYS.map((k) => siteSizes.find((s) => s.key === k)).filter((s): s is (typeof siteSizes)[number] => !!s);
@@ -15,9 +16,12 @@ const warrantyPages = EXACT_PAGES.filter((p) => p.kind === 'warranty');
 const mileagePages = EXACT_PAGES.filter((p) => p.kind === 'mileage');
 const comparePages = EXACT_PAGES.filter((p) => p.kind === 'compare');
 const rebatePages = EXACT_PAGES.filter((p) => p.kind === 'rebate');
+const treadwearPages = EXACT_PAGES.filter((p) => p.kind === 'treadwear');
+const longestPages = EXACT_PAGES.filter((p) => p.kind === 'longest');
+const winterPages = EXACT_PAGES.filter((p) => p.kind === 'winter');
 const title = 'Exact Tire Size and Line Lookups';
-const description = `Exact pages for mileage warranties, the highest UTQG grade by size, head-to-head treadwear, and November 2026 rebates. ${EXACT_PAGES.length} new query pages, read ${EXACT_DATE}.`;
-const answer = `This page lists one URL per query. ${EXACT_PAGES.length} pages added ${EXACT_DATE} cover a maker mileage warranty, the highest NHTSA treadwear grade in a size, a two-line treadwear comparison, or a November 2026 rebate whose purchase window is on the maker’s own page. Above those, the earlier list still has eight sizes with fewer than ten graded lines, ten lines filed mostly as “All sizes,” Michelin load and speed charts read ${CHART_DATE}, and the November 27 and November 30, 2026 date pages. No prices are added.`;
+const description = `Mileage warranties, UTQG grades, mileage comparisons, and longest cited warranties by size. ${EXACT_PAGES.length} exact pages. No store prices.`;
+const answer = `This page lists one URL per query. The set read ${EXACT_DATE} covers a maker mileage warranty, the highest NHTSA treadwear grade in a size, a two-line treadwear comparison, or a November 2026 rebate. The set read ${WAVE3_DATE} adds mileage warranties, treadwear ratings, mileage comparisons, and longest-cited-warranty pages for all-season, all-terrain, and winter lines that were not in the first set. Above those, the earlier list still has eight sizes with fewer than ten graded lines, ten lines filed mostly as “All sizes,” Michelin load and speed charts read ${CHART_DATE}, and the November 27 and November 30, 2026 date pages. No prices are added.`;
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Exact lookups', href: LOOKUP_PATH }];
 const faqs = [
   { q: 'Why do these sizes have their own pages?', a: 'Each of them has at least five graded lines in the NHTSA file and fewer than ten. A cutoff of ten lines leaves them unpublished. The ranking on each size page is only the lines NHTSA names for that size.' },
@@ -26,7 +30,7 @@ const faqs = [
 ];
 const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
 ---
-<Base title={title} description={description} crumbs={crumbs} ld={ld} og="lookup" modified={EXACT_DATE}>
+<Base title={title} description={description} crumbs={crumbs} ld={ld} og="lookup" modified={WAVE3_DATE}>
   <p class="eyebrow">Exact match · wave 2</p>
   <h1>Exact tire size and line lookups</h1>
   <div class="answer">{answer}</div>
@@ -76,11 +80,32 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: 
     <tbody>{mileagePages.map((p) => <tr><td><a href={exactPath(p.slug)}>{p.h1}</a></td></tr>)}</tbody>
   </table></div>
 
-  <h2>Head-to-head treadwear</h2>
-  <p>Two lines, their NHTSA grades, and a warranty cell only when a maker page is cited. Michelin’s own 2022 test is quoted only on the pairs that test included.</p>
+  <h2>Head-to-head treadwear and mileage</h2>
+  <p>Two lines and their NHTSA grades. A warranty cell appears only when a maker page is cited. Comparisons read {WAVE3_DATE} also put the mileage figures in the answer. Michelin’s own 2022 test is quoted only on the pairs that test included.</p>
   <div class="tw"><table>
     <thead><tr><th>Page</th></tr></thead>
     <tbody>{comparePages.map((p) => <tr><td><a href={exactPath(p.slug)}>{p.h1}</a></td></tr>)}</tbody>
+  </table></div>
+
+  <h2>Treadwear rating by line</h2>
+  <p>The answer is the NHTSA grade, including rows the file splits by speed rating or section width. A winter line with no row stays a missing row. No mile count is added unless a maker page is linked.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Page</th></tr></thead>
+    <tbody>{treadwearPages.map((p) => <tr><td><a href={exactPath(p.slug)}>{p.h1}</a></td></tr>)}</tbody>
+  </table></div>
+
+  <h2>Longest cited warranty by size</h2>
+  <p>The page ranks lines that NHTSA names for that size and for which this site cites a maker mileage warranty. The rank uses the highest printed figure. A lower speed rating on the same line can be a smaller number. Lines filed only as “All sizes” stay off the table.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Page</th></tr></thead>
+    <tbody>{longestPages.map((p) => <tr><td><a href={exactPath(p.slug)}>{p.h1}</a></td></tr>)}</tbody>
+  </table></div>
+
+  <h2>Winter tires</h2>
+  <p>Winter mileage figures are the maker’s rows. The Bridgestone manual’s “no limited mileage warranty” sentence for winter tires is quoted on the page. November 27, 2026 is linked as a date inside a purchase window, not as a sale price.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Page</th></tr></thead>
+    <tbody>{winterPages.map((p) => <tr><td><a href={exactPath(p.slug)}>{p.h1}</a></td></tr>)}</tbody>
   </table></div>
 
   <h2>November 2026 rebates, by maker</h2>

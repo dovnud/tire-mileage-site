@@ -18,7 +18,7 @@ export const GET = ({ site, params }: { site: URL; params: { type: string } }) =
     tires: siteLines.filter((l) => !isThinLine(l)).map(lineUrl),
     sizes: [...siteSizes.map((s) => sizeUrl(s.key)), ...querySizes.map((s) => sizeMeaningPath(s.key))],
   };
-  const exactMod = new Set(EXACT_PAGES.map((p) => exactPath(p.slug)));
-  const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths[params.type].map((p) => `<url><loc>${new URL(p, site).href}</loc><lastmod>${(params.type === 'guides' && GUIDES.find((g) => guideUrl(g) === p)?.updated) || (exactMod.has(p) ? EXACT_DATE : UPDATED)}</lastmod></url>`).join('\n')}\n</urlset>\n`;
+  const exactMod = new Map(EXACT_PAGES.map((p) => [exactPath(p.slug), p.retrieved ?? EXACT_DATE]));
+  const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths[params.type].map((p) => `<url><loc>${new URL(p, site).href}</loc><lastmod>${(params.type === 'guides' && GUIDES.find((g) => guideUrl(g) === p)?.updated) || exactMod.get(p) || UPDATED}</lastmod></url>`).join('\n')}\n</urlset>\n`;
   return new Response(body, { headers: { 'Content-Type': 'application/xml' } });
 };

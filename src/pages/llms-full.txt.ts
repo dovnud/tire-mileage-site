@@ -203,12 +203,12 @@ ${SPEED_ROWS.map((r) => `- ${r.page ? `[${r.letter}](${u(speedRatingPath(r.lette
 
 # Exact-match queries
 
-Read ${EXACT_DATE}. Warranty miles and rebate amounts are quoted from the maker page linked on each URL. A “best mileage” page reports the highest UTQG treadwear grade NHTSA filed for that size. It is not a road test and not a warranty. Comparison pages use the NHTSA grades. No prices are stored.
+Warranty miles and rebate amounts are quoted from the maker page linked on each URL. A “best mileage” page reports the highest UTQG treadwear grade NHTSA filed for that size. A “longest cited warranty” page ranks only lines that name that size and have a maker warranty quoted on this site. It is not a road test. No prices are stored. The first exact-match set was read ${EXACT_DATE}. Later pages use the date under each heading.
 
 ${EXACT_PAGES.map((p) => `# ${p.h1}
 
 URL: ${u(exactPath(p.slug))}
-Last updated: ${EXACT_DATE}
+Last updated: ${p.retrieved ?? EXACT_DATE}
 
 ${p.answer}
 

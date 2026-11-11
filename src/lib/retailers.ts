@@ -82,6 +82,12 @@ function wrapAffiliate(id: RetailerId, plainUrl: string): string {
 const QUERY_OVERRIDES: Record<string, string> = {
   'michelin/defender-2': 'Michelin Defender2',
   'michelin/defender-ltx-m-s-2': 'Michelin Defender LTX M/S2',
+  'goodyear/assurance-comfortdrive': 'Goodyear Assurance ComfortDrive',
+  'goodyear/wrangler-workhorse-at-2': 'Goodyear Wrangler Workhorse AT 2',
+  'bridgestone/weatherpeak': 'Bridgestone WeatherPeak',
+  'hankook/kinergy-pt': 'Hankook Kinergy PT',
+  'falken/wildpeak-a-t-at3w-t-rating': 'Falken Wildpeak A/T3W',
+  'falken/wildpeak-a-t-4w-h-rating': 'Falken Wildpeak A/T4W',
 };
 
 export function cleanLineName(line: string): string {

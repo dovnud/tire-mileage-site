@@ -22,6 +22,8 @@ export const LOOKUP_PATH = '/lookup/';
 export const exactPath = (slug: string) => `/lookup/${slug}/`;
 /** Date the November 2026 exact-match warranty and rebate pages were read. */
 export const EXACT_DATE = '2026-11-09';
+/** Date the later exact-match wave (all-season, all-terrain, winter) was read. */
+export const WAVE3_DATE = '2026-11-11';
 export const LOAD_INDEX_PATH = '/load-index/';
 export const SPEED_RATING_PATH = '/speed-rating/';
 export const loadIndexPath = (code: string) => `/load-index/${code}/`;
