@@ -21,7 +21,7 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
       <button type="submit">Find tires for my size</button>
     </form>
     <p id="lookup-msg" class="lookup-msg" role="status" aria-live="polite"></p>
-    <p id="how-line" class="how-line"><strong>How it works:</strong> look up the treadwear, compare tires for your size, then click through to Amazon or Discount Tire to buy. TireMileage doesn’t sell tires; we link to retailers. <a href="/where-to-buy/">Where to buy</a></p>
+    <p id="how-line" class="how-line"><strong>How it works:</strong> look up the treadwear, compare tires for your size, then click through to Amazon or Discount Tire to buy. <a href="/where-to-buy/">Where to buy</a></p>
     <div class="chips" aria-label="Popular sizes">{popular.map((s) => <a class="chip" href={sizeUrl(s.key)}>{s.label}</a>)}</div>
   </section>
 
@@ -30,13 +30,13 @@ const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'TireM
     <ol class="steps">
       <li><h3>Enter your size</h3><p>Type the size from your sidewall (like 225/65R17). We rank every tire line NHTSA lists for it.</p></li>
       <li><h3>Compare the grades</h3><p>Treadwear gauge plus color-coded traction and temperature badges. Optional: work out cost per 1,000 miles with a real quote.</p></li>
-      <li><h3>Click through to buy</h3><p>Use <strong>Search on Amazon</strong>. It opens a search, not a price. Discount Tire is a plain link with no commission. We don’t sell tires. <a href="/where-to-buy/">Details</a></p></li>
+      <li><h3>Click through to buy</h3><p>Use <strong>Search on Amazon</strong> or Discount Tire, then check the price and fit at the retailer. <a href="/where-to-buy/">Details</a></p></li>
     </ol>
   </section>
 
   <p>The file behind these pages has {S.raw_records.toLocaleString()} NHTSA UTQG records, {S.normalized_lines.toLocaleString()} tire lines, {S.normalized_brands} brands, and {S.distinct_explicit_sizes} sizes named in the data.</p>
 
-  <div class="answer"><strong>Quick answer:</strong> TireMileage turns the U.S. government’s tire grading data (NHTSA UTQG) into comparisons by size and by tire line. Treadwear is a relative durability grade (higher = slower wear on NHTSA’s test), not a mileage promise. Pick a size or tire line, then click through to Amazon or Discount Tire to check the price and buy; the calculator turns your own quote into cost per 1,000 miles.</div>
+  <div class="answer">TireMileage turns the U.S. government’s tire grading data (NHTSA UTQG) into comparisons by size and by tire line. Treadwear is a relative durability grade (higher = slower wear on NHTSA’s test), not a mileage promise. Pick a size or tire line, then click through to Amazon or Discount Tire to check the price and buy; the calculator turns your own quote into cost per 1,000 miles.</div>
 
   <div class="sec-h"><h2>Highest-treadwear lines</h2><a href="/tires/">All tire lines →</a></div>
   <p class="meta" style="margin-top:-4px">Search on Amazon opens a search for that tire. View &amp; shop opens the full line page.</p>

@@ -4,7 +4,7 @@ import ShopCta from '../../components/ShopCta.astro';
 import ShopSize from '../../components/ShopSize.astro';
 import Base from '../../layouts/Base.astro';
 import { EXACT_DATE, EXACT_PAGES, exactPath, type ExactPage } from '../../lib/exact-match';
-import { LOOKUP_PATH } from '../../lib/paths';
+import { LOOKUP_PATH, REBATE_PATH } from '../../lib/paths';
 
 export function getStaticPaths() {
   return EXACT_PAGES.map((page) => ({ params: { slug: page.slug }, props: { page } }));
@@ -15,6 +15,11 @@ const crumbs = [
   { name: 'Exact lookups', href: LOOKUP_PATH },
   { name: page.h1, href: exactPath(page.slug) },
 ];
+// Rebate expiry: a build after endsOn renders the ended notice; earlier builds also carry a tiny client-side check,
+// so the notice appears on the day after endsOn (Pacific time) without a rebuild.
+const todayPT = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+const longDate = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+const ended = !!page.endsOn && todayPT > page.endsOn;
 const ld = [{
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -24,9 +29,14 @@ const ld = [{
 <Base title={page.title} description={page.description} crumbs={crumbs} ld={ld} og={`lookup/${page.slug}`} modified={EXACT_DATE}>
   <p class="eyebrow">{page.kicker}</p>
   <h1>{page.h1}</h1>
+  {page.endsOn && <p class="note rebate-live" id="rebate-live" hidden={ended}><strong>Purchase window ends {longDate(page.endsOn)}.</strong> That last purchase date is printed on the offer page cited under Sources, read {page.endsReadOn}.</p>}
+  {page.endsOn && <p class="note rebate-ended" id="rebate-ended" role="status" data-ends={page.endsOn} hidden={!ended}><strong>This rebate has ended.</strong> The purchase window closed {longDate(page.endsOn)}. The details below are what the offer page said when read {page.endsReadOn}, kept as a record. Check the maker’s site for current offers, or the <a href={REBATE_PATH}>rebate lookup</a>.</p>}
+  {page.endsOn && !ended && <script is:inline define:vars={{ ends: page.endsOn }}>
+    (function () { if (Date.now() > Date.parse(ends + 'T23:59:59-08:00')) { var a = document.getElementById('rebate-ended'), b = document.getElementById('rebate-live'); if (a) a.hidden = false; if (b) b.hidden = true; } })();
+  </script>}
   {page.shopLine && <ShopCta brand={page.shopLine.brand} line={page.shopLine.line} brandSlug={page.shopLine.brandSlug} lineSlug={page.shopLine.lineSlug} />}
   {page.shopSize && <ShopSize label={page.shopSize} />}
-  <div class="answer"><strong>Quick answer:</strong> {page.answer}</div>
+  <div class="answer">{page.answer}</div>
   {page.blocks.map((b) => {
     if (b.kind === 'p') return <p>{b.segs!.map((s) => s.href ? <a href={s.href}>{s.text}</a> : s.text)}</p>;
     if (b.kind === 'ul') return <ul>{b.items!.map((item) => <li>{item.map((s) => s.href ? <a href={s.href}>{s.text}</a> : s.text)}</li>)}</ul>;

@@ -3,26 +3,24 @@ import Base from '../../layouts/Base.astro';
 import FaqList from '../../components/FaqList.astro';
 import { siteSizes } from '../../lib/data';
 import { AMAZON_DISCLOSURE } from '../../lib/retailers';
-import { COMPARE_PATH, PAGE_DATE, REPLACE_PATH, HOLIDAY_PATH, sizeCostPath } from '../../lib/paths';
-import { popularSizes } from '../../lib/size-facts';
+import { COMPARE_PATH, PAGE_DATE, REPLACE_PATH, HOLIDAY_PATH, COST_PATH } from '../../lib/paths';
 import { compareFaqs } from '../../lib/tool-faqs';
 const title = 'Compare Two Tires by Cost per Mile';
 const description = 'Enter the price you paid and the miles you expect for two tires. See cost per 1,000 miles and break-even. Prices are never filled in.';
 const crumbs = [{ name: 'Home', href: '/' }, { name: 'Compare cost per mile', href: COMPARE_PATH }];
 const faqs = compareFaqs;
-const popular = popularSizes();
 const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
 ---
 <Base title={title} description={description} crumbs={crumbs} ld={ld} published={PAGE_DATE} modified={PAGE_DATE}>
   <p class="eyebrow">Tool · buying math</p>
   <h1>Compare two tires: cost per mile</h1>
   <p class="guide-meta"><span>Last updated <time datetime={PAGE_DATE}>{PAGE_DATE}</time></span></p>
-  <div class="answer"><strong>Quick answer:</strong> Cost per 1,000 miles is the price you paid for the set divided by the miles you expect, times 1,000. Break-even miles are how far the higher-priced set must last to match the other set’s cost per mile. Both prices stay blank until you type them. A treadwear grade is not a mileage number.</div>
+  <div class="answer">Cost per 1,000 miles is the price you paid for the set divided by the miles you expect, times 1,000. Break-even miles are how far the higher-priced set must last to match the other set’s cost per mile. Both prices stay blank until you type them. A treadwear grade is not a mileage number.</div>
 
   <section class="calc" aria-labelledby="cmp-h">
     <h2 id="cmp-h">Your two sets</h2>
     <p>Pick tire lines that already have a page here, or skip the lists and type a price and miles. Nothing is pre-filled. The formula is <code>cost per 1,000 miles = set price ÷ (expected miles ÷ 1,000)</code>. Set price is the price per tire times the number of tires. A worked example with invented numbers, labeled as invented, is in the <a href="/guides/tire-cost-per-mile/">cost-per-mile guide</a>.</p>
-    <p>A size page can open this tool with that size already selected. One quote, instead of two, has its own page: {popular.map((s, i) => <span><a href={sizeCostPath(s.key)}>{s.label} cost per mile</a>{i < popular.length - 1 ? ', ' : ''}</span>)}.</p>
+    <p>A size page can open this tool with that size already selected. One quote instead of two: the <a href={COST_PATH}>cost-per-mile calculator</a>.</p>
     <p><label>Limit the suggestion lists to a size on this site
       <select id="cmp-size">
         <option value="">Any size</option>

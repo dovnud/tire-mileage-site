@@ -1,0 +1,105 @@
+---
+// One cost-per-mile calculator for every size. It replaced 163 near-identical /sizes/<size>/cost-per-mile/ pages
+// (301-redirected here with ?size=<key>, see public/_redirects). Nothing is pre-filled except the size you pick.
+import Base from '../../layouts/Base.astro';
+import FaqList from '../../components/FaqList.astro';
+import ReminderForm from '../../components/ReminderForm.astro';
+import { fmt, sizeUrl, NHTSA_GUIDE, SOURCE_URL } from '../../lib/data';
+import { AFTER_REBATE_PATH, COMPARE_PATH, COST_PATH, PAGE_DATE, REBATE_PATH, REPLACE_PATH, sizeMeaningPath } from '../../lib/paths';
+import { querySizes, rankSize, topLinePhrase } from '../../lib/size-facts';
+
+const sizes = querySizes.map((s) => {
+  const r = rankSize(s);
+  return { k: s.key, l: s.label, n: r.n, med: r.med == null ? '' : fmt(r.med), top: topLinePhrase(r.topTies), low: r.lowest ? String(r.lowest.key) : '' };
+}).sort((a, b) => a.l.localeCompare(b.l, 'en', { numeric: true }));
+const title = 'Tire Cost per Mile Calculator (Any Size)';
+const description = `Tire cost per mile from the price and miles you type. Pick one of ${sizes.length} sizes to see its NHTSA treadwear context. No price is stored or filled in.`;
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Cost per mile calculator', href: COST_PATH }];
+const faqs = [
+  { q: 'How is tire cost per mile calculated?', a: 'Cost per 1,000 miles equals (price per tire × number of tires) ÷ (expected miles ÷ 1,000). Cost per mile is the set price divided by the miles. You type the price and the miles.' },
+  { q: 'Why is no price filled in?', a: 'This site has no price feed. Prices change by size and store, so the price box stays empty until you type a quote.' },
+  { q: 'Can I use the treadwear grade as the miles?', a: 'No. The NHTSA treadwear grade compares wear rate on a government test course. It is not a mile count, so it is shown as context for the size you pick and never typed into the miles box.' },
+  { q: 'Does a higher treadwear grade mean a lower cost per mile?', a: 'Not by itself. Cost per mile uses your price and your miles. Grades are most comparable within one maker.' },
+];
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
+---
+<Base title={title} description={description} crumbs={crumbs} ld={ld} modified={PAGE_DATE}>
+  <p class="eyebrow">Tool · buying math</p>
+  <h1>Tire cost per mile calculator</h1>
+  <div class="answer">Cost per 1,000 miles for a set is the price you type for the set, divided by the miles you expect, times 1,000. Pick your size to see how many NHTSA-graded lines it has and its median treadwear grade. A treadwear grade is not a mile count, so it is never filled into the miles box.</div>
+
+  <section class="calc" aria-labelledby="cpm-h" data-cost-path={COST_PATH}>
+    <h2 id="cpm-h">Your quote</h2>
+    <p>Formula: <code>cost per 1,000 miles = (price per tire × tires in the set) ÷ (expected miles ÷ 1,000)</code>. The same arithmetic, with a worked example that uses invented numbers, is in <a href="/guides/tire-cost-per-mile/">how to calculate tire cost per mile</a>.</p>
+    <div class="calc-form">
+      <label>Tire size
+        <select id="cpm-size">
+          <option value="">Any size</option>
+          {sizes.map((s) => <option value={s.k}>{s.l}</option>)}
+        </select>
+      </label>
+      <label>Price you were quoted per tire ($)
+        <input id="cpm-price" type="number" min="0" step="0.01" inputmode="decimal" />
+      </label>
+      <label>Tires in the set
+        <input id="cpm-count" type="number" min="1" step="1" value="4" />
+      </label>
+      <label>Miles you expect
+        <input id="cpm-miles" type="number" min="1" step="1" inputmode="numeric" />
+      </label>
+    </div>
+    <h2>Result</h2>
+    <output id="cpm-out" aria-live="polite">Enter a price and the miles you expect.</output>
+    <p id="cpm-ctx" class="note" hidden></p>
+    <p class="meta">A warranty figure is a ceiling the maker will stand behind, not a forecast. See <a href="/guides/treadwear-vs-warranty-mileage/">treadwear versus warranty mileage</a>.</p>
+  </section>
+
+  <p>Two quotes side by side: <a href={COMPARE_PATH}>compare cost per mile</a>. A rebate you type: <a href={AFTER_REBATE_PATH}>cost per mile after a rebate</a>. Maker rebate windows we could verify are on the <a href={REBATE_PATH}>tire rebate lookup</a>; those amounts are not copied into these boxes. Worn-out and age thresholds: <a href={REPLACE_PATH}>when to replace your tires</a>. Every size’s full treadwear ranking is on the <a href="/sizes/">sizes index</a>.</p>
+
+  <ReminderForm tire="" />
+  <p class="meta">The reminder form stores a request and does not send a message.</p>
+
+  <FaqList faqs={faqs} />
+  <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2>
+    <ol>
+      <li>The cost-per-1,000-miles formula is this site’s arithmetic, the same one in <a href="/guides/tire-cost-per-mile/">How to calculate tire cost per mile</a>. No outside price source is used.</li>
+      <li>Size context (line count, median, highest and lowest treadwear grade) comes from <a href={SOURCE_URL} rel="noopener">NHTSA’s tire ratings API</a>, via the <a href="/data/">dataset on this site</a>. <a href={NHTSA_GUIDE} rel="noopener">NHTSA TireWise</a> describes the grade.</li>
+    </ol>
+  </section>
+  <script is:inline type="application/json" id="cpm-sizes" set:html={JSON.stringify(sizes.map((s) => [s.k, s.l, s.n, s.med, s.top, s.low, sizeUrl(s.k), sizeMeaningPath(s.k)])).replace(/</g, '\\u003c')}></script>
+  <script is:inline>
+    (function () {
+      var sel = document.getElementById('cpm-size');
+      var price = document.getElementById('cpm-price');
+      var count = document.getElementById('cpm-count');
+      var miles = document.getElementById('cpm-miles');
+      var out = document.getElementById('cpm-out');
+      var ctx = document.getElementById('cpm-ctx');
+      if (!sel || !price || !count || !miles || !out || !ctx) return;
+      var data = {};
+      try { JSON.parse(document.getElementById('cpm-sizes').textContent).forEach(function (r) { data[r[0]] = r; }); } catch (e) {}
+      function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      function label() { var r = data[sel.value]; return r ? r[1] : ''; }
+      function showCtx() {
+        var r = data[sel.value];
+        if (!r) { ctx.hidden = true; ctx.innerHTML = ''; return; }
+        ctx.innerHTML = '<strong>' + esc(r[1]) + ':</strong> NHTSA lists ' + r[2] + ' graded lines' + (r[3] ? ', median treadwear ' + esc(r[3]) : '') + '. Highest: ' + esc(r[4]) + '. Lowest: ' + esc(r[5]) + '. These are wear-rate grades, not miles. <a href="' + r[6] + '">' + esc(r[1]) + ' treadwear ranking</a> · <a href="' + r[7] + '">what ' + esc(r[1]) + ' means</a>';
+        ctx.hidden = false;
+      }
+      function render() {
+        var pr = parseFloat(price.value), n = parseFloat(count.value), mi = parseFloat(miles.value);
+        if (!(pr >= 0) || price.value === '' || !(n >= 1) || !(mi > 0)) { out.textContent = 'Enter a price and the miles you expect.'; return; }
+        var set = pr * n, per1k = set / (mi / 1000), per = set / mi, l = label();
+        out.textContent = (l ? l + ' set: ' : 'Set price ') + '$' + set.toFixed(2) + '. $' + per1k.toFixed(2) + ' per 1,000 miles ($' + per.toFixed(4) + ' per mile) over ' + Math.round(mi).toLocaleString('en-US') + ' miles.';
+      }
+      var preset = (new URLSearchParams(location.search).get('size') || '').toLowerCase();
+      if (preset && data[preset]) sel.value = preset;
+      sel.addEventListener('change', function () {
+        showCtx(); render();
+        try { var u = new URL(location.href); if (sel.value) u.searchParams.set('size', sel.value); else u.searchParams.delete('size'); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
+      });
+      [price, count, miles].forEach(function (e) { e.addEventListener('input', render); });
+      showCtx(); render();
+    })();
+  </script>
+</Base>

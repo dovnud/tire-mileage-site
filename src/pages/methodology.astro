@@ -6,7 +6,7 @@ const crumbs = [{ name: 'Home', href: '/' }, { name: 'Methodology', href: '/meth
 ---
 <Base title="Methodology: How We Use NHTSA UTQG Tire Data | TireMileage" description="Where the data comes from (NHTSA), how it was cleaned, what the numbers mean, and what is missing (prices, warranties, full size coverage)." crumbs={crumbs}>
   <h1>Methodology</h1>
-  <div class="answer"><strong>Quick answer:</strong> Every grade on this site comes from NHTSA's public tire ratings API, pulled {UPDATED}. We computed ranks and percentiles from those grades. We do not show prices. A maker's mileage warranty appears only on a few lines, and only where we read it on the maker's own page (linked).</div>
+  <div class="answer">Every grade on this site comes from NHTSA's public tire ratings API, pulled {UPDATED}. We computed ranks and percentiles from those grades. We do not show prices. A maker's mileage warranty appears only on a few lines, and only where we read it on the maker's own page (linked).</div>
   <h2>Source</h2>
   <p><a href={SOURCE_URL}>{SOURCE_URL}</a> returned {S.reported_total.toLocaleString()} records; we retrieved {S.raw_records.toLocaleString()} unique records. The API caps pages at 100 rows and only allows non-unique sort keys, so the pull script dedupes by NHTSA record id and checks the total. NHTSA is a U.S. federal agency; works of the U.S. federal government are generally not subject to U.S. copyright. Grade definitions: <a href={NHTSA_GUIDE}>NHTSA TireWise</a>, <a href={CFR_URL}>49 CFR 575.104</a>.</p>
   <h2>What the grades mean</h2>

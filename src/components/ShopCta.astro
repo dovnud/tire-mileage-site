@@ -11,7 +11,6 @@ const plain = retailers.filter((r) => r.id !== 'amazon').map((r) => ({ id: r.id,
 ---
 <section class="shop-cta" id="shop-this-tire" aria-labelledby="shop-h">
   <h2 id="shop-h">Shop this tire</h2>
-  <p class="shop-sub">Opens a search for “{q}”. Search on Amazon is an affiliate link. You confirm the price and size at the retailer. TireMileage doesn’t sell tires.</p>
   <ShopLinks amazonHref={amazon ? buildRetailerUrl('amazon', brand, line, key) : undefined} amazonLabel="Search on Amazon" plain={plain} />
-  <p class="shop-fine">{AMAZON_DISCLOSURE} The Amazon button may earn us a commission at no cost to you. No prices are shown here because they vary by size and store. <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
+  <p class="shop-fine">{AMAZON_DISCLOSURE} <a href="/where-to-buy/">How buying works</a> · <a href="/affiliate-disclosure/">Affiliate disclosure</a></p>
 </section>

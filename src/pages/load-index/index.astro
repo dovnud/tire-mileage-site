@@ -24,7 +24,7 @@ const kgRows = Array.from({ length: 17 }, (_, i) => [LOAD_KG[i], LOAD_KG[i + 17]
 <Base title={title} description={description} crumbs={crumbs} ld={ld} og="load-index/index" modified={CHART_DATE}>
   <p class="eyebrow">Load index · Michelin chart</p>
   <h1>Tire load index chart</h1>
-  <div class="answer"><strong>Quick answer:</strong> {answer}</div>
+  <div class="answer">{answer}</div>
   <p>The exact pages are {LOAD_PAGES.map((p, i) => <span><a href={loadIndexPath(p.code)}>{p.code}</a>{i < LOAD_PAGES.length - 1 ? ', ' : ''}</span>)}. Speed letters are on the <a href={SPEED_RATING_PATH}>speed rating chart</a>. The rules, including XL, are in <a href="/guides/load-index-and-speed-rating/">load index and speed rating</a>.</p>
 
   <h2>Indexes with a checked pound cell</h2>

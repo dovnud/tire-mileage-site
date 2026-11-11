@@ -57,8 +57,6 @@ code{font-family:var(--mono);font-size:.9em;background:var(--surface2);padding:1
 .results .empty{padding:12px;color:var(--mut)}
 
 /* disclosure strip */
-.disc{background:var(--surface);border-bottom:1px solid var(--bd);font-size:var(--fs-0);color:var(--mut)}
-.disc .wrap{padding-top:7px;padding-bottom:7px}
 .disc strong{color:var(--fg)}
 .note{border:1px solid var(--bd2);background:var(--surface2);border-radius:var(--r-sm);padding:10px 14px;font-size:var(--fs-1);color:var(--mut);margin:12px 0}
 .note strong{color:var(--fg)}
@@ -215,7 +213,6 @@ footer.site-f .fine{border-top:1px solid rgba(255,255,255,.14);margin-top:22px;p
   .nav{order:3;flex-basis:100%;flex-wrap:wrap;gap:4px;margin:0 -6px;padding-bottom:4px}
   .nav a{white-space:nowrap;min-height:44px;display:inline-flex;align-items:center;padding:6px 12px}
   .nav a.nav-extra{display:none}
-  .disc-more{display:none}
   .hero{padding:18px 16px 16px}
   .results{position:fixed;left:12px;right:12px;top:auto;margin-top:6px;min-width:0}
 }
