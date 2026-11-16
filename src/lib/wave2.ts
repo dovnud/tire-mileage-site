@@ -27,4 +27,7 @@ export const WAVE2_LINE_KEYS = [
   'falken/wildpeak-a-t-at3w-t-rating',
   'hankook/kinergy-4s-2',
   'cooper/discoverer-at3-4s',
+  // Nov 16 2026: GA4 showed visitors hitting a 404 for the Open Country A/T III
+  // (NHTSA files the line under Tornel). Publish it so the page exists.
+  'tornel/open-country-a-t-iii',
 ] as const;

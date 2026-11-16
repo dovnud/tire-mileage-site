@@ -1,3 +1,14 @@
 # Nov 10 2026 audit: the 163 per-size cost-per-mile pages were folded into one calculator.
 /sizes/:size/cost-per-mile/ /tools/cost-per-mile/?size=:size 301
 /sizes/:size/cost-per-mile /tools/cost-per-mile/?size=:size 301
+# Nov 16 2026: GA4 "Page not found" fix. Visitors used one-piece addresses; the real
+# pages live under /tires/<brand>/<model>/. The Open Country A/T III is filed by
+# NHTSA under Tornel, so the Toyo address points at the Tornel page.
+/tires/michelin-defender-ltx-m-s2/ /tires/michelin/defender-ltx-m-s-2/ 301
+/tires/michelin-defender-ltx-m-s2 /tires/michelin/defender-ltx-m-s-2/ 301
+/tires/michelin-pilot-sport-4-suv/ /tires/michelin/pilot-sport-4-suv/ 301
+/tires/michelin-pilot-sport-4-suv /tires/michelin/pilot-sport-4-suv/ 301
+/tires/michelin-primacy-tour-a-s/ /tires/michelin/primacy-tour-a-s/ 301
+/tires/michelin-primacy-tour-a-s /tires/michelin/primacy-tour-a-s/ 301
+/tires/toyo-open-country-a-t-iii/ /tires/tornel/open-country-a-t-iii/ 301
+/tires/toyo-open-country-a-t-iii /tires/tornel/open-country-a-t-iii/ 301
